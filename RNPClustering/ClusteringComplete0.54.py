@@ -221,7 +221,7 @@ ax.set_zlabel ('z axis')
 #print (X3.size)
 #print (cluster4[0].size)
 #print (newX3.size)
-#print (cluster3[0].size)
+#print (cluster1[0].size)
 
 plt.show()
                     
