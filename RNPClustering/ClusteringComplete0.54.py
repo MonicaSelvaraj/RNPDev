@@ -56,10 +56,10 @@ X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float)
 
 #Generating a plot of the original points
 ax = fig.add_subplot(1,2,1, projection = '3d')
-ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
+ax.scatter (X1, Y1, Z1, c = 'b', marker='o', s=1)
 ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
-ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
-ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=4)
+ax.scatter (X3, Y3, Z3, c = 'b', marker='o', s=3)
+ax.scatter (X4, Y4, Z4, c = 'b', marker='o', s=4)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
@@ -175,30 +175,53 @@ def cluster(X,Y,Z, xylim,zlim):
 #End of cluster method
 
 #List of x,y,z thresholds
-#                     0.54  0.45  0.36,  0.27
-xythreshold = [0.54, 0.45, 0.36, 0.27]
-zthreshold  = [0.362, 0.543, 0.724, 0.905]
+#                     0.27  0.36  0.45,  0.54
+xythreshold = [0.27, 0.36, 0.45, 0.54]
+zthreshold  = [0.905, 0.724, 0.543, 0.362]
 
 #Clustering 0.54 points first
 cluster4 = cluster(X4,Y4,Z4, xythreshold[3],zthreshold[3])
-cluster4= numpy.array(cluster4) #cluster4[1]= numpy.array(cluster4[1]); cluster4[2]=numpy.array(cluster4[2])
+cluster4= numpy.array(cluster4)
 cluster4 = cluster4.astype(float)
 
-
 #Appending the new cluster points to 0.45 array, and re-clustering
-#newX3 =
-#newY3 = 
-#newZ3 = 
+newX3 = numpy.append(X3, cluster4[0])
+newY3 = numpy.append(Y3, cluster4[1])
+newZ3 = numpy.append(Z3, cluster4[2])
+
+cluster3 = cluster(newX3,newY3,newZ3, xythreshold[2],zthreshold[2])
+cluster3= numpy.array(cluster3)
+cluster3 = cluster3.astype(float)
+
+#Appending the new cluster points to 0.36 array, and re-clustering
+newX2 = numpy.append(X2, cluster3[0])
+newY2 = numpy.append(Y2, cluster3[1])
+newZ2 = numpy.append(Z2, cluster3[2])
+
+cluster2 = cluster(newX2,newY2,newZ2, xythreshold[1],zthreshold[1])
+cluster2= numpy.array(cluster2)
+cluster2 = cluster2.astype(float)
+
+#Appending the new cluster points to 0.27 array, and re-clustering
+newX1 = numpy.append(X1, cluster2[0])
+newY1 = numpy.append(Y1, cluster2[1])
+newZ1 = numpy.append(Z1, cluster2[2])
+
+cluster1 = cluster(newX1,newY1,newZ1, xythreshold[0],zthreshold[0])
+cluster1= numpy.array(cluster1)
+cluster1 = cluster1.astype(float)
 
 #Generating a scatter plot of the points after clustering
 ax = fig.add_subplot(1,2,2, projection = '3d')
-ax.scatter (cluster4[0], cluster4[1], cluster4[2], c = 'b', marker='o', s=2)
+ax.scatter (cluster1[0], cluster1[1], cluster1[2], c = 'b', marker='o', s=2)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 
-print (X4.size)
-print (cluster4[0].size)
+#print (X3.size)
+#print (cluster4[0].size)
+#print (newX3.size)
+#print (cluster3[0].size)
 
 plt.show()
                     
