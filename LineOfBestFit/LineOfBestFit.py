@@ -74,26 +74,6 @@ ax.scatter (datamean[0], datamean[1], datamean[2], c = 'g', marker='o')
 
 uu, dd, vv = numpy.linalg.svd(data - datamean)
 
-#Tested, works
-def findRange(x,y,z):
-    minimum = numpy.amin(x)
-    maximum = numpy.amax(x)
-    miny = numpy.amin(y)
-    maxy = numpy.amax(y)
-    if(miny<minimum):
-        minimum = miny
-    if(maxy>maximum):
-        maximum = maxy
-    minz = numpy.amin(z)
-    maxz = numpy.amax(z)
-    if(minz<minimum):
-        minimum = minz
-    if(maxz>maximum):
-        maximum = maxz
-    return minimum, maximum
-
-Range = findRange(x2,y2,z2)
-
 #Taking the variation in the z dimension, because this is the dimension of PC1
 #Linear algebra - figure out what exactly is happening in terms of dimensional collapsation
 linepts = vv[0] * numpy.mgrid[-150:150:2j][:, numpy.newaxis]
