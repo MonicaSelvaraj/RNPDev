@@ -1,9 +1,12 @@
 '''
-Applying the clustering algorithm to
-a. 0.54, 0.45, 0.36, 0.27
-Calculations 
-x-y variation is 0.54, 0.45, 0.36, 0.27
-z variation is 0.362, 0.543, 0.724, 0.905
+- Noticed that 0.27 points were noise - removed from data
+- Currently have two sizes of particles:
+a. 0.45
+b. 0.54 (that can be clustered with 0.36)
+
+Plotting
+a. Whole image with 0.27 removed
+b. Clustered image with 0.54 and 0.36 clustered 
 '''
 
 #!/usr/bin/python
@@ -19,12 +22,12 @@ sys.setrecursionlimit(10000)
 fig = plt.figure( )
 
 #Original data 
-X1 = list(); Y1 = list(); Z1 = list() #0.27
-X2 = list(); Y2 = list(); Z2 = list() #0.36
-X3 = list(); Y3 = list(); Z3 = list() #0.45
-X4 = list(); Y4 = list(); Z4 = list() #0.54
+X1 = list(); Y1 = list(); Z1 = list(); S1 = list()#0.27 - being thrown away
+X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.36
+X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.45
+X4 = list(); Y4 = list(); Z4 = list(); S4 = list()#0.54
 
-with open ('manualzRed.csv', 'r') as csv_file:
+with open ('newTestRed.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         #each line has X,Y,Z, radius
@@ -32,34 +35,38 @@ with open ('manualzRed.csv', 'r') as csv_file:
             X1.append(line[0])
             Y1.append(line[1])
             Z1.append(line[2])
+            S1.append(line[3])
         elif (float(line[3])>0.28 and float(line[3])<0.37):
             X2.append(line[0])
             Y2.append(line[1])
             Z2.append(line[2])
+            S2.append(line[3])
         elif (float(line[3])>0.37 and float(line[3])<0.46):
             X3.append(line[0])
             Y3.append(line[1])
             Z3.append(line[2])
+            S3.append(line[3])
         else:
             X4.append(line[0])
             Y4.append(line[1])
             Z4.append(line[2])
+            S4.append(line[3])
 
-X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1)
-X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2)
-X3 = numpy.array(X3); Y3 = numpy.array(Y3); Z3 = numpy.array(Z3)
-X4 = numpy.array(X4); Y4 = numpy.array(Y4); Z4 = numpy.array(Z4)
-X1 = X1.astype(float); Y1= Y1.astype(float); Z1= Z1.astype(float)
-X2 = X2.astype(float); Y2= Y2.astype(float); Z2 = Z2.astype(float)
-X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float)
-X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float)
+X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1); S1 = numpy.array(S1)
+X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2); S2 = numpy.array(S2)
+X3 = numpy.array(X3); Y3 = numpy.array(Y3); Z3 = numpy.array(Z3); S3 = numpy.array(S3)
+X4 = numpy.array(X4); Y4 = numpy.array(Y4); Z4 = numpy.array(Z4); S4 = numpy.array(S4)
+X1 = X1.astype(float); Y1= Y1.astype(float); Z1= Z1.astype(float); S1= S1.astype(float)
+X2 = X2.astype(float); Y2= Y2.astype(float); Z2 = Z2.astype(float); S2= S2.astype(float)
+X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype(float)
+X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype(float)
 
 #Generating a plot of the original points
 ax = fig.add_subplot(1,2,1, projection = '3d')
-ax.scatter (X1, Y1, Z1, c = 'b', marker='o', s=1)
-ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
-ax.scatter (X3, Y3, Z3, c = 'b', marker='o', s=3)
-ax.scatter (X4, Y4, Z4, c = 'b', marker='o', s=4)
+#ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
+ax.scatter (X2, Y2, Z2, c = 'r', marker='o', s=2)
+ax.scatter (X3, Y3, Z3, c = 'r', marker='o', s=3)
+ax.scatter (X4, Y4, Z4, c = 'r', marker='o', s=4)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
@@ -174,68 +181,41 @@ def cluster(X,Y,Z, xylim,zlim):
     return (newx, newy, newz);
 #End of cluster method
 
+z = Z2[Z2.size-1]
 #List of x,y,z thresholds
 #                     0.27  0.36  0.45,  0.54
 xythreshold = [0.27, 0.36, 0.45, 0.54]
-zthreshold  = [0.905, 0.724, 0.543, 0.362]
+zthreshold  = [0, z*2, 0, 0]
 
-#Clustering 0.54 points first
-cluster4 = cluster(X4,Y4,Z4, xythreshold[3],zthreshold[3])
-cluster4= numpy.array(cluster4)
-cluster4 = cluster4.astype(float)
+#Clustering 0.54 points with 0.36 points
+newX = numpy.append(X2, X4)
+newY = numpy.append(Y2, Y4)
+newZ = numpy.append(Z2, Z4)
 
-#Appending the new cluster points to 0.45 array, and re-clustering
-newX3 = numpy.append(X3, cluster4[0])
-newY3 = numpy.append(Y3, cluster4[1])
-newZ3 = numpy.append(Z3, cluster4[2])
-
-cluster3 = cluster(newX3,newY3,newZ3, xythreshold[2],zthreshold[2])
-cluster3= numpy.array(cluster3)
-cluster3 = cluster3.astype(float)
-
-#Appending the new cluster points to 0.36 array, and re-clustering
-newX2 = numpy.append(X2, cluster3[0])
-newY2 = numpy.append(Y2, cluster3[1])
-newZ2 = numpy.append(Z2, cluster3[2])
-
-cluster2 = cluster(newX2,newY2,newZ2, xythreshold[1],zthreshold[1])
-cluster2= numpy.array(cluster2)
-cluster2 = cluster2.astype(float)
-
-#Appending the new cluster points to 0.27 array, and re-clustering
-newX1 = numpy.append(X1, cluster2[0])
-newY1 = numpy.append(Y1, cluster2[1])
-newZ1 = numpy.append(Z1, cluster2[2])
-
-cluster1 = cluster(newX1,newY1,newZ1, xythreshold[0],zthreshold[0])
-cluster1= numpy.array(cluster1)
-cluster1 = cluster1.astype(float)
+clustersFormed = cluster(newX,newY,newZ, xythreshold[1],zthreshold[1])
+clustersFormed= numpy.array(clustersFormed)
+clustersFormed = clustersFormed.astype(float)
 
 #Generating a scatter plot of the points after clustering
 ax = fig.add_subplot(1,2,2, projection = '3d')
-ax.scatter (cluster1[0], cluster1[1], cluster1[2], c = 'b', marker='o', s=2)
+ax.scatter (clustersFormed[0] , clustersFormed[1], clustersFormed[2], c = 'r', marker='o', s=4)
+ax.scatter (X3, Y3, Z3, c = 'r', marker='o', s=3)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 
-#print (X3.size)
-#print (cluster4[0].size)
-#print (newX3.size)
-#print (cluster3[0].size)
+#For calculations
+#print ("Number of 0.36 particles: ", X2.size) #Number of 0.36 particles 
+#print ("Number of 0.45 particles: ", X3.size) #Number of 0.45 particles
+#print ("Number of 0.54 particles: ", X4.size) #Number of 0.54 particles
+#print ("Total number of clusters: ", clustersFormed[0].size) #Total number of 0.54 and 0.36 points
+#print ("Number of 0.36 particles left after clustering: ", ((X2.size + X3.size) - clustersFormed[0].size)) #Remaining number of 0.36 particles
 
 plt.show()
                     
             
             
-            
-            
-                
-                
-            
-            
-            
-            
-            
+
             
 
         
