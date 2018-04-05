@@ -1,6 +1,7 @@
 '''
 This script implements:
 - Finding the (mode) number of z's each size is split into
+- Clustering by size
 '''
 
 #!/usr/bin/python
@@ -8,6 +9,7 @@ import sys, os
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import Axes3D
+import scipy #To find the mode 
 import numpy 
 import csv
 import math
@@ -56,16 +58,18 @@ X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype
 X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype(float)
 
 #Generating a plot of the original points
-ax = fig.add_subplot(1,2,1, projection = '3d')
+#ax = fig.add_subplot(1,2,1, projection = '3d')
 #ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
-ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
-ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
-ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=4)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
+#ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
+#ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
+#ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=4)
+#ax.set_xlabel ('x, axis')
+#ax.set_ylabel ('y axis')
+#ax.set_zlabel ('z axis')
 
 #Start function here
+#Note: zlim - is the distance between each z slice
+#mz - mode of number of z splits
 def cluster(X,Y,Z, xylim,zlim):
     
     #For sorted data
@@ -89,7 +93,7 @@ def cluster(X,Y,Z, xylim,zlim):
     Zs = numpy.concatenate(sortedArray[2], axis=0)
 
     #DEFINING A FUNCTION TO GENERATE A CLUSTER FROM SORTED DATA
-    def generateCluster(xdata,ydata,zdata):
+    def generateCluster(xdata,ydata,zdata,mZ):
         
         #The maximum z-distance can be zlim
         xOfCluster = 0.0
@@ -105,13 +109,13 @@ def cluster(X,Y,Z, xylim,zlim):
         xarrays = list(); yarrays = list();zarrays = list()
         xarrays = numpy.array(xarrays); yarrays = numpy.array(yarrays); zarrays = numpy.array(zarrays)
         xarrays = xarrays.astype(float); yarrays = yarrays.astype(float); zarrays = zarrays.astype(float)
-    
-        if (zdist<zlim): #Is one cluster
+        #TODO: Change z to mode z here  
+        if (zdist<(zlim*mZ)): #Is one cluster
             pointpos = math.floor((zlength/2.0))
             xOfCluster = xdata[pointpos]
             yOfCluster = ydata[pointpos]
             zOfCluster = zdata[pointpos]
-        if (zdist>zlim):#More than one cluster
+        else: #More than one cluster
             xarrays = numpy.array_split(xdata, 2)
             yarrays = numpy.array_split(ydata, 2)
             zarrays = numpy.array_split(zdata, 2)
@@ -156,16 +160,28 @@ def cluster(X,Y,Z, xylim,zlim):
             pos2+=1
             if visited[pos2] == 1:
                 continue
-            if ((a>currentX-xylim and  a<currentX+xylim) and (b>currentY-xylim and b<currentY+xylim)):
+            if ((a=>currentX-xylim and  a<=currentX+xylim) and (b=>currentY-xylim and b<=currentY+xylim)):
                 similarX.append(a)
                 similarY.append(b)
                 listofZ.append(c)
                 visited[pos2] = 1
-                
+        #When you come out of the inner loop, you have one set of similar z points, count length of z here
+        print (similarX)
+        print (similarY)
+        print (listofZ)
+        #zlengths stores the z length of each set of points to determine the mode  
+        zlengths = list()
+        zlengths.append (len(listofZ))
+        #Converting zlengths to a numpy array
+        zlengths = numpy.array(zlengths)
+        zlengths = zlengths.astype(float)
+        print (zlengths)
+        #Finding the mode of zlengths for our z threshold
+        modeZ = scipy.stats.mode(zlengths)
         #Generating new points after clustering
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
-        newPoints = generateCluster(similarX, similarY, listofZ)
+        newPoints = generateCluster(similarX, similarY, listofZ,modeZ)
         newx.append(newPoints[0])
         newy.append(newPoints[1])
         newz.append(newPoints[2])
@@ -175,11 +191,11 @@ def cluster(X,Y,Z, xylim,zlim):
     return (newx, newy, newz);
 #End of cluster method
 
-z = Z2[Z2.size-1]
 #List of x,y,z thresholds
+#zDistance is the distance between each slice - to be multiplied with mode z to determine the z threshold
+zDistance = Z2[Z2.size-1]
 #                     0.27  0.36  0.45,  0.54
 xythreshold = [0.27, 0.36, 0.45, 0.54]
-zthreshold  = [0, z*2, 0, 0]
 
 #Clustering 0.54 points with 0.36 points
 newX = numpy.append(X2, X4)
