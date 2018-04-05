@@ -2,6 +2,13 @@
 This script implements:
 - Finding the (mode) number of z's each size is split into
 - Clustering by size
+TODO: Right now you are counting the mode every time you make a cluster
+you need to calculate the mode after making all the clusters
+Possible appraoch :
+a. Store similarX, similarY, listofZ in separate multi-dimensional arrays
+b. Go through and find modeZ
+c. Then start clustering all points, and write the new x,y,z onto a file
+d. Do the rest of the analysis from the new data file 
 '''
 
 #!/usr/bin/python
@@ -9,7 +16,7 @@ import sys, os
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import Axes3D
-import scipy #To find the mode 
+import scipy.stats
 import numpy 
 import csv
 import math
@@ -109,8 +116,10 @@ def cluster(X,Y,Z, xylim,zlim):
         xarrays = list(); yarrays = list();zarrays = list()
         xarrays = numpy.array(xarrays); yarrays = numpy.array(yarrays); zarrays = numpy.array(zarrays)
         xarrays = xarrays.astype(float); yarrays = yarrays.astype(float); zarrays = zarrays.astype(float)
-        #TODO: Change z to mode z here  
-        if (zdist<(zlim*mZ)): #Is one cluster
+        #TODO: Change z to mode z here
+        print (zlim)
+        print (mZ)
+        if (zdist<(float)(zlim*mZ)): #Is one cluster
             pointpos = math.floor((zlength/2.0))
             xOfCluster = xdata[pointpos]
             yOfCluster = ydata[pointpos]
@@ -160,7 +169,7 @@ def cluster(X,Y,Z, xylim,zlim):
             pos2+=1
             if visited[pos2] == 1:
                 continue
-            if ((a=>currentX-xylim and  a<=currentX+xylim) and (b=>currentY-xylim and b<=currentY+xylim)):
+            if ((a>currentX-xylim and  a<currentX+xylim) and (b>currentY-xylim and b<currentY+xylim)):
                 similarX.append(a)
                 similarY.append(b)
                 listofZ.append(c)
