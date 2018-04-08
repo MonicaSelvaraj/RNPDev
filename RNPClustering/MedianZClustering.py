@@ -132,8 +132,9 @@ def MedianZ(X,Y,Z,xylim):
 #For 0.54 points
 sortedData = numpy.array(0); alignedData = numpy.array(0)
 sortedData = Sort(X1, Y1, Z1)
-zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], S1[0])
-print (zlim)
+medianZ = MedianZ(sortedData[0], sortedData[1], sortedData[2], S1[0])
+
+def Cluster(X,Y,Z,xylim,zlim)
 
 
 
