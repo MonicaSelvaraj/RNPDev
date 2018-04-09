@@ -233,6 +233,8 @@ def cluster(X,Y,Z,S):
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
         newPoints = generateCluster(similarX, similarY, listofZ,zlim)
+        if (newPoints[0] <= 0 or newPoints[1] <= 0 or newPoints[2] <= 0 ): #Why do I have negative values? BUG
+            continue
         newx.append(newPoints[0])
         newy.append(newPoints[1])
         newz.append(newPoints[2])
@@ -266,7 +268,7 @@ cluster1 = cluster1.astype(float)
 ax = fig.add_subplot(1,2,2, projection = '3d')
 #ax.scatter (cluster4[0] , cluster4[1], cluster4[2], c = 'y', marker='o', s=S4[0]*10)
 #ax.scatter (cluster3[0] , cluster3[1], cluster3[2], c = 'g', marker='o', s=S3[0]*10)
-#ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*10)
+ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*10)
 #ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0]*10)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
