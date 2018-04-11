@@ -2,8 +2,6 @@
 - Aligning each size particles by x,y and finding the number of z splits
 - Calculating the ceil of the median of z splits to figure out the z threshold 
 - Using that z threshold to cluster points (individually for each size)
-
-TODO: There is an extra point on the graphs for some reason, check it out. 
 '''
 
 #!/usr/bin/python
@@ -66,13 +64,13 @@ X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype
 #Generating a plot of the original points
 ax = fig.add_subplot(1,2,1, projection = '3d')
 ax.grid(False)
-#red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0]*2, linewidths=3)
-blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*4, linewidths=2)
-green = ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=S3[0]*8, linewidths=2)
-yellow = ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=S4[0]*16, linewidths=2)
-ax.set_title('vasa unclustered')
-ax.legend((blue, green, yellow),
-           ('0.36 ', '0.45', '0.54'),
+red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0])
+blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*2, linewidths=2)
+green = ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=S3[0]*4, linewidths=2)
+yellow = ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=S4[0]*6, linewidths=2)
+ax.set_title('unclustered')
+ax.legend((red, blue, green, yellow),
+           ('0.27', '0.36 ', '0.45', '0.54'),
            scatterpoints=1,
            loc='best',
            ncol=1,
@@ -151,8 +149,6 @@ def MedianZ(X,Y,Z,S):
     zthreshold = math.ceil(statistics.median(zSplits))
     return (zthreshold);
 
-
-#Start function here
 def cluster(X,Y,Z,S):
     #Getting the x,y threshold 
     xylim = S[0] #Works
@@ -279,15 +275,15 @@ ax = fig.add_subplot(1,2,2, projection = '3d')
 yellow = ax.scatter (cluster4[0] , cluster4[1], cluster4[2], c = 'y', marker='o', s=S4[0]*16, linewidths=2)
 green = ax.scatter (cluster3[0] , cluster3[1], cluster3[2], c = 'g', marker='o', s=S3[0]*8, linewidths=2)
 blue = ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*4, linewidths=2)
-#red = ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0]*2, linewidths=3)
+red = ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0])
 ax.grid(False)
-ax.legend((blue, green, yellow),
-           ('0.36 ', '0.45', '0.54'),
+ax.legend((red,blue, green, yellow),
+           ('0.27','0.36 ', '0.45', '0.54'),
            scatterpoints=1,
            loc='best',
            ncol=1,
            fontsize=8)
-ax.set_title('vasa clustered')
+ax.set_title('clustered')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
