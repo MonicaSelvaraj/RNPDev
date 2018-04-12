@@ -1,20 +1,24 @@
 '''
-- Aligning each size particles by x,y and finding the number of z splits
-- Calculating the ceil of the median of z splits to figure out the z threshold 
-- Using that z threshold to cluster points (individually for each size)
+De-convolution approach
+- Particles of each size are de-convoluted separately
+For each size:
+- Particles within a specific x,y are grouped
+- The spread in the z is determined for each group
+- The median spred in the z is set as the z threshold for de-convolution
+- Particles within the x,y,z, threshold are represented as just the center point (getting rid of particles detected when out of focus)
 '''
 
 #!/usr/bin/python
 import sys, os 
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib import style
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import scipy.stats
 import statistics
 import numpy 
 import csv
 import math
-from matplotlib import style
 
 sys.setrecursionlimit(10000)
 fig = plt.figure( )
@@ -68,7 +72,7 @@ red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0])
 blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*2, linewidths=2)
 green = ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=S3[0]*4, linewidths=2)
 yellow = ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=S4[0]*6, linewidths=2)
-ax.set_title('unclustered')
+ax.set_title('Convoluted')
 ax.legend((red, blue, green, yellow),
            ('0.27', '0.36 ', '0.45', '0.54'),
            scatterpoints=1,
@@ -149,16 +153,17 @@ def MedianZ(X,Y,Z,S):
     zthreshold = math.ceil(statistics.median(zSplits))
     return (zthreshold);
 
+#Clusters points
 def cluster(X,Y,Z,S):
     #Getting the x,y threshold 
-    xylim = S[0] #Works
+    xylim = S[0]
     print (xylim)
     #Sorting data 
     sortedData = numpy.array(0); alignedData = numpy.array(0)
     sortedData = Sort(X, Y, Z)
 
     #Getting the z threshold
-    zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], xylim)*Z[Z.size-1] #Works
+    zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], xylim)*Z[Z.size-1] 
     print (zlim)
 
     #DEFINING A FUNCTION TO GENERATE A CLUSTER FROM SORTED DATA
@@ -283,7 +288,7 @@ ax.legend((red,blue, green, yellow),
            loc='best',
            ncol=1,
            fontsize=8)
-ax.set_title('clustered')
+ax.set_title('Deconvoluted')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
