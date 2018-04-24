@@ -68,13 +68,13 @@ X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype
 #Generating a plot of the original points
 ax = fig.add_subplot(1,2,1, projection = '3d')
 ax.grid(False)
-red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0])
-blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*2, linewidths=2)
+#red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0])
+#blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*2, linewidths=2)
 green = ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=S3[0]*4, linewidths=2)
 yellow = ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=S4[0]*6, linewidths=2)
 ax.set_title('Convoluted')
-ax.legend((red, blue, green, yellow),
-           ('0.27', '0.36 ', '0.45', '0.54'),
+ax.legend((green, yellow),
+           ( '0.45', '0.54'),
            scatterpoints=1,
            loc='best',
            ncol=1,
@@ -275,15 +275,34 @@ cluster1 = cluster(X1, Y1, Z1, S1)
 cluster1= numpy.array(cluster1)
 cluster1 = cluster1.astype(float)
 
+#Cluster 4 has x,y,z of 0.54
+#Cluster 3 has x,y,z of 0.45
+#Cluster 2 has x,y,z of 0.36
+#Write out to a csv file named deconvoluted.csv - should contain list of x,y,z from cluster4,3,2
+
+#First create 4 numpy arrays for x,y,z, size data
+dX = list(); dY = list(); dZ = list(); dS = list()
+dX = numpy.array(dX); dY = numpy.array(dY); dZ = numpy.array(dZ); dS = numpy.array(dS);
+dX = dX.astype(float); dY= dY.astype(float); dZ= dZ.astype(float); dS= dS.astype(float)
+
+dX = numpy.concatenate((cluster4[0], cluster3[0]), axis=0)
+dY = numpy.concatenate((cluster4[1], cluster3[1]), axis=0)
+dZ = numpy.concatenate((cluster4[2], cluster3[2]), axis=0)
+print (dX)
+print (dY)
+print (dZ)
+
+numpy.savetxt("deconvoluted.csv", numpy.column_stack((dX,dY,dZ)), delimiter=",", fmt='%s')
+
 #Generating a scatter plot of the points after clustering
 ax = fig.add_subplot(1,2,2, projection = '3d')
 yellow = ax.scatter (cluster4[0] , cluster4[1], cluster4[2], c = 'y', marker='o', s=S4[0]*16, linewidths=2)
 green = ax.scatter (cluster3[0] , cluster3[1], cluster3[2], c = 'g', marker='o', s=S3[0]*8, linewidths=2)
-blue = ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*4, linewidths=2)
-red = ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0])
+#blue = ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*4, linewidths=2)
+#red = ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0])
 ax.grid(False)
-ax.legend((red,blue, green, yellow),
-           ('0.27','0.36 ', '0.45', '0.54'),
+ax.legend((green, yellow),
+           ('0.45', '0.54'),
            scatterpoints=1,
            loc='best',
            ncol=1,
@@ -296,7 +315,7 @@ ax.set_zlabel ('z axis')
 plt.show()
 
 
-    
+
     
     
 
