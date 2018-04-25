@@ -71,10 +71,33 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 
-xline = movingaverage(X1, 3)
-yline = movingaverage(Y1, 3)
-zline = movingaverage(Z1, 3)
-ax.plot3D(xline,yline,zline,'red')
+data = numpy.concatenate((X1[:, numpy.newaxis], 
+                       Y1[:, numpy.newaxis], 
+                       Z1[:, numpy.newaxis]), 
+                      axis=1)
+print(data)
+
+datamean = data.mean(axis=0)
+print (datamean) #This is going to be the center of my helix
+ax.scatter (datamean[0], datamean[1], datamean[2], c = 'b', marker='o')
+
+uu, dd, vv = numpy.linalg.svd(data - datamean)
+
+#Taking the variation in the z dimension, because this is the dimension of PC1
+#Linear algebra - figure out what exactly is happening in terms of dimensional collapsation
+linepts = vv[0] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
+
+#Moving the line to be in between the points 
+linepts += datamean
+
+#Why are we taking the transpose?
+ax.plot3D(*linepts.T)
+
+#SMA doesn't seem to show anything, trying PC1
+#xline = movingaverage(movingaverage(X1, 10),5)
+#yline = movingaverage(movingaverage(Y1, 10),5)
+#zline = movingaverage(movingaverage(Z1, 10),5)
+#ax.plot3D(xline,yline,zline,'red')
 
 plt.show()
 
