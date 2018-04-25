@@ -84,6 +84,10 @@ linepts += datamean
 #Why are we taking the transpose?
 ax.plot3D(*linepts.T)
 
+print (x2)
+print (y2)
+print (z2)
+
 #SMA
 #Plotting the line 
 xline =movingaverage(movingaverage(x2, 10),5)
