@@ -82,15 +82,15 @@ redPCs = PCs(X1, Y1, Z1)
 greenPCs = PCs(X2, Y2, Z2)
 
 #Drawing PC's through vasa
-lineptsPC1 = redPCs[0] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
-lineptsPC2 = redPCs[1] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
-lineptsPC3 = redPCs[2] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
+lineptsPC1 = greenPCs[0] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
+lineptsPC2 = greenPCs[1] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
+lineptsPC3 = greenPCs[2] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
 #Moving the line to be in between the points
-lineptsPC1 += redPCs[3]; lineptsPC2 += redPCs[3]; lineptsPC3 += redPCs[3]
+lineptsPC1 += greenPCs[3]; lineptsPC2 += greenPCs[3]; lineptsPC3 += greenPCs[3]
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.grid(False)
-red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o',linewidths=2)
-ax.set_title('vasa Principal Components')
+green = ax.scatter (X2, Y2, Z2, c = 'g', marker='o',linewidths=2)
+ax.set_title('dazl Principal Components')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
@@ -100,11 +100,11 @@ ax.plot3D(*lineptsPC3.T)
 plt.show()        
 
 #Fitting curves to 2D projections
-Points = list(zip(X1,Y1,Z1))
-center = redPCs[3]
-Pc1 = redPCs[0]
-Pc2 = redPCs[1]
-Pc3 = redPCs[2]
+Points = list(zip(X2,Y2,Z2))
+center = greenPCs[3]
+Pc1 = greenPCs[0]
+Pc2 = greenPCs[1]
+Pc3 = greenPCs[2]
 #If we don't sort - it might looks like a bunch of scribbles - sorted draws a nice line
 Points.sort(key=lambda i: numpy.dot(Pc1, i)) # Sorts by first PC so it draws lines nicely
 C1s = numpy.dot(Points - center, Pc1) # Components in first PC direction
@@ -112,42 +112,42 @@ C2s = numpy.dot(Points - center, Pc2) # Components in second PC direction
 C3s = numpy.dot(Points - center, Pc3) # Components in third PC direction
 
 #Shows plots before fitting curves
-plt.scatter(C2s, C3s, c='r'); plt.title(' vasa C2 vs C3'); plt.show() # Shows plot without first PC
-plt.scatter(C2s, C1s, c='r'); plt.title(' vasa C1 vs C2'); plt.show() # Shows plot without third PC
-plt.scatter(C1s, C3s, c='r'); plt.title(' vasa C1 vs C3'); plt.show()# Shows plot without second PC
+plt.scatter(C2s, C3s, c='g'); plt.title(' dazl C2 vs C3'); plt.show() # Shows plot without first PC
+plt.scatter(C2s, C1s, c='g'); plt.title(' dazl C1 vs C2'); plt.show() # Shows plot without third PC
+plt.scatter(C1s, C3s, c='g'); plt.title(' dazl C1 vs C3'); plt.show()# Shows plot without second PC
 
 #This is to input to scipy.optimize.curvefit
 def helixFit(pc1, r, frequency, phase):
     return r*numpy.cos(pc1*frequency + phase) #Doesn't matter if it's sin or cos
 
 # Need to fit each of the components separately
-popt, pcov = curve_fit(helixFit, C1s, C2s, p0=[10, 0.2, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1s, C2s, p0=[5, 0.4, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Ps = [helixFit(c1, *popt) for c1 in C1s]
 #Output - [ 2.41007063  0.28832207 -0.23765725]
 
-popt, pcov = curve_fit(helixFit, C1s, C3s, p0=[10, 0.2, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1s, C3s, p0=[5, 0.4, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Ps = [helixFit(c1, *popt) for c1 in C1s]
 #Output - [1.0358227  0.27418132 0.97085416]
 
 #2D plots after fit
-plt.scatter(C2s, C3s, c='r') # True
+plt.scatter(C2s, C3s, c='g') # True
 plt.plot(C2Ps, C3Ps, c='b') # Fit
-plt.title(' vasa C2 vs C3 fit') 
+plt.title(' dazl C2 vs C3 fit') 
 plt.show()
-plt.scatter(C1s, C2s, c='r') # True
+plt.scatter(C1s, C2s, c='g') # True
 plt.plot(C1s, C2Ps, c= 'b') # Fit
-plt.title(' vasa C1 vs C2 fit') 
+plt.title(' dazl C1 vs C2 fit') 
 plt.show()
-plt.scatter(C1s, C3s, c='r') # True
+plt.scatter(C1s, C3s, c='g') # True
 plt.plot(C1s, C3Ps, c='b') # Fit
-plt.title(' vasa C1 vs C3 fit') 
+plt.title(' dazl C1 vs C3 fit') 
 plt.show()
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter3D(X1, Y1, Z1, c = 'r', marker='o')
+ax.scatter3D(X2, Y2, Z2, c = 'g', marker='o')
 # Plot lines connecting nearby points in Helix
 #Drawing a line throught the middle of C1, C2Ps, C3Ps
 for i in range(len(C1s)-1): #Go from the center into the PC's direction by this much for each point
@@ -155,7 +155,7 @@ for i in range(len(C1s)-1): #Go from the center into the PC's direction by this 
         start = center + C1s[i]*Pc1 + C2Ps[i]*Pc2 + C3Ps[i]*Pc3
         end = center + C1s[i+1]*Pc1 + C2Ps[i+1]*Pc2 + C3Ps[i+1]*Pc3
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'blue')
-        ax.set_title(' vasa overall fit') 
+        ax.set_title(' dazl overall fit') 
 plt.show()
 
 
