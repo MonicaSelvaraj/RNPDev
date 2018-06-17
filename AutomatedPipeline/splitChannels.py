@@ -20,16 +20,17 @@ with open ('vasaC1dazlC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
-        if line[0] == 'C1':
-            X1.append(line[1])
-            Y1.append(line[2])
-            Z1.append(line[3])
-            S1.append(line[4])
-        else:
-            X2.append(line[1])
-            Y2.append(line[2])
-            Z2.append(line[3])
-            S2.append(line[4])
+        if float(line[4]) > 0.28:
+            if line[0] == 'C1':
+                X1.append(line[1])
+                Y1.append(line[2])
+                Z1.append(line[3])
+                S1.append(line[4])
+            else:
+                X2.append(line[1])
+                Y2.append(line[2])
+                Z2.append(line[3])
+                S2.append(line[4])
         
 X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1); S1 = numpy.array(S1)
 X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2); S2 = numpy.array(S2)
