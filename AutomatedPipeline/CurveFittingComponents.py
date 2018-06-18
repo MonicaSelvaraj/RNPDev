@@ -20,19 +20,20 @@ from scipy.optimize import curve_fit
 
 plt.style.use('dark_background')
 
+#2D curve fitting 
 #Original data 
 C1r = list(); C2r = list(); C3r = list()#C1 - red
 C1g = list(); C2g = list(); C3g = list()#C2 - green
 
 #Reading in the data 
-with open ('ComponentsC1.csv', 'r') as csv_file:
+with open ('CleanedComponentsC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
             C1r.append(line[0])
             C2r.append(line[1])
             C3r.append(line[2])
             
-with open ('ComponentsC2.csv', 'r') as csv_file:
+with open ('CleanedComponentsC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
             C1g.append(line[0])
@@ -44,7 +45,6 @@ C1r = numpy.array(C1r); C2r = numpy.array(C2r); C3r = numpy.array(C3r)
 C1g = numpy.array(C1g); C2g = numpy.array(C2g); C3g = numpy.array(C3g)
 C1r = C1r.astype(float); C2r= C2r.astype(float); C3r = C3r.astype(float)
 C1g = C1g.astype(float); C2g= C2g.astype(float); C3g = C3g.astype(float)
-
 
 #This is to input to scipy.optimize.curvefit
 def helixFit(pc1, r, frequency, phase):
@@ -60,11 +60,11 @@ print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pr = [helixFit(c1, *popt) for c1 in C1r]
 
 #Need to fit each of the components separately - C2
-popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[5, 0.4, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[5, 0.6, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pg = [helixFit(c1, *popt) for c1 in C1g]
 
-popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[5, 0.4, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[5, 0.6, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pg = [helixFit(c1, *popt) for c1 in C1g]
 
@@ -93,7 +93,80 @@ plt.title(' C1 vs C3 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
 plt.show()
 
+#3D fit
 
+#Original data
+#Variables for C1
+X1 = list(); Y1 = list(); Z1 = list()
+
+#Variables for C2
+X2 = list(); Y2 =  list(); Z2 = list()
+
+with open ('deconvolutedC1.csv', 'r') as csv_file:
+    csv_reader = csv.reader (csv_file)
+    #Iterating through contents in the file
+    for line in csv_reader:
+        #each line has X,Y,Z,S
+        if (float(line[1]) > 10):
+                X1.append(line[0])
+                Y1.append(line[1])
+                Z1.append(line[2])
+        
+with open ('deconvolutedC2.csv', 'r') as csv_file:
+    csv_reader = csv.reader (csv_file)
+    #Iterating through contents in the file
+    for line in csv_reader:
+        #each line has X,Y,Z,S
+             if (float(line[1]) > 10):
+                     X2.append(line[0])
+                     Y2.append(line[1])
+                     Z2.append(line[2])
+        
+
+X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1)
+X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2)
+X1 = X1.astype(float); Y1 = Y1.astype(float); Z1 = Z1.astype(float)
+X2 = X2.astype(float); Y2 = Y2.astype(float); Z2 = Z2.astype(float)
+
+def PCs(X,Y,Z):
+        data = numpy.concatenate((X[:, numpy.newaxis], 
+                       Y[:, numpy.newaxis], 
+                       Z[:, numpy.newaxis]), 
+                      axis=1)
+        #print(data)
+        datamean = data.mean(axis=0)
+        print (datamean) #This is going to be the center of my helix
+        uu, dd, vv = numpy.linalg.svd(data - datamean)
+        #Taking the variation in the z dimension, because this is the dimension of PC1
+        #Linear algebra - figure out what exactly is happening in terms of dimensional collapsation
+        return vv[0], vv[1], vv[2], datamean;
+
+C1PCs = PCs(X1, Y1, Z1); C2PCs = PCs(X2, Y2, Z2)
+centerC1 = C1PCs[3]; centerC2 = C2PCs[3]
+C1Pc1 = C1PCs[0]; C2Pc1 = C2PCs[0]
+C1Pc2 = C1PCs[1]; C2Pc2 = C2PCs[1]
+C1Pc3 = C1PCs[2]; C2Pc3 = C2PCs[2]
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter3D(X1, Y1, Z1, c = 'r', marker='o')
+ax.scatter3D(X2, Y2, Z2, c = 'g', marker='o')
+# Plot lines connecting nearby points in Helix
+#Drawing a line throught the middle of C1, C2P, C3P
+for i in range(len(C1r)-1): #Go from the center into the PC's direction by this much for each point
+        #Plot3D, takes a start x, end x, start y, end y, start z, end z
+        start = centerC1 + C1r[i]*C1Pc1 + C2Pr[i]*C1Pc2 + C3Pr[i]*C1Pc3
+        end = centerC1 + C1r[i+1]*C1Pc1 + C2Pr[i+1]*C1Pc2 + C3Pr[i+1]*C1Pc3
+        ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'blue', linewidth = 3)
+for i in range(len(C1g)-1): #Go from the center into the PC's direction by this much for each point
+        #Plot3D, takes a start x, end x, start y, end y, start z, end z
+        start = centerC2 + C1g[i]*C2Pc1 + C2Pg[i]*C2Pc2 + C3Pg[i]*C2Pc3
+        end = centerC2 + C1g[i+1]*C2Pc1 + C2Pg[i+1]*C2Pc2 + C3Pg[i+1]*C2Pc3
+        ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3, alpha=0.2)
+        ax.set_title('overall fit')
+plt.show()
+
+#Parameters
 
 
 
