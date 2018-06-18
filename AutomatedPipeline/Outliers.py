@@ -1,5 +1,6 @@
 '''
 - Plots of C1s, C2s, C3s before outliers are removed
+- Plots components with lines
 - Remove outliers for each channel individually
 - Plots of C1s, C2s, and C3s after outliers have been removed, with lines to indicate boundaries
 of removal
@@ -69,20 +70,39 @@ def removeOutliers(C1, C2, C3):
         sdDst = numpy.std(dst, axis = 0); print (sdDst)
 
         #outliersIndex contains the positions of the outliers
-        outliersIndex = numpy.where(dst > meanDst + 2 * sdDst)
+        outliersIndex = numpy.where(dst >= meanDst + 2 * sdDst)
+        lineDst = meanDst + 2 * sdDst
         print (outliersIndex)
         #Removing the outliers from C1, C2, C3
         newC1 = numpy.delete (C1, outliersIndex)
         newC2 = numpy.delete (C2, outliersIndex)
         newC3 = numpy.delete (C3, outliersIndex)
-        return (newC1, newC2, newC3);
+        return (newC1, newC2, newC3, lineDst);
 
 CleanedChannel1 = removeOutliers (C1r, C2r, C3r)
+lineC1 = CleanedChannel1[3]
 CleanedChannel2 = removeOutliers (C1g, C2g, C3g)
+lineC2 = CleanedChannel2[3]
 
 #Writing cleaned data to a new file
 numpy.savetxt("CleanedComponentsC1.csv", numpy.column_stack((CleanedChannel1[0], CleanedChannel1[1], CleanedChannel1[2])), delimiter=",", fmt='%s')
 numpy.savetxt("CleanedComponentsC2.csv", numpy.column_stack((CleanedChannel2[0], CleanedChannel2[1], CleanedChannel2[2])), delimiter=",", fmt='%s')
+
+#Shows plots with outliers and lines
+plt.scatter(C2g, C3g, c='g'); plt.scatter(C2r, C3r, c='r'); plt.title('C2 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20)
+plt.axvline(x=lineC1, c='r'); plt.axvline(x=-lineC1, c='r'); plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
+plt.axvline(x=lineC2, c='g'); plt.axvline(x=-lineC2, c='g'); plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
+plt.show() # Shows plot without first PC
+
+plt.scatter(C1g, C2g, c='g'); plt.scatter(C1r, C2r, c='r'); plt.title('C1 vs C2');  plt.ylim(-20, 20); plt.xlim(-20,20)
+plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
+plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
+plt.show() # Shows plot without third PC
+
+plt.scatter(C1g, C3g, c='g'); plt.scatter(C1r, C3r, c='r'); plt.title(' C1 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20)
+plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
+plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
+plt.show()# Shows plot without second PC
 
 #Shows plots after removing outliers
 plt.scatter(CleanedChannel2[2], CleanedChannel2[1], c='g'); plt.scatter(CleanedChannel1[2],CleanedChannel1[1],c='r');plt.title('C2 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.show() # Shows plot without first PC
