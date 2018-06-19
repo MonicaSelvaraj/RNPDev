@@ -15,7 +15,8 @@ import numpy
 import csv
 import math
 from matplotlib import style
-from scipy.spatial import distance 
+from scipy.spatial import distance
+from scipy.signal import argrelextrema
 from scipy.optimize import curve_fit
 
 plt.style.use('dark_background')
@@ -167,6 +168,37 @@ for i in range(len(C1g)-1): #Go from the center into the PC's direction by this 
 plt.show()
 
 #Parameters
+def Pitch(x, y):
+        #x is the array of x coordinates and y is the array of y coordinates
+
+        #Converting x, y to numpy arrays
+        x = numpy.array(x); y = numpy.array(y)
+        x = x.astype(float); y = y.astype(float)
+
+        # sort the data in x and rearrange y accordingly
+        sortId = numpy.argsort(x)
+        x = x[sortId]
+        y = y[sortId]
+
+        # this way the x-axis corresponds to the index of x
+        maxm = argrelextrema(y, numpy.greater)  
+        minm = argrelextrema(y, numpy.less)
+        
+        #maxm and minm contains the indices of minima and maxima respectively
+        maxima = maxm[0]
+        
+        #Now finding the distance between the first two maxima 
+        p1 = (x[maxima[0]], y[maxima[0]])
+        p2 = (x[maxima[1]], y[maxima[1]])
+        pitch = distance.euclidean(p1,p2)
+        return (pitch);
+
+print (Pitch(C1r, C2Pr))
+print (Pitch(C1r, C3Pr))
+print (Pitch(C1g, C2Pg))
+print (Pitch(C1g, C3Pg))
+
+        
 
 
 
