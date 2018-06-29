@@ -10,7 +10,10 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import numpy 
 import csv
-from scipy.spatial import distance 
+import scipy
+from scipy.spatial import distance
+from scipy.sparse import csr_matrix, csgraph
+from scipy.sparse.csgraph import minimum_spanning_tree
 
 fig = plt.figure( )
 plt.style.use('dark_background')
@@ -64,7 +67,42 @@ def createDictionary(X, Y, Z):
         D.update({i:weightedVertices})
     return (D);
 
-print (createDictionary(X,Y,Z))
+'''
+Iterating through the X,Y,Z coordinates and creating a row column and distance matrix
+Using those matrices to create a csr matrix
+Using the csr matrix to make a minimum spanning tree
+'''
+def minSpanningTree(X,Y,Z):
+    row = list(); col = list(); dist = list()
+    i = -1 #i, j keeps track of position 
+    for x1,y1,z1 in zip(X,Y,Z):
+        i = i+1; j = -1
+        for x2,y2,z2 in zip (X,Y,Z):
+            j = j+1
+            if (j>i):
+                col.append(i)
+                a = (x1,y1,z1)
+                b = (x2,y2,z2)
+                row.append(j)
+                dist.append(distance.euclidean(a,b))
+    row= numpy.array(row); col = numpy.array(col); dist = numpy.array(dist)
+    sparseMatrix = csr_matrix((dist, (row, col)), shape=(len(row), len(col))).toarray()
+    MST = minimum_spanning_tree(sparseMatrix)
+    return (MST);
+    
+
+
+def drawMinimumSpanningTree(MST):
+    cx = scipy.sparse.coo_matrix(MST)
+    for i, j, v in zip(cx.row, cx.col, cx.data):
+        print ("(%d, %d), %s" % (i , j, v))
+    return();
+
+minimumSpanningTree= minSpanningTree(X, Y, Z)
+drawMinimumSpanningTree(minimumSpanningTree)
+    
+    
+
 
 
 
