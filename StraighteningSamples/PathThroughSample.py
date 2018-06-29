@@ -13,6 +13,8 @@ import scipy
 from scipy.spatial import distance
 from scipy.sparse import csr_matrix, csgraph
 from scipy.sparse.csgraph import minimum_spanning_tree
+import networkx as nx
+import itertools
 
 plt.style.use('dark_background')
 
@@ -54,13 +56,11 @@ def ScatterPlot(x, y, z):
 
 '''
 args: numpy arrays with x,y,z coorindates
-returns: minimum spanning tree in the form of 3 arrays - row, column, distance between pair of points
+returns: minimum spanning tree 
 
 Iterating through the X,Y,Z coordinates and creating a row column and distance matrix
 Using those matrices to create a csr matrix
 Using the csr matrix to make a minimum spanning tree
-Converting the output csr matrix to a coo matrix
-Iterating through the coo matrix to return row, column, and distance arrays
 '''
 def minSpanningTree(X,Y,Z):
     row = list(); col = list(); dist = list()
@@ -78,22 +78,23 @@ def minSpanningTree(X,Y,Z):
     row= numpy.array(row); col = numpy.array(col); dist = numpy.array(dist)
     sparseMatrix = csr_matrix((dist, (row, col)), shape=(len(row), len(col))).toarray()
     MST = minimum_spanning_tree(sparseMatrix)
-    
-    A = list(); B = list(); C = list() #A-row, B-col, C-distance
-    cx = scipy.sparse.coo_matrix(MST)
-    for i, j, k in zip(cx.row, cx.col, cx.data):
-        A.append(i)
-        B.append(j)
-        C.append(k)
-    return (A, B, C);
+    return (MST);
+
 
 '''
 args: row and column array of points that need to be joined
 returns: --
 
-Draws the minimum spanning tree
+Converting the output csr matrix to a coo matrix
+Iterating through the coo matrix to draw the minimum spanning tree
 '''
-def drawMinimumSpanningTree(A, B):
+def drawMinimumSpanningTree(MST, X, Y, Z):
+    A = list(); B = list() #These lists store which points need to be connected A-row, B-col
+    cx = scipy.sparse.coo_matrix(MST)
+    for i, j, v in zip(cx.row, cx.col, cx.data):
+        A.append(i)
+        B.append(j)
+        
     #A, B have the indices of the points that need to be connected
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1, projection = '3d')
@@ -107,37 +108,30 @@ def drawMinimumSpanningTree(A, B):
     return();
 
 '''
-args: distance between minimum spanning tree points array, row and column array
-returns: row, column, and distance arrays without positions of outliers
+args: csr graph of minimum spanning tree, original coordinates
+returns: ranked coordinates
 
-Finding the mean and sd of distances, and removing points that are mean+2*sd away
+Converts csr graph to networkx graph
+Performs breadth first search of minimum spanning tree
+Stores the path from origin to end in a list and creates a new list of reordered points
 '''
-def removeOutliers(row, col, dst, sd):
-    dst = numpy.array(dst); dst = dst.astype(float)
-    meanDst = numpy.mean(dst, axis = 0); print (meanDst)
-    sdDst = numpy.std(dst, axis = 0); print (sdDst)
-    outliersIndex = numpy.where(dst > meanDst + sd * sdDst)
-    newRow= numpy.delete (row, outliersIndex)
-    newCol = numpy.delete (col, outliersIndex)
-    newDst = numpy.delete (dst, outliersIndex)
-    return (newRow, newCol, newDst);
-
-'''
-args: row and column of minimum spanning matrix, original x,y,z coordinates
-Merging row and column to make a list of indices
-Going through the original x,y,z coordinates and re-ordering them according to the new indices
-'''
-def RankingPoints(A, B, X, Y, Z):
-    rankIndices = list(); rX = list(); rY = list(); rZ = list()
-    for a, b in zip(A, B):
-        rankIndices.append(a); rankIndices.append(b); #it doesn't matter if we have duplicates
-    print(rankIndices)
-    for i in rankIndices:
-        rX.append(X[i]); rY.append(Y[i]); rZ.append(Z[i])
+def RankPoints(MST, X, Y, Z):
+    G = nx.from_scipy_sparse_matrix(MST)
+    bfsDict = list(nx.bfs_successors(G,0))
+    #Traversing through the dictionary and storing the values form each key in a list
+    rank = list(); mergedRanks = list(); rX = list(); rY = list(); rZ = list()
+    for i, j in bfsDict:
+        rank.append(j)
+    for k in rank:
+        mergedRanks = mergedRanks + k
+    #mergedRanks contains the indices of the ranks
+    for r in mergedRanks:
+        rX.append(X[r]); rY.append(Y[r]); rZ.append(Z[r])
     print(rX)
     print(rY)
     print(rZ)
     return (rX, rY, rZ)
+
 
 def movingaverage(values, window):
     weights = numpy.repeat(1.0, window)/window
@@ -163,15 +157,9 @@ def drawMovingAverage(x,y,z):
 In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2] #X,Y,Z has the original data
 ScatterPlot(X, Y, Z)
 minimumSpanningTree= minSpanningTree(X, Y, Z)
-drawMinimumSpanningTree(minimumSpanningTree[0], minimumSpanningTree[1])
-#RO = removeOutliers(minimumSpanningTree[0], minimumSpanningTree[1], minimumSpanningTree[2], 1.5)
-#drawMinimumSpanningTree(RO[0], RO[1])
-rP = RankingPoints(minimumSpanningTree[0], minimumSpanningTree[1], X, Y, Z)
-drawMovingAverage(rP[0], rP[1], rP[2])
-
-
-
-
+drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
+newPoints = RankPoints(minimumSpanningTree, X, Y, Z)
+#drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
 
 
 
