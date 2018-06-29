@@ -106,16 +106,32 @@ def drawMinimumSpanningTree(A, B):
     plt.show()
     return();
 
-def removeOutliers():
+'''
+args: distance between minimum spanning tree points array, row and column array
+returns: row, column, and distance arrays without positions of outliers
+
+Finding the mean and sd of distances, and removing points that are mean+2*sd away
+'''
+def removeOutliers(row, col, dst, sd):
+    dst = numpy.array(dst); dst = dst.astype(float)
+    meanDst = numpy.mean(dst, axis = 0); print (meanDst)
+    sdDst = numpy.std(dst, axis = 0); print (sdDst)
+    outliersIndex = numpy.where(dst > meanDst + sd * sdDst)
+    newRow= numpy.delete (row, outliersIndex)
+    newCol = numpy.delete (col, outliersIndex)
+    newDst = numpy.delete (dst, outliersIndex)
+    return (newRow, newCol, newDst);
 
 
 
 
-
-In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2]
+In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2] #X,Y,Z has the original data
 ScatterPlot(X, Y, Z)
 minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree[0], minimumSpanningTree[1])
+#RO = removeOutliers(minimumSpanningTree[0], minimumSpanningTree[1], minimumSpanningTree[2], 1.5)
+#drawMinimumSpanningTree(RO[0], RO[1])
+
     
 
 
