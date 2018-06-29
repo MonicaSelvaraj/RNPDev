@@ -116,7 +116,6 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
 minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
     
-    
 
 
 
