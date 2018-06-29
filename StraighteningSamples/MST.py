@@ -89,17 +89,32 @@ def minSpanningTree(X,Y,Z):
     sparseMatrix = csr_matrix((dist, (row, col)), shape=(len(row), len(col))).toarray()
     MST = minimum_spanning_tree(sparseMatrix)
     return (MST);
-    
 
 
-def drawMinimumSpanningTree(MST):
+def drawMinimumSpanningTree(MST, X, Y, Z):
+    A = list(); B = list() #These lists store which points need to be connected A-row, B-col
     cx = scipy.sparse.coo_matrix(MST)
     for i, j, v in zip(cx.row, cx.col, cx.data):
-        print ("(%d, %d), %s" % (i , j, v))
+        A.append(i)
+        B.append(j)
+        #print ("(%d, %d), %s" % (i , j, v))
+    #print(A)
+    #print(B)
+
+    #A, B have the indices of the points that need to be connected
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1, projection = '3d')
+    ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+    ax.set_xlabel ('x, axis')
+    ax.set_ylabel ('y axis')
+    ax.set_zlabel ('z axis')
+    for a, b in zip(A, B):
+        ax.plot3D([X[a], X[b]], [Y[a], Y[b]], [Z[a], Z[b]], c='b')
+    plt.show()
     return();
 
 minimumSpanningTree= minSpanningTree(X, Y, Z)
-drawMinimumSpanningTree(minimumSpanningTree)
+drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
     
     
 
