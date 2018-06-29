@@ -122,8 +122,43 @@ def removeOutliers(row, col, dst, sd):
     newDst = numpy.delete (dst, outliersIndex)
     return (newRow, newCol, newDst);
 
+'''
+args: row and column of minimum spanning matrix, original x,y,z coordinates
+Merging row and column to make a list of indices
+Going through the original x,y,z coordinates and re-ordering them according to the new indices
+'''
+def RankingPoints(A, B, X, Y, Z):
+    rankIndices = list(); rX = list(); rY = list(); rZ = list()
+    for a, b in zip(A, B):
+        rankIndices.append(a); rankIndices.append(b); #it doesn't matter if we have duplicates
+    print(rankIndices)
+    for i in rankIndices:
+        rX.append(X[i]); rY.append(Y[i]); rZ.append(Z[i])
+    print(rX)
+    print(rY)
+    print(rZ)
+    return (rX, rY, rZ)
 
+def movingaverage(values, window):
+    weights = numpy.repeat(1.0, window)/window
+    #valid only runs the sma's on valid points
+    smas = numpy.convolve(values, weights, 'valid')
+    return smas #returns a numpy array
 
+def drawMovingAverage(x,y,z):
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1, projection = '3d')
+    ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+    ax.set_xlabel ('x, axis')
+    ax.set_ylabel ('y axis')
+    ax.set_zlabel ('z axis')
+    xline =movingaverage(x, 10)
+    yline =movingaverage(y, 10)
+    zline =movingaverage(z, 10)
+    ax.plot3D(xline,yline,zline,'green')
+    plt.show()
+    return();
+    
 
 In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2] #X,Y,Z has the original data
 ScatterPlot(X, Y, Z)
@@ -131,8 +166,11 @@ minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree[0], minimumSpanningTree[1])
 #RO = removeOutliers(minimumSpanningTree[0], minimumSpanningTree[1], minimumSpanningTree[2], 1.5)
 #drawMinimumSpanningTree(RO[0], RO[1])
+rP = RankingPoints(minimumSpanningTree[0], minimumSpanningTree[1], X, Y, Z)
+drawMovingAverage(rP[0], rP[1], rP[2])
 
-    
+
+
 
 
 
