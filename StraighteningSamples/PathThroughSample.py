@@ -78,6 +78,7 @@ def minSpanningTree(X,Y,Z):
     row= numpy.array(row); col = numpy.array(col); dist = numpy.array(dist)
     sparseMatrix = csr_matrix((dist, (row, col)), shape=(len(row), len(col))).toarray()
     MST = minimum_spanning_tree(sparseMatrix)
+    print (MST)
     return (MST);
 
 
@@ -117,7 +118,7 @@ Stores the path from origin to end in a list and creates a new list of reordered
 '''
 def RankPoints(MST, X, Y, Z):
     G = nx.from_scipy_sparse_matrix(MST)
-    bfsDict = list(nx.bfs_successors(G,0))
+    bfsDict = list(nx.bfs_successors(G,1))
     #Traversing through the dictionary and storing the values form each key in a list
     rank = list(); mergedRanks = list(); rX = list(); rY = list(); rZ = list()
     for i, j in bfsDict:
@@ -127,9 +128,6 @@ def RankPoints(MST, X, Y, Z):
     #mergedRanks contains the indices of the ranks
     for r in mergedRanks:
         rX.append(X[r]); rY.append(Y[r]); rZ.append(Z[r])
-    print(rX)
-    print(rY)
-    print(rZ)
     return (rX, rY, rZ)
 
 
@@ -146,9 +144,9 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =movingaverage(x, 10)
-    yline =movingaverage(y, 10)
-    zline =movingaverage(z, 10)
+    xline =movingaverage(x, 25)
+    yline =movingaverage(y, 25)
+    zline =movingaverage(z, 25)
     ax.plot3D(xline,yline,zline,'green')
     plt.show()
     return();
@@ -159,7 +157,8 @@ ScatterPlot(X, Y, Z)
 minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
 newPoints = RankPoints(minimumSpanningTree, X, Y, Z)
-#drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+
 
 
 
