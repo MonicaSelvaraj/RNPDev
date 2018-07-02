@@ -1,7 +1,9 @@
 '''
 - Drawing a Minimum Spanning Tree through the points
-- Removing outliers
-- Use moving least squares to draw a path through the points
+- Performing a breadth first search(bfs) through the minimum spanning tree
+- Re-ordering x,y,z coordinates wrt the bfs ranks
+- Determining the simple moving average through the ranked coordinates
+- Taking 10-100 points on the moving average, and drawing a bezier curve through the points
 '''
 
 #!/usr/bin/python
@@ -15,13 +17,16 @@ from scipy.sparse import csr_matrix, csgraph
 from scipy.sparse.csgraph import minimum_spanning_tree
 import networkx as nx
 import itertools
+from scipy.misc import comb
 
 plt.style.use('dark_background')
 
 
 '''
 args: --
-returns: numpy arrays with x,y,z coorindates 
+returns: numpy arrays with x,y,z coorindates
+
+Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 '''
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
@@ -58,7 +63,7 @@ def ScatterPlot(x, y, z):
 args: numpy arrays with x,y,z coorindates
 returns: minimum spanning tree 
 
-Iterating through the X,Y,Z coordinates and creating a row column and distance matrix
+Iterating through the X,Y,Z coordinates and creating a row, column and distance matrix
 Using those matrices to create a csr matrix
 Using the csr matrix to make a minimum spanning tree
 '''
@@ -78,12 +83,11 @@ def minSpanningTree(X,Y,Z):
     row= numpy.array(row); col = numpy.array(col); dist = numpy.array(dist)
     sparseMatrix = csr_matrix((dist, (row, col)), shape=(len(row), len(col))).toarray()
     MST = minimum_spanning_tree(sparseMatrix)
-    print (MST)
     return (MST);
 
 
 '''
-args: row and column array of points that need to be joined
+args: minimum spanning tree, x,y,z coordinates
 returns: --
 
 Converting the output csr matrix to a coo matrix
@@ -95,7 +99,6 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
     for i, j, v in zip(cx.row, cx.col, cx.data):
         A.append(i)
         B.append(j)
-        
     #A, B have the indices of the points that need to be connected
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1, projection = '3d')
@@ -123,20 +126,23 @@ def RankPoints(MST, X, Y, Z):
     rank = list(); mergedRanks = list(); rX = list(); rY = list(); rZ = list()
     for i, j in bfsDict:
         rank.append(j)
-    for k in rank:
+    for k in rank: #Making an array or arrays a single list
         mergedRanks = mergedRanks + k
     #mergedRanks contains the indices of the ranks
     for r in mergedRanks:
         rX.append(X[r]); rY.append(Y[r]); rZ.append(Z[r])
     return (rX, rY, rZ)
 
-
 def movingaverage(values, window):
     weights = numpy.repeat(1.0, window)/window
     #valid only runs the sma's on valid points
     smas = numpy.convolve(values, weights, 'valid')
     return smas #returns a numpy array
+'''
 
+args: ranked x,y,z coordinates
+returns: sma in x,y,z direction
+'''
 def drawMovingAverage(x,y,z):
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1, projection = '3d')
@@ -151,47 +157,12 @@ def drawMovingAverage(x,y,z):
     plt.show()
     return(xline, yline, zline);
     
-
-In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2] #X,Y,Z has the original data
-ScatterPlot(X, Y, Z)
-minimumSpanningTree= minSpanningTree(X, Y, Z)
-drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
-newPoints = RankPoints(minimumSpanningTree, X, Y, Z)
-smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
-
-#Bezier Curve implementation
-last = len(smaPoints[0])
-xB = list(); yB = list(); zB = list()
-interval = 1
-for i,j,k in zip(smaPoints[0], smaPoints[1], smaPoints[2]):
-    interval = interval +1
-    if (interval == 1):
-        xB.append(i); yB.append(j);  zB.append(k)
-    if (interval%10 == 0 or interval == last -1):
-        xB.append(i); yB.append(j);  zB.append(k)
-
-print(xB)
-print(yB)
-print(zB)
-
-xB = numpy.array(xB); yB = numpy.array(yB); zB = numpy.array(zB)
-xB = xB.astype(float); yB= yB.astype(float); zB= zB.astype(float)
-
-bezierPoints = numpy.concatenate((xB[:, numpy.newaxis], 
-                       yB[:, numpy.newaxis], 
-                       zB[:, numpy.newaxis]), 
-                      axis=1)
-print(bezierPoints)
-        
-
-from scipy.misc import comb
-
 def bernstein_poly(i, n, t):
     """
      The Bernstein polynomial of n, i as a function of t
     """
 
-    return comb(n, i) * ( t**(n-i) ) * (1 - t)**i
+    return (comb(n, i) * ( t**(n-i) ) * (1 - t)**i);
 
 
 def bezier_curve(points, nTimes=1000):
@@ -215,14 +186,54 @@ def bezier_curve(points, nTimes=1000):
 
     t = numpy.linspace(0.0, 1.0, nTimes)
 
-    polynomial_array = numpy.array([ bernstein_poly(i, nPoints-1, t) for i in range(0, nPoints)   ])
+    polynomial_array = numpy.array([ bernstein_poly(i, nPoints-1, t) for i in range(0, nPoints)])
 
     xvals = numpy.dot(xPoints, polynomial_array)
     yvals = numpy.dot(yPoints, polynomial_array)
     zvals = numpy.dot(zPoints, polynomial_array)
 
-    return xvals, yvals,zvals
+    return (xvals, yvals,zvals);
 
+'''
+args: points from the simple moving average
+returns: sample points to use to draw the bezier curve
+
+Picks the first, last and every 10th point in between,  as sample points to
+draw the bezier curve
+'''
+def BezierInput(smaPoints):
+    last = len(smaPoints[0]) #Makes sure we include the last point in the curve
+    xB = list(); yB = list(); zB = list()
+    interval = 1 #Keeps track of which points to add
+    for i,j,k in zip(smaPoints[0], smaPoints[1], smaPoints[2]):
+        interval = interval +1
+        if (interval == 1):
+            xB.append(i); yB.append(j);  zB.append(k)
+        if (interval%10 == 0 or interval == last -1): #picking every 10 points on the sma
+            xB.append(i); yB.append(j);  zB.append(k)
+    xB = numpy.array(xB); yB = numpy.array(yB); zB = numpy.array(zB)
+    xB = xB.astype(float); yB= yB.astype(float); zB= zB.astype(float)
+    bezierPoints = numpy.concatenate((xB[:, numpy.newaxis], 
+                       yB[:, numpy.newaxis], 
+                       zB[:, numpy.newaxis]), 
+                      axis=1)
+    return (bezierPoints);
+
+#Reading and storing the input
+In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2]
+#Producing a scatter plot of the original data
+ScatterPlot(X, Y, Z)
+#Computing the minimum spanning tree for the data
+minimumSpanningTree= minSpanningTree(X, Y, Z)
+#Drawing the minimum spanning tree through the data
+drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
+#Re-ordering the x,y,z coordinates to give the data a direction
+newPoints = RankPoints(minimumSpanningTree, X, Y, Z)
+#Drawing the simple moving average through the ranked points
+smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+#Picking sample points as input to draw the bezier curve
+bezierPoints = BezierInput(smaPoints)
+#Drawing the bezier curve through the data
 bezierLine = bezier_curve(bezierPoints)
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
