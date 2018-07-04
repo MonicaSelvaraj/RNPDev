@@ -222,6 +222,43 @@ def BezierInput(smaPoints):
                       axis=1)
     return (bezierPoints);
 
+'''
+ Given as set of x,y,z points such as [ [1,1,1], 
+                 [2,3,5], 
+                 [4,5,5], ..[Xn, Yn, Zn] ]
+calculates and returns the direction vector between every consecutive set of points
+'''
+
+def directionVectors(points):
+    xPoints = list(); yPoints = list(); zPoints = list()
+    xPoints = points[0]; yPoints = points[1]; zPoints = points[2]
+    xP = list(); yP = list(); zP = list()
+    for i in range(len(xPoints)-1):
+        if(i%10 == 0):
+            xP.append(xPoints[i])
+            yP.append(yPoints[i])
+            zP.append(zPoints[i])
+    print(xP); print(yP); print(zP)
+    dx = list(); dy = list(); dz = list()
+    rot = list()
+    for i in range(len(xP)-1):
+        #Calculating the distance between the points, and dividing by the distance to normalize the direction vector
+        a = (xP[i], yP[i], zP[i])
+        b = (xP[i+1], yP[i+1], zP[i+1])
+        dst = distance.euclidean(a,b)
+        dx.append((xP[i+1] - xP[i])/dst)
+        dy.append((yP[i+1] - yP[i])/dst)
+        dz.append((zP[i+1] - zP[i])/dst)
+    dx = numpy.array(dx); dy = numpy.array(dy); dz = numpy.array(dz)
+    dx = dx.astype(float); dy= dy.astype(float); dz= dz.astype(float)
+    Directions = numpy.concatenate((dx[:, numpy.newaxis], 
+                       dy[:, numpy.newaxis], 
+                       dz[:, numpy.newaxis]), 
+                      axis=1)
+    print(Directions)
+    print(len(xP))
+    return(Directions)
+
 #Reading and storing the input
 In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2]
 #Producing a scatter plot of the original data
@@ -245,46 +282,8 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'green')
-#Plotting points on the line
-xP = list(); yP = list(); zP = list()
-xP = bezierLine[0]
-yP = bezierLine[1]
-zP = bezierLine[2]
-ax.scatter (xP, yP, zP, c = 'y', marker='o', s=1, linewidths=2)
-plt.show()
-
-
-'''
- Given as set of x,y,z points such as [ [1,1,1], 
-                 [2,3,5], 
-                 [4,5,5], ..[Xn, Yn, Zn] ]
-calculates and returns the direction vector between every consecutive set of points
-'''
-
-def directionVectors(points):
-    xPoints = numpy.array([p[0] for p in points])
-    yPoints = numpy.array([p[1] for p in points])
-    zPoints = numpy.array([p[2] for p in points])
-    dx = list(); dy = list(); dz = list()
-    rot = list()
-    for i in range(len(xPoints)-1):
-        #Calculating the distance between the points, and dividing by the distance to normalize the direction vector
-        a = (xPoints[i], yPoints[i], zPoints[i])
-        b = (xPoints[i+1], yPoints[i+1], zPoints[i+1])
-        dst = distance.euclidean(a,b)
-        dx.append((xPoints[i+1] - xPoints[i])/dst)
-        dy.append((yPoints[i+1] - yPoints[i])/dst)
-        dz.append((zPoints[i+1] - zPoints[i])/dst)
-    dx = numpy.array(dx); dy = numpy.array(dy); dz = numpy.array(dz)
-    dx = dx.astype(float); dy= dy.astype(float); dz= dz.astype(float)
-    Directions = numpy.concatenate((dx[:, numpy.newaxis], 
-                       dy[:, numpy.newaxis], 
-                       dz[:, numpy.newaxis]), 
-                      axis=1)
-    
-    return(Directions)
-
-directionVectors(bezierPoints)
+#Calculating the direction vector for every tenth point
+directionVectors(bezierLine)
   
 
 
