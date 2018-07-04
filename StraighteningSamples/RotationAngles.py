@@ -227,18 +227,22 @@ def BezierInput(smaPoints):
                  [2,3,5], 
                  [4,5,5], ..[Xn, Yn, Zn] ]
 calculates and returns the direction vector between every consecutive set of points
+[[-0.99850764  0.02023064  0.0507269 ]
+ [-0.92395035 -0.14969413  0.35200485]...
 '''
 
 def directionVectors(points):
     xPoints = list(); yPoints = list(); zPoints = list()
     xPoints = points[0]; yPoints = points[1]; zPoints = points[2]
+
+    #Making a list of every 10th point
     xP = list(); yP = list(); zP = list()
     for i in range(len(xPoints)-1):
         if(i%10 == 0):
             xP.append(xPoints[i])
             yP.append(yPoints[i])
             zP.append(zPoints[i])
-    print(xP); print(yP); print(zP)
+            
     dx = list(); dy = list(); dz = list()
     rot = list()
     for i in range(len(xP)-1):
@@ -246,18 +250,39 @@ def directionVectors(points):
         a = (xP[i], yP[i], zP[i])
         b = (xP[i+1], yP[i+1], zP[i+1])
         dst = distance.euclidean(a,b)
-        dx.append((xP[i+1] - xP[i])/dst)
-        dy.append((yP[i+1] - yP[i])/dst)
-        dz.append((zP[i+1] - zP[i])/dst)
+        dx.append(abs((xP[i+1] - xP[i])/dst))
+        dy.append(abs((yP[i+1] - yP[i])/dst))
+        dz.append(abs((zP[i+1] - zP[i])/dst))
     dx = numpy.array(dx); dy = numpy.array(dy); dz = numpy.array(dz)
     dx = dx.astype(float); dy= dy.astype(float); dz= dz.astype(float)
     Directions = numpy.concatenate((dx[:, numpy.newaxis], 
                        dy[:, numpy.newaxis], 
                        dz[:, numpy.newaxis]), 
                       axis=1)
-    print(Directions)
+    print(len(Directions))
     print(len(xP))
-    return(Directions)
+    return(Directions, xP, yP, zP)
+'''
+Given as set of direction vectors [[-0.99850764  0.02023064  0.0507269 ] -d1
+                                                     [-0.92395035 -0.14969413  0.35200485] -d2,
+finding the rate of change of direction d2-d1
+finding the mean and sd of the rate of change of direction in the x,y,z directions
+Considering anything that is mean+2sd in the x,y, or z as a bend 
+Returns location of bends wrt x,y,z coordinates
+'''
+def bendsInSample(directions, x, y, z):
+    xDirections = list(); yDirections = list(); zDirections = list()
+    for i,j,k in directions:
+        xDirection.append(i)
+        yDirection.append(j)
+        zDirection.append(k)
+        
+    rateOfChangeX = list(); rateOfChangeY = list(); rateOfChangeZ = list()
+    for i in range(len(xDirections)-1):
+        rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
+        rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
+        rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
+    return ()
 
 #Reading and storing the input
 In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2]
@@ -283,7 +308,9 @@ ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'green')
 #Calculating the direction vector for every tenth point
-directionVectors(bezierLine)
+directionsOutput = directionVectors(bezierLine)
+#Calculating the x,y,z positions of the bends in the sample
+locationOfBends = bendsInSample(directionsOutput[0], directionsOutput[1], directionsOutput[2],directionsOutput[2])
   
 
 
