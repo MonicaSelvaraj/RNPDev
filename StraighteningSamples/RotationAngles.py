@@ -21,6 +21,7 @@ import networkx as nx
 import itertools
 from scipy.misc import comb
 import math
+import statistics
 
 plt.style.use('dark_background')
 
@@ -273,15 +274,43 @@ Returns location of bends wrt x,y,z coordinates
 def bendsInSample(directions, x, y, z):
     xDirections = list(); yDirections = list(); zDirections = list()
     for i,j,k in directions:
-        xDirection.append(i)
-        yDirection.append(j)
-        zDirection.append(k)
+        xDirections.append(i)
+        yDirections.append(j)
+        zDirections.append(k)
         
     rateOfChangeX = list(); rateOfChangeY = list(); rateOfChangeZ = list()
     for i in range(len(xDirections)-1):
         rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
-        rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
-        rateOfChangeX.append(abs(xDirections[i+1] - xDirections[i]))
+        rateOfChangeY.append(abs(yDirections[i+1] - yDirections[i]))
+        rateOfChangeZ.append(abs(zDirections[i+1] - zDirections[i]))
+
+    #Finding the positions of the points where the bends occur
+    meanRateX = statistics.mean(rateOfChangeX)
+    meanRateY = statistics.mean(rateOfChangeY)
+    meanRateZ = statistics.mean(rateOfChangeZ)
+    sdRateX = statistics.stdev(rateOfChangeX)
+    sdRateY = statistics.stdev(rateOfChangeY)
+    sdRateZ = statistics.stdev(rateOfChangeZ)
+
+    bendsIndexX = numpy.where(rateOfChangeX > meanRateX + 1 * sdRateX)
+    bendsIndexY = numpy.where(rateOfChangeY > meanRateY + 1 * sdRateY)
+    bendsIndexZ = numpy.where(rateOfChangeZ > meanRateZ + 1 * sdRateZ)
+
+    print(bendsIndexX); print(bendsIndexY); print(bendsIndexZ)
+    #bendsIndex = set( bendsIndexX+ bendsIndexY + bendsIndexZ) 
+
+    #Plotting bends
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1, projection = '3d')
+    ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+    ax.set_xlabel ('x, axis')
+    ax.set_ylabel ('y axis')
+    ax.set_zlabel ('z axis')
+    ax.scatter(x[95], y[95], z[95], c='b')
+    ax.scatter(x[96], y[96], z[96], c='b')
+    ax.scatter(x[97], y[97], z[97], c='b')
+    plt.show()        
+
     return ()
 
 #Reading and storing the input
