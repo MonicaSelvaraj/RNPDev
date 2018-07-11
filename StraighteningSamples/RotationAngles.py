@@ -142,8 +142,8 @@ def movingaverage(values, window):
     #valid only runs the sma's on valid points
     smas = numpy.convolve(values, weights, 'valid')
     return smas #returns a numpy array
-'''
 
+'''
 args: ranked x,y,z coordinates
 returns: sma in x,y,z direction
 '''
@@ -239,7 +239,7 @@ def directionVectors(points):
     #Making a list of every 10th point
     xP = list(); yP = list(); zP = list()
     for i in range(len(xPoints)-1):
-        if(i%10 == 0):
+        if(i%30 == 0):
             xP.append(xPoints[i])
             yP.append(yPoints[i])
             zP.append(zPoints[i])
@@ -260,7 +260,7 @@ def directionVectors(points):
                        dy[:, numpy.newaxis], 
                        dz[:, numpy.newaxis]), 
                       axis=1)
-    print(len(Directions))
+    print(Directions)
     print(len(xP))
     return(Directions, xP, yP, zP)
 '''
@@ -292,9 +292,9 @@ def bendsInSample(directions, x, y, z):
     sdRateY = statistics.stdev(rateOfChangeY)
     sdRateZ = statistics.stdev(rateOfChangeZ)
 
-    bendsIndexX = numpy.where(rateOfChangeX > meanRateX + 1 * sdRateX)
-    bendsIndexY = numpy.where(rateOfChangeY > meanRateY + 1 * sdRateY)
-    bendsIndexZ = numpy.where(rateOfChangeZ > meanRateZ + 1 * sdRateZ)
+    bendsIndexX = numpy.where(rateOfChangeX > meanRateX + 0.25* sdRateX)
+    bendsIndexY = numpy.where(rateOfChangeY > meanRateY + 0.25 * sdRateY)
+    bendsIndexZ = numpy.where(rateOfChangeZ > meanRateZ + 0.25 * sdRateZ)
 
     print(bendsIndexX); print(bendsIndexY); print(bendsIndexZ)
     #bendsIndex = set( bendsIndexX+ bendsIndexY + bendsIndexZ) 
@@ -306,9 +306,9 @@ def bendsInSample(directions, x, y, z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    ax.scatter(x[95], y[95], z[95], c='b')
-    ax.scatter(x[96], y[96], z[96], c='b')
-    ax.scatter(x[97], y[97], z[97], c='b')
+    ax.scatter(x[31], y[31], z[31], c='b')
+    #ax.scatter(x[96], y[96], z[96], c='b')
+    #ax.scatter(x[97], y[97], z[97], c='b')
     plt.show()        
 
     return ()
@@ -339,7 +339,7 @@ ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'green')
 #Calculating the direction vector for every tenth point
 directionsOutput = directionVectors(bezierLine)
 #Calculating the x,y,z positions of the bends in the sample
-locationOfBends = bendsInSample(directionsOutput[0], directionsOutput[1], directionsOutput[2],directionsOutput[2])
+locationOfBends = bendsInSample(directionsOutput[0], directionsOutput[1], directionsOutput[2],directionsOutput[3])
   
 
 

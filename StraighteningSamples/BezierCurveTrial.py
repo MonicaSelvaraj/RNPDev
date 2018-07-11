@@ -165,7 +165,7 @@ def bernstein_poly(i, n, t):
     return (comb(n, i) * ( t**(n-i) ) * (1 - t)**i);
 
 
-def bezier_curve(points, nTimes=1000):
+def bezier_curve(points, bezierPointsLength):
     """
        Given a set of control points, return the
        bezier curve defined by the control points.
@@ -184,7 +184,7 @@ def bezier_curve(points, nTimes=1000):
     yPoints = numpy.array([p[1] for p in points])
     zPoints = numpy.array([p[2] for p in points])
 
-    t = numpy.linspace(0.0, 1.0, nTimes)
+    t = numpy.linspace(0.0, 1.0, bezierPointsLength)
 
     polynomial_array = numpy.array([ bernstein_poly(i, nPoints-1, t) for i in range(0, nPoints)])
 
@@ -228,13 +228,13 @@ minimumSpanningTree= minSpanningTree(X, Y, Z)
 #Drawing the minimum spanning tree through the data
 drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
 #Re-ordering the x,y,z coordinates to give the data a direction
-newPoints = RankPoints(minimumSpanningTree, X, Y, Z)
+newPoints = RankPoints(minimumSpanningTree, X, Y, Z); bezierPointsLength = len(newPoints[0])
 #Drawing the simple moving average through the ranked points
 smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
 #Picking sample points as input to draw the bezier curve
 bezierPoints = BezierInput(smaPoints)
 #Drawing the bezier curve through the data
-bezierLine = bezier_curve(bezierPoints)
+bezierLine = bezier_curve(bezierPoints, bezierPointsLength)
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
@@ -243,5 +243,4 @@ ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'green')
 plt.show()
-
 
