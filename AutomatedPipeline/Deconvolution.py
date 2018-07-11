@@ -15,38 +15,40 @@ import numpy
 import csv
 import math
 
-#Original data 
-X1 = list(); Y1 = list(); Z1 = list(); S1 = list()#0.36
-X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.45
-X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.54
-
-#Reading in the data 
+#Reading in all the x,y,z,size data for one channel 
+X = list(); Y = list(); Z = list(); S = list()
 with open ('C1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
-        #each line has X,Y,Z,S
-        if (float(line[3])<0.53):
-            X1.append(line[0])
-            Y1.append(line[1])
-            Z1.append(line[2])
-            S1.append(line[3])
-        elif (float(line[3])>0.53 and float(line[3])<0.66):
-            X2.append(line[0])
-            Y2.append(line[1])
-            Z2.append(line[2])
-            S2.append(line[3])
-        else:
-            X3.append(line[0])
-            Y3.append(line[1])
-            Z3.append(line[2])
-            S3.append(line[3])
+        X.append(line[0])
+        Y.append(line[1])
+        Z.append(line[2])
+        S.append(line[3])
 
-X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1); S1 = numpy.array(S1)
-X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2); S2 = numpy.array(S2)
-X3 = numpy.array(X3); Y3 = numpy.array(Y3); Z3 = numpy.array(Z3); S3 = numpy.array(S3)
-X1 = X1.astype(float); Y1= Y1.astype(float); Z1= Z1.astype(float); S1= S1.astype(float)
-X2 = X2.astype(float); Y2= Y2.astype(float); Z2 = Z2.astype(float); S2= S2.astype(float)
-X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype(float)
+#Going through S and figuring out how many sizes there are
+sizes = list()
+for size in S:
+    if size not in sizes:
+        sizes.append(size)
+
+#Creating individual lists for coordinates of each size
+numLists = len(sizes)
+sizeLists = []
+for i in range(numLists):
+    sizeLists.append([[],[],[]])
+
+#      S1           S2           S3
+#[[x][y][z]], [[x][y][z]], [[x][y][z]] - size lists
+#       0            1               2
+#   0 1  2      0  1  2      0  1  2
+#Example: access list 3 with list[2], and the ith item of list 3 with list[2][i].
+for i in range(0, len(sizes)): #Going through the coordinates 3 times
+    for j in range(0, len(X)-1):
+        if (sizes[i] == S[j]):
+            sizeLists[i][0].append(X[j])
+            sizeLists[i][1].append(Y[j])
+            sizeLists[i][2].append(Z[j])
+
 
 #Sorts data by x, y, z like excel and returns sorted x,y,z numpy arrays 
 def Sort(x,y,z):
