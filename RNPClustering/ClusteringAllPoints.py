@@ -64,9 +64,9 @@ X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype
 #Generating a plot of the original points
 ax = fig.add_subplot(1,2,1, projection = '3d')
 #ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
-ax.scatter (X2, Y2, Z2, c = 'r', marker='o', s=2)
-ax.scatter (X3, Y3, Z3, c = 'r', marker='o', s=3)
-ax.scatter (X4, Y4, Z4, c = 'r', marker='o', s=4)
+ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
+ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
+ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=4)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
@@ -198,8 +198,8 @@ clustersFormed = clustersFormed.astype(float)
 
 #Generating a scatter plot of the points after clustering
 ax = fig.add_subplot(1,2,2, projection = '3d')
-ax.scatter (clustersFormed[0] , clustersFormed[1], clustersFormed[2], c = 'r', marker='o', s=4)
-ax.scatter (X3, Y3, Z3, c = 'r', marker='o', s=3)
+ax.scatter (clustersFormed[0] , clustersFormed[1], clustersFormed[2], c = 'y', marker='o', s=4)
+ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')

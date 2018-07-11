@@ -23,14 +23,14 @@ plt.style.use('dark_background')
 X = list(); Y = list(); Z = list() 
 
 #Reading in the data 
-with open ('deconvolutedC2.csv', 'r') as csv_file:
+with open ('deconvolutedC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         #each line has X,Y,Z
-            if (float(line[1]) > 10):
-                    X.append(line[0])
-                    Y.append(line[1])
-                    Z.append(line[2])
+            #if (float(line[2])>0 and float(line[2]) < 100):
+            X.append(line[0])
+            Y.append(line[1])
+            Z.append(line[2])
        
 X = numpy.array(X); Y = numpy.array(Y); Z = numpy.array(Z)
 X = X.astype(float); Y= Y.astype(float); Z= Z.astype(float)
@@ -40,6 +40,7 @@ def PCs(X,Y,Z):
                        Y[:, numpy.newaxis], 
                        Z[:, numpy.newaxis]), 
                       axis=1)
+        print (data)
         datamean = data.mean(axis=0) #Center of helix
         uu, dd, vv = numpy.linalg.svd(data - datamean)
         #Taking the variation in the z dimension, because this is the dimension of PC1
@@ -58,7 +59,7 @@ lineptsPC1 += PCsOutput[3]; lineptsPC2 += PCsOutput[3]; lineptsPC3 += PCsOutput[
 #Principal components plot
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.grid(False)
-ax.scatter (X, Y, Z, c = 'g', marker='o', linewidths=2)
+ax.scatter (X, Y, Z, c = 'r', marker='o', linewidths=2)
 ax.set_title('Principal Components')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
@@ -81,7 +82,7 @@ C2s = numpy.dot(Points - center, Pc2) # Components in second PC direction
 C3s = numpy.dot(Points - center, Pc3) # Components in third PC direction
 
 #Writing C1s, C2s, and C3s into a file
-numpy.savetxt("ComponentsC2.csv", numpy.column_stack((C1s, C2s, C3s)), delimiter=",", fmt='%s')
+numpy.savetxt("ComponentsC1.csv", numpy.column_stack((C1s, C2s, C3s)), delimiter=",", fmt='%s')
 
 
 

@@ -52,20 +52,20 @@ def helixFit(pc1, r, frequency, phase):
     return r*numpy.cos(pc1*frequency + phase) #Doesn't matter if it's sin or cos
 
 #Need to fit each of the components separately - C1
-popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[5, 0.4, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[10, 0.3, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pr = [helixFit(c1, *popt) for c1 in C1r]
 
-popt, pcov = curve_fit(helixFit, C1r, C3r, p0=[5, 0.4, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1r, C3r, p0=[10, 0.3, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pr = [helixFit(c1, *popt) for c1 in C1r]
 
 #Need to fit each of the components separately - C2
-popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[5, 0.6, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[10, 0.3, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pg = [helixFit(c1, *popt) for c1 in C1g]
 
-popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[5, 0.6, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[10, 0.3, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pg = [helixFit(c1, *popt) for c1 in C1g]
 
@@ -108,7 +108,7 @@ with open ('deconvolutedC1.csv', 'r') as csv_file:
     #Iterating through contents in the file
     for line in csv_reader:
         #each line has X,Y,Z,S
-        if (float(line[1]) > 10):
+         if (float(line[1]) > 10):
                 X1.append(line[0])
                 Y1.append(line[1])
                 Z1.append(line[2])
@@ -118,7 +118,7 @@ with open ('deconvolutedC2.csv', 'r') as csv_file:
     #Iterating through contents in the file
     for line in csv_reader:
         #each line has X,Y,Z,S
-             if (float(line[1]) > 10):
+              if (float(line[1]) > 10):
                      X2.append(line[0])
                      Y2.append(line[1])
                      Z2.append(line[2])
@@ -163,7 +163,7 @@ for i in range(len(C1g)-1): #Go from the center into the PC's direction by this 
         #Plot3D, takes a start x, end x, start y, end y, start z, end z
         start = centerC2 + C1g[i]*C2Pc1 + C2Pg[i]*C2Pc2 + C3Pg[i]*C2Pc3
         end = centerC2 + C1g[i+1]*C2Pc1 + C2Pg[i+1]*C2Pc2 + C3Pg[i+1]*C2Pc3
-        ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3, alpha=0.2)
+        ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3) #alpha=0.5) 
         ax.set_title('overall fit')
 plt.show()
 

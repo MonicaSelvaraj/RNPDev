@@ -190,30 +190,3 @@ print (X1.size)
 print (newx.size)
 
 plt.show()
-                    
-            
-            
-            
-            
-                
-                
-            
-            
-            
-            
-            
-            
-
-        
-        
-        
-    
-
-
-      
-
-       
-
-
-
-

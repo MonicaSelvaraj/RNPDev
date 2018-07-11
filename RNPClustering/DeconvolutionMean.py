@@ -1,28 +1,28 @@
 '''
-This script implements:
-- Finding the (mode) number of z's each size is split into
-- Clustering by size
-TODO: Right now you are counting the mode every time you make a cluster
-you need to calculate the mode after making all the clusters
-Possible appraoch :
-a. Store similarX, similarY, listofZ in separate multi-dimensional arrays
-b. Go through and find modeZ
-c. Then start clustering all points, and write the new x,y,z onto a file
-d. Do the rest of the analysis from the new data file
+De-convolution approach
+- Particles of each size are de-convoluted separately
+For each size:
+- Particles within a specific x,y are grouped
+- The spread in the z is determined for each group
+- The median spred in the z is set as the z threshold for de-convolution
+- Particles within the x,y,z, threshold are represented as just the center point (getting rid of particles detected when out of focus)
 '''
 
 #!/usr/bin/python
 import sys, os 
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib import style
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import scipy.stats
+import statistics
 import numpy 
 import csv
 import math
 
 sys.setrecursionlimit(10000)
 fig = plt.figure( )
+plt.style.use('dark_background')
 
 #Original data 
 X1 = list(); Y1 = list(); Z1 = list(); S1 = list()#0.27 - Not being considered for Curve fitting 
@@ -30,6 +30,7 @@ X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.36
 X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.45
 X4 = list(); Y4 = list(); Z4 = list(); S4 = list()#0.54
 
+#Reading in the data 
 with open ('newTestRed.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
@@ -65,33 +66,61 @@ X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype
 X4 = X4.astype(float); Y4= Y4.astype(float); Z4= Z4.astype(float); S4= S4.astype(float)
 
 #Generating a plot of the original points
-#ax = fig.add_subplot(1,2,1, projection = '3d')
-#ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
-#ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
-#ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
-#ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=4)
-#ax.set_xlabel ('x, axis')
-#ax.set_ylabel ('y axis')
-#ax.set_zlabel ('z axis')
+ax = fig.add_subplot(1,2,1, projection = '3d')
+ax.grid(False)
+red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1[0])
+blue = ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=S2[0]*2, linewidths=2)
+green = ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=S3[0]*4, linewidths=2)
+yellow = ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=S4[0]*6, linewidths=2)
+ax.set_title('Convoluted')
+ax.legend((red, blue, green, yellow),
+           ( '0.27', '0.36', '0.45', '0.54'),
+           scatterpoints=1,
+           loc='best',
+           ncol=1,
+           fontsize=8)
+ax.set_xlabel ('x, axis')
+ax.set_ylabel ('y axis')
+ax.set_zlabel ('z axis')
 
-#Finding the mode z split for each size
-def modeZ(x,y,z)
-    #Returning a 3D numpy array with x,y,and z data of each set of points that align in the x and y  
+#Sorts data by x, y, z like excel and returns sorted x,y,z numpy arrays - used as input for Align method 
+def Sort(x,y,z):
+    #For sorted data
+    Xs = list(); Ys = list(); Zs = list()
+    Xs = numpy.array(Xs); Ys = numpy.array(Ys); Zs = numpy.array(Zs)
+    Xs = Xs.astype(float); Ys= Ys.astype(float); Zs= Zs.astype(float)
+    
+    #Concatenating numpy arrays
+    data = numpy.concatenate((x[:, numpy.newaxis], 
+                       y[:, numpy.newaxis], 
+                       z[:, numpy.newaxis]), 
+                      axis=1)
+    
+    #Sorting wrt x, y, z consecutively like excel
+    sortedData = data[numpy.lexsort(numpy.transpose(data)[::-1])]
+    
+    #Separating the sorted data into numpy arrays
+    sortedArray = numpy.hsplit(sortedData, 3)
+    Xs = numpy.concatenate(sortedArray[0], axis=0)
+    Ys = numpy.concatenate(sortedArray[1], axis=0)
+    Zs = numpy.concatenate(sortedArray[2], axis=0)
+    return (Xs, Ys, Zs);
 
+#This method takes in the sorted data and finds the median of z splits, to determine the z threshold
+def MedianZ(X,Y,Z,S):
+    xylim = S
     #Variable pos to keep track of the current positions being visited 
     pos1 = -1 #Starting from -1 because indexing starts from 0
     pos2 = -1
 
-    #Array to keep track of what is visited, 1 indicates visited, 0 indicates unvisited
+    #Array to keep track of what has been visited to avoid double counts, 1 indicates visited, 0 indicates unvisited
     visited = numpy.zeros(X.size)
 
-    #New arrays for x,y,z points that need to be clustered 
-    #newx = list()
-    #newy = list()
-    #newz = list()
+    #New multidimensional arrays for cluster points - This is what the cluster method returns 
+    zSplits = list()
 
-    #Iterating through Xs,Ys,Zs at the same time
-    for x,y,z in zip (Xs, Ys, Zs):
+    #Iterating through x,y,z at the same time
+    for x,y,z in zip (X, Y, Z):
         #Refreshing the lists before generating another cluster
         similarX = list()
         similarY = list()
@@ -107,69 +136,38 @@ def modeZ(x,y,z)
         listofZ.append(z) #adding the corresponding z to the list
         #Iterating through the rest of the array to find similar values
         pos2 = -1 #Resetting the position before visiting the whole array again
-        for a,b,c in zip (Xs, Ys, Zs):
+        for a,b,c in zip (X, Y, Z):
             pos2+=1
             if visited[pos2] == 1:
                 continue
-            if ((a>currentX-xylim and  a<currentX+xylim) and (b>currentY-xylim and b<currentY+xylim)):
+            if ((a>=currentX-xylim and  a<=currentX+xylim) and (b>=currentY-xylim and b<=currentY+xylim)):
                 similarX.append(a)
                 similarY.append(b)
                 listofZ.append(c)
                 visited[pos2] = 1
-        #When you come out of the inner loop, you have one set of similar z points, count length of z here
-        print (similarX)
-        print (similarY)
-        print (listofZ)
-        #zlengths stores the z length of each set of points to determine the mode  
-        zlengths = list()
-        zlengths.append (len(listofZ))
-        #Converting zlengths to a numpy array
-        zlengths = numpy.array(zlengths)
-        zlengths = zlengths.astype(float)
-        print (zlengths)
-        #Finding the mode of zlengths for our z threshold
-        modeZ = scipy.stats.mode(zlengths)
-        #Generating new points after clustering
+        #When you come out of the inner loop, you have one set of aligned points
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
-        newPoints = generateCluster(similarX, similarY, listofZ,modeZ)
-        newx.append(newPoints[0])
-        newy.append(newPoints[1])
-        newz.append(newPoints[2])
+        if (listofZ.size != 1): #We don't care about the points that are not being split
+            zSplits.append(listofZ.size)
+    zthreshold = math.ceil(statistics.mean(zSplits))
+    return (zthreshold);
 
-    newx= numpy.array(newx); newy = numpy.array(newy); newz = numpy.array(newz)
-    newx = newx.astype(float); newy= newy.astype(float); newz= newz.astype(float)
-    return (newx, newy, newz);
-:
-    
+#Clusters points
+def cluster(X,Y,Z,S):
+    #Getting the x,y threshold 
+    xylim = S[0]
+    print (xylim)
+    #Sorting data 
+    sortedData = numpy.array(0); alignedData = numpy.array(0)
+    sortedData = Sort(X, Y, Z)
 
-#Start function here
-#Note: zlim - is the distance between each z slice
-#mz - mode of number of z splits
-def cluster(X,Y,Z, xylim,zlim):
-    
-    #For sorted data
-    Xs = list(); Ys = list(); Zs = list()
-    Xs = numpy.array(Xs); Ys = numpy.array(Ys); Zs = numpy.array(Zs)
-    Xs = Xs.astype(float); Ys= Ys.astype(float); Zs= Zs.astype(float)
-
-    #SORTING
-    #Concatenating numpy arrays
-    data = numpy.concatenate((X[:, numpy.newaxis], 
-                       Y[:, numpy.newaxis], 
-                       Z[:, numpy.newaxis]), 
-                      axis=1)
-    #Sorting wrt x, y, z consecutively like excel
-    sortedData = data[numpy.lexsort(numpy.transpose(data)[::-1])]
-
-    #Separating the sorted data into numpy arrays
-    sortedArray = numpy.hsplit(sortedData, 3)
-    Xs = numpy.concatenate(sortedArray[0], axis=0)
-    Ys = numpy.concatenate(sortedArray[1], axis=0)
-    Zs = numpy.concatenate(sortedArray[2], axis=0)
+    #Getting the z threshold
+    zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], xylim)*Z[Z.size-1] 
+    print (zlim)
 
     #DEFINING A FUNCTION TO GENERATE A CLUSTER FROM SORTED DATA
-    def generateCluster(xdata,ydata,zdata,mZ):
+    def generateCluster(xdata,ydata,zdata,zlim):
         
         #The maximum z-distance can be zlim
         xOfCluster = 0.0
@@ -185,20 +183,18 @@ def cluster(X,Y,Z, xylim,zlim):
         xarrays = list(); yarrays = list();zarrays = list()
         xarrays = numpy.array(xarrays); yarrays = numpy.array(yarrays); zarrays = numpy.array(zarrays)
         xarrays = xarrays.astype(float); yarrays = yarrays.astype(float); zarrays = zarrays.astype(float)
-        #TODO: Change z to mode z here
-        print (zlim)
-        print (mZ)
-        if (zdist<(float)(zlim*mZ)): #Is one cluster
+    
+        if (zdist<zlim): #Is one cluster
             pointpos = math.floor((zlength/2.0))
             xOfCluster = xdata[pointpos]
             yOfCluster = ydata[pointpos]
             zOfCluster = zdata[pointpos]
-        else: #More than one cluster
+        if (zdist>zlim):#More than one cluster
             xarrays = numpy.array_split(xdata, 2)
             yarrays = numpy.array_split(ydata, 2)
             zarrays = numpy.array_split(zdata, 2)
-            generateCluster(xarrays[0],yarrays[0],zarrays[0])
-            generateCluster(xarrays[1],yarrays[1],zarrays[1])
+            generateCluster(xarrays[0],yarrays[0],zarrays[0],zlim)
+            generateCluster(xarrays[1],yarrays[1],zarrays[1],zlim)
           
         clusterCenter = [xOfCluster, yOfCluster, zOfCluster]
         return (clusterCenter);
@@ -218,7 +214,7 @@ def cluster(X,Y,Z, xylim,zlim):
     newz = list()
 
     #Iterating through Xs,Ys,Zs at the same time
-    for x,y,z in zip (Xs, Ys, Zs):
+    for x,y,z in zip (sortedData[0], sortedData[1], sortedData[2]):
         #Refreshing the lists before generating another cluster
         similarX = list()
         similarY = list()
@@ -234,32 +230,22 @@ def cluster(X,Y,Z, xylim,zlim):
         listofZ.append(z) #adding the corresponding z to the list
         #Iterating through the rest of the array to find similar values
         pos2 = -1 #Resetting the position before visiting the whole array again
-        for a,b,c in zip (Xs, Ys, Zs):
+        for a,b,c in zip (sortedData[0], sortedData[1], sortedData[2]):
             pos2+=1
             if visited[pos2] == 1:
                 continue
-            if ((a>currentX-xylim and  a<currentX+xylim) and (b>currentY-xylim and b<currentY+xylim)):
+            if ((a>=currentX-xylim and  a<=currentX+xylim) and (b>=currentY-xylim and b<=currentY+xylim)):
                 similarX.append(a)
                 similarY.append(b)
                 listofZ.append(c)
                 visited[pos2] = 1
-        #When you come out of the inner loop, you have one set of similar z points, count length of z here
-        print (similarX)
-        print (similarY)
-        print (listofZ)
-        #zlengths stores the z length of each set of points to determine the mode  
-        zlengths = list()
-        zlengths.append (len(listofZ))
-        #Converting zlengths to a numpy array
-        zlengths = numpy.array(zlengths)
-        zlengths = zlengths.astype(float)
-        print (zlengths)
-        #Finding the mode of zlengths for our z threshold
-        modeZ = scipy.stats.mode(zlengths)
+                
         #Generating new points after clustering
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
-        newPoints = generateCluster(similarX, similarY, listofZ,modeZ)
+        newPoints = generateCluster(similarX, similarY, listofZ,zlim)
+        if (newPoints[0] <= 0 or newPoints[1] <= 0 or newPoints[2] <= 0 ): #Why do I have negative values? BUG
+            continue
         newx.append(newPoints[0])
         newy.append(newPoints[1])
         newz.append(newPoints[2])
@@ -269,60 +255,68 @@ def cluster(X,Y,Z, xylim,zlim):
     return (newx, newy, newz);
 #End of cluster method
 
-#List of x,y,z thresholds
-#zDistance is the distance between each slice - to be multiplied with mode z to determine the z threshold
-zDistance = Z2[Z2.size-1]
-#                     0.27  0.36  0.45,  0.54
-xythreshold = [0.27, 0.36, 0.45, 0.54]
-
 #Clustering 0.54 points
-clustersFormed4 = cluster(X4,Y4,Z4, xythreshold[3],zDistance)
-clustersFormed4 = numpy.array(clustersFormed4)
-clustersFormed4 = clustersFormed4.astype(float)
+cluster4 = cluster(X4, Y4, Z4, S4)
+cluster4= numpy.array(cluster4)
+cluster4 = cluster4.astype(float)
 
 #Clustering 0.45 points
-clustersFormed3 = cluster(X3,Y3,Z3, xythreshold[2],zDistance)
-clustersFormed3 = numpy.array(clustersForme3)
-clustersFormed3 = clustersFormed3.astype(float)
+cluster3 = cluster(X3, Y3, Z3, S3)
+cluster3= numpy.array(cluster3)
+cluster3 = cluster3.astype(float)
 
 #Clustering 0.36 points
-clustersFormed2 = cluster(X2,Y2,Z2, xythreshold[1],zDistance)
-clustersFormed2 = numpy.array(clustersFormed2)
-clustersFormed2 = clustersFormed2.astype(float)
+cluster2 = cluster(X2, Y2, Z2, S2)
+cluster2= numpy.array(cluster2)
+cluster2 = cluster2.astype(float)
+
+#Clustering 0.27 points
+cluster1 = cluster(X1, Y1, Z1, S1)
+cluster1= numpy.array(cluster1)
+cluster1 = cluster1.astype(float)
+
+#Cluster 4 has x,y,z of 0.54
+#Cluster 3 has x,y,z of 0.45
+#Cluster 2 has x,y,z of 0.36
+#Write out to a csv file named deconvoluted.csv - should contain list of x,y,z from cluster4,3,2
+
+#First create 4 numpy arrays for x,y,z, size data
+dX = list(); dY = list(); dZ = list(); dS = list()
+dX = numpy.array(dX); dY = numpy.array(dY); dZ = numpy.array(dZ); dS = numpy.array(dS);
+dX = dX.astype(float); dY= dY.astype(float); dZ= dZ.astype(float); dS= dS.astype(float)
+
+dX = numpy.concatenate((cluster4[0], cluster3[0], cluster2[0]), axis=0)
+dY = numpy.concatenate((cluster4[1], cluster3[1], cluster2[1]), axis=0)
+dZ = numpy.concatenate((cluster4[2], cluster3[2], cluster2[2]), axis=0)
+#print (dX)
+#print (dY)
+#print (dZ)
+
+numpy.savetxt("deconvoluted.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
 
 #Generating a scatter plot of the points after clustering
 ax = fig.add_subplot(1,2,2, projection = '3d')
-ax.scatter (clustersFormed4[0] , clustersFormed4[1], clustersFormed4[2], c = 'y', marker='o', s=4)
-ax.scatter (clustersFormed3[0] , clustersFormed3[1], clustersFormed3[2], c = 'g', marker='o', s=4)
-ax.scatter (clustersFormed2[0] , clustersFormed2[1], clustersFormed2[2], c = 'b', marker='o', s=4)
+yellow = ax.scatter (cluster4[0] , cluster4[1], cluster4[2], c = 'y', marker='o', s=S4[0]*16, linewidths=2)
+green = ax.scatter (cluster3[0] , cluster3[1], cluster3[2], c = 'g', marker='o', s=S3[0]*8, linewidths=2)
+blue = ax.scatter (cluster2[0] , cluster2[1], cluster2[2], c = 'b', marker='o', s=S2[0]*4, linewidths=2)
+red = ax.scatter (cluster1[0] , cluster1[1], cluster1[2], c = 'r', marker='o', s=S1[0])
+ax.grid(False)
+ax.legend((red, blue, green, yellow),
+           ('0.27','0.36','0.45', '0.54'),
+           scatterpoints=1,
+           loc='best',
+           ncol=1,
+           fontsize=8)
+ax.set_title('Deconvoluted')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-
-#For calculations
-#print ("Number of 0.36 particles: ", X2.size) #Number of 0.36 particles 
-#print ("Number of 0.45 particles: ", X3.size) #Number of 0.45 particles
-#print ("Number of 0.54 particles: ", X4.size) #Number of 0.54 particles
-#print ("Total number of clusters: ", clustersFormed[0].size) #Total number of 0.54 and 0.36 points
-#print ("Number of 0.36 particles left after clustering: ", ((X2.size + X3.size) - clustersFormed[0].size)) #Remaining number of 0.36 particles
-
+#ax.view_init(azim=180, elev=10)
 plt.show()
-                    
-            
-            
 
-            
 
-        
-        
-        
+
     
-
-
-      
-
-       
-
-
+    
 
 

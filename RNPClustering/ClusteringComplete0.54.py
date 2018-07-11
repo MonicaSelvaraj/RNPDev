@@ -224,30 +224,3 @@ ax.set_zlabel ('z axis')
 #print (cluster1[0].size)
 
 plt.show()
-                    
-            
-            
-            
-            
-                
-                
-            
-            
-            
-            
-            
-            
-
-        
-        
-        
-    
-
-
-      
-
-       
-
-
-
-

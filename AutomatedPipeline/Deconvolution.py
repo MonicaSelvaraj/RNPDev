@@ -21,16 +21,16 @@ X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.45
 X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.54
 
 #Reading in the data 
-with open ('C2.csv', 'r') as csv_file:
+with open ('C1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         #each line has X,Y,Z,S
-        if (float(line[3])<0.37):
+        if (float(line[3])<0.53):
             X1.append(line[0])
             Y1.append(line[1])
             Z1.append(line[2])
             S1.append(line[3])
-        elif (float(line[3])>0.37 and float(line[3])<0.46):
+        elif (float(line[3])>0.53 and float(line[3])<0.66):
             X2.append(line[0])
             Y2.append(line[1])
             Z2.append(line[2])
@@ -252,7 +252,7 @@ dZ = numpy.concatenate((cluster3[2], cluster2[2], cluster1[2]), axis=0)
 #print (dY)
 #print (dZ)
 
-numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
+numpy.savetxt("deconvolutedC1.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
 
 
 

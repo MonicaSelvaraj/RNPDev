@@ -31,7 +31,7 @@ X4= list()
 Y4 = list()
 Z4 = list()
 
-with open ('manualzRed.csv', 'r') as csv_file:
+with open ('newTestRed.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         #each line has X,Y,Z, radius
@@ -79,36 +79,36 @@ Y4= Y4.astype(float)
 Z4= Z4.astype(float)
 
 #setting up the axes for the 0.27 subplot
-ax = fig.add_subplot(2,3,2, projection = '3d')
-ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=2)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
+#ax = fig.add_subplot(2,3,2, projection = '3d')
+#ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=2)
+#ax.set_xlabel ('x, axis')
+#ax.set_ylabel ('y axis')
+#ax.set_zlabel ('z axis')
 
 #setting up the axes for the 0.36 subplot
-ax = fig.add_subplot(2,3,3, projection = '3d')
-ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=4)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
+#ax = fig.add_subplot(2,3,3, projection = '3d')
+#ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=4)
+#ax.set_xlabel ('x, axis')
+#ax.set_ylabel ('y axis')
+#ax.set_zlabel ('z axis')
 
 #setting up the axes for the 0.45 subplot
-ax = fig.add_subplot(2,3,4, projection = '3d')
-ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s = 8)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
+#ax = fig.add_subplot(2,3,4, projection = '3d')
+#ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s = 8)
+#ax.set_xlabel ('x, axis')
+#ax.set_ylabel ('y axis')
+#ax.set_zlabel ('z axis')
 
 #setting up the axes for the 0.27 subplot
-ax = fig.add_subplot(2,3,5, projection = '3d')
-ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=16)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
+#ax = fig.add_subplot(2,3,5, projection = '3d')
+#ax.scatter (X4, Y4, Z4, c = 'y', marker='o', s=16)
+#ax.set_xlabel ('x, axis')
+#ax.set_ylabel ('y axis')
+#ax.set_zlabel ('z axis')
 
 #setting up the axes for the all sizes subplot
-ax = fig.add_subplot(2,3,1, projection = '3d')
-ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
+ax = fig.add_subplot(1,1,1, projection = '3d')
+#ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1)
 ax.scatter (X2, Y2, Z2, c = 'b', marker='o', s=2)
 ax.scatter (X3, Y3, Z3, c = 'g', marker='o', s=3)
 ax.scatter (X4, Y4, Z4, c = 'y', marker='o',s=4)

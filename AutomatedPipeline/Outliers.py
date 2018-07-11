@@ -52,7 +52,7 @@ plt.scatter(C1g, C2g, c='g'); plt.scatter(C1r, C2r, c='r'); plt.title('C1 vs C2'
 plt.scatter(C1g, C3g, c='g'); plt.scatter(C1r, C3r, c='r'); plt.title(' C1 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20); plt.show()# Shows plot without second PC
 
 #REMOVING OUTLIERS
-def removeOutliers(C1, C2, C3):
+def removeOutliers(C1, C2, C3, sd):
         dst = list()
         #Finding distances of points from (0,0)
         for x,y in zip (C2, C3):
@@ -70,8 +70,8 @@ def removeOutliers(C1, C2, C3):
         sdDst = numpy.std(dst, axis = 0); print (sdDst)
 
         #outliersIndex contains the positions of the outliers
-        outliersIndex = numpy.where(dst >= meanDst + 2 * sdDst)
-        lineDst = meanDst + 2 * sdDst
+        outliersIndex = numpy.where(dst > meanDst + sd * sdDst)
+        lineDst = meanDst + sd * sdDst
         print (outliersIndex)
         #Removing the outliers from C1, C2, C3
         newC1 = numpy.delete (C1, outliersIndex)
@@ -79,10 +79,12 @@ def removeOutliers(C1, C2, C3):
         newC3 = numpy.delete (C3, outliersIndex)
         return (newC1, newC2, newC3, lineDst);
 
-CleanedChannel1 = removeOutliers (C1r, C2r, C3r)
+CleanedChannel1 = removeOutliers (C1r, C2r, C3r,2)
 lineC1 = CleanedChannel1[3]
-CleanedChannel2 = removeOutliers (C1g, C2g, C3g)
+print (lineC1)
+CleanedChannel2 = removeOutliers (C1g, C2g, C3g, 2)
 lineC2 = CleanedChannel2[3]
+print (lineC2)
 
 #Writing cleaned data to a new file
 numpy.savetxt("CleanedComponentsC1.csv", numpy.column_stack((CleanedChannel1[0], CleanedChannel1[1], CleanedChannel1[2])), delimiter=",", fmt='%s')
