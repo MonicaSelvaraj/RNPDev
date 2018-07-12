@@ -15,41 +15,41 @@ import numpy
 import csv
 import math
 
-#Original data
-X1 = list(); Y1 = list(); Z1 = list(); S1 = list()#0.36
-X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.45
-X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.54
-
-#Reading in the data
+#Reading in all the x,y,z,size data for one channel 
+X = list(); Y = list(); Z = list(); S = list()
 with open ('C2.csv', 'r') as csv_file:
-     csv_reader = csv.reader (csv_file)
-     for line in csv_reader:
-         #each line has X,Y,Z,S
-         if (float(line[3])<0.37):
-             X1.append(line[0])
-             Y1.append(line[1])
-             Z1.append(line[2])
-             S1.append(line[3])
-         elif (float(line[3])>0.37 and float(line[3])<0.46):
-            X2.append(line[0])
-            Y2.append(line[1])
-            Z2.append(line[2])
-            S2.append(line[3])
-         else:
-            X3.append(line[0])
-            Y3.append(line[1])
-            Z3.append(line[2])
-            S3.append(line[3])
+    csv_reader = csv.reader (csv_file)
+    for line in csv_reader:
+        X.append(line[0])
+        Y.append(line[1])
+        Z.append(line[2])
+        S.append(line[3])
 
-X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1); S1 = numpy.array(S1)	
-X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2); S2 = numpy.array(S2)	
-X3 = numpy.array(X3); Y3 = numpy.array(Y3); Z3 = numpy.array(Z3); S3 = numpy.array(S3)	
-X1 = X1.astype(float); Y1= Y1.astype(float); Z1= Z1.astype(float); S1= S1.astype(float)	
-X2 = X2.astype(float); Y2= Y2.astype(float); Z2 = Z2.astype(float); S2= S2.astype(float)	
-X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype(float)
+#Going through S and figuring out how many sizes there are
+sizes = list()
+for size in S:
+    if size not in sizes:
+        sizes.append(size)
 
-#TESTING INPUT: print(X1); print(Y1); print (Z1)
-            
+#Creating individual lists for coordinates of each size
+numLists = len(sizes)
+sizeLists = []
+for i in range(numLists):
+    sizeLists.append([[],[],[]])
+
+
+#      S1           S2           S3
+#{[[x][y][z]], [[x][y][z]], [[x][y][z]]]- size lists
+#       0            1               2
+#   0 1  2      0  1  2      0  1  2
+#Example: access list 3 with list[2], and the ith item of list 3 with list[2][i].
+for i in range(0, len(sizes)): #Going through the coordinates 3 times
+    for j in range(0, len(X)-1):
+        if (sizes[i] == S[j]):
+            sizeLists[i][0].append(X[j])
+            sizeLists[i][1].append(Y[j])
+            sizeLists[i][2].append(Z[j])
+
 '''
 Given three numpy arrays x,y,z sorts the arrays consecutively and returns
 sorted numpy arrays Xs, Ys, Zs
@@ -76,197 +76,116 @@ def Sort(x,y,z):
     return (Xs, Ys, Zs);
 
 '''
-Given the sorted data Xs, Ys, Zs
+Given numpy arrays with x,y,z coordinates and the radius of the particle
+creates groups of particles to be clustered 
 '''
-#This method takes in the sorted data and finds the median of z splits, to determine the z threshold
-def MedianZ(X,Y,Z,S):
-    xylim = S
-    #Variable pos to keep track of the current positions being visited 
-    pos1 = -1 #Starting from -1 because indexing starts from 0
-    pos2 = -1
+def Groups(x,y,z, radius):
+    XGroups = list(); YGroups = list(); ZGroups = list()
+    
+    #Keeping track of the points that have been visited, to avoid adding the same point to two clusters
+    visited = numpy.zeros(x.size)
 
-    #Array to keep track of what has been visited to avoid double counts, 1 indicates visited, 0 indicates unvisited
-    visited = numpy.zeros(X.size)
-
-    #New multidimensional arrays for cluster points - This is what the cluster method returns 
-    zSplits = list()
-       
-    #Iterating through x,y,z at the same time
-    for x,y,z in zip (X, Y, Z):
+    for i in range(0, len(x)):
         #Refreshing the lists before generating another cluster
         similarX = list()
         similarY = list()
         listofZ = list()
-        pos1+=1
-        if (visited[pos1] == 1):
+
+        if(visited[i] == 1):
             continue
-        visited[pos1] = 1 
-        currentX = x
-        currentY = y
-        similarX.append(x) #adding the first x to the list
-        similarY.append(y) #adding the corresponding y to the list
-        listofZ.append(z) #adding the corresponding z to the list
-        #Iterating through the rest of the array to find similar values
-        pos2 = -1 #Resetting the position before visiting the whole array again
-        for a,b,c in zip (X, Y, Z):
-            pos2+=1
-            if visited[pos2] == 1:
+        visited[i] = 1
+        similarX.append(x[i]) #adding the first x to the list
+        similarY.append(y[i]) #adding the corresponding y to the list
+        listofZ.append(z[i]) #adding the corresponding z to the list
+
+        #Iterating through the rest of the array to find similar values that could be added to the group
+        for j in range(i, len(x)):
+            if (visited[j] == 1):
                 continue
-            if ((a>=currentX-xylim and  a<=currentX+xylim) and (b>=currentY-xylim and b<=currentY+xylim)):
-                similarX.append(a)
-                similarY.append(b)
-                listofZ.append(c)
-                visited[pos2] = 1
-        #When you come out of the inner loop, you have one set of aligned points
-        similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
-        similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
-                
-        if (listofZ.size != 1): #We don't care about the points that are not being split
-            zSplits.append(listofZ.size)
-    zthreshold = math.ceil(statistics.median(zSplits))
-    return (zthreshold);
+            if ((x[j]>=x[i]-radius and  x[j]<=x[i]+radius) and (y[j]>=y[i]-radius and y[j]<=y[i]+radius)):
+                similarX.append(x[j])
+                similarY.append(y[j])
+                listofZ.append(z[j])
+                visited[j] = 1
+        #When you come out of the inner loop, you have one group of points
+        XGroups.append(similarX); YGroups.append(similarY); ZGroups.append(listofZ)
 
-#Clusters points
-def cluster(X,Y,Z,S):
-    #Getting the x,y threshold 
-    xylim = S[0]
-    print (xylim)
-    #Sorting data 
-    sortedData = numpy.array(0); alignedData = numpy.array(0)
-    sortedData = Sort(X, Y, Z)
-#TESTING SORT:print(sortedData[0]); print(sortedData[1]); print(sortedData[2])
+    return(XGroups, YGroups, ZGroups)
 
-    #Getting the z threshold
-    zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], xylim)*Z[Z.size-1] 
-    print (zlim)
+'''
+Given a specific group of points, generates the clustered points
+'''
+def generateCluster(xGroup, yGroup, zGroup, zThreshold):
+    xOfCluster = 0.0; yOfCluster = 0.0; zOfCluster = 0.0
 
-    #DEFINING A FUNCTION TO GENERATE A CLUSTER FROM SORTED DATA
-    def generateCluster(xdata,ydata,zdata,zlim):
-        
-        #The maximum z-distance can be zlim
-        xOfCluster = 0.0
-        yOfCluster = 0.0
-        zOfCluster = 0.0
-
-        maxz = numpy.amax(zdata)
-        minz = numpy.amin(zdata)
-        zlength = len(zdata)
-        zdist = maxz - minz #How spread apart the points are
-        
-        #In case I need to split up the arrays for recursion
-        xarrays = list(); yarrays = list();zarrays = list()
-        xarrays = numpy.array(xarrays); yarrays = numpy.array(yarrays); zarrays = numpy.array(zarrays)
-        xarrays = xarrays.astype(float); yarrays = yarrays.astype(float); zarrays = zarrays.astype(float)
+    maxz = numpy.amax(zGroup)
+    minz = numpy.amin(zGroup)
+    zlength = len(zGroup)
+    zdist = maxz - minz #How spread apart the points are
     
-        if (zdist<zlim): #Is one cluster
-            pointpos = math.floor((zlength/2.0))
-            xOfCluster = xdata[pointpos]
-            yOfCluster = ydata[pointpos]
-            zOfCluster = zdata[pointpos]
-        if (zdist>zlim):#More than one cluster
-            xarrays = numpy.array_split(xdata, 2)
-            yarrays = numpy.array_split(ydata, 2)
-            zarrays = numpy.array_split(zdata, 2)
-            generateCluster(xarrays[0],yarrays[0],zarrays[0],zlim)
-            generateCluster(xarrays[1],yarrays[1],zarrays[1],zlim)
+    #In case I need to split up the arrays for recursion
+    xarrays = list(); yarrays = list();zarrays = list()
+
+    if (zdist<zThreshold): #Is one cluster
+        pointpos = math.floor((zlength/2.0))
+        xOfCluster = xGroup[pointpos]
+        yOfCluster = yGroup[pointpos]
+        zOfCluster = zGroup[pointpos]
+    if (zdist>zThreshold):#More than one cluster
+        xarrays = numpy.array_split(xGroup, 2)
+        yarrays = numpy.array_split(yGroup, 2)
+        zarrays = numpy.array_split(zGroup, 2)
+        generateCluster(xarrays[0],yarrays[0],zarrays[0],zThreshold)
+        generateCluster(xarrays[1],yarrays[1],zarrays[1],zThreshold)
           
-        clusterCenter = [xOfCluster, yOfCluster, zOfCluster]
-        return (clusterCenter);
-    #End of generateCluster method
-                
-    #CLUSTERING
-    #Variable pos to keep track of the current positions being visited 
-    pos1 = -1 #Starting from -1 because indexing starts from 0
-    pos2 = -1
+    clusterCenter = [xOfCluster, yOfCluster, zOfCluster]
+    return (clusterCenter);
 
-    #Array to keep track of what is visited, 1 indicates visited, 0 indicates unvisited
-    visited = numpy.zeros(X.size)
+'''
+Given x,y,z coordinates and the radius, groups them using the Groups method, generates clusters, and
+returns the clustered x,y,z,s for the coordinates
+'''
+def Cluster(X,Y,Z, radius):
+    X = numpy.array(X, dtype = float); Y = numpy.array(Y, dtype = float); Z = numpy.array(Z, dtype = float)
 
-    #New arrays for cluster points - This is what the cluster method returns 
-    newx = list()
-    newy = list()
-    newz = list()
-
-    #Iterating through Xs,Ys,Zs at the same time
-    for x,y,z in zip (sortedData[0], sortedData[1], sortedData[2]):
-        #Refreshing the lists before generating another cluster
-        similarX = list()
-        similarY = list()
-        listofZ = list()
-        pos1+=1
-        if (visited[pos1] == 1):
-            continue
-        visited[pos1] = 1 
-        currentX = x
-        currentY = y
-        similarX.append(x) #adding the first x to the list
-        similarY.append(y) #adding the corresponding y to the list
-        listofZ.append(z) #adding the corresponding z to the list
-        #Iterating through the rest of the array to find similar values
-        pos2 = -1 #Resetting the position before visiting the whole array again
-        for a,b,c in zip (sortedData[0], sortedData[1], sortedData[2]):
-            pos2+=1
-            if visited[pos2] == 1:
-                continue
-            if ((a>=currentX-xylim and  a<=currentX+xylim) and (b>=currentY-xylim and b<=currentY+xylim)):
-                similarX.append(a)
-                similarY.append(b)
-                listofZ.append(c)
-                visited[pos2] = 1
-                
-        #Generating new points after clustering
-        similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
-        similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
-        newPoints = generateCluster(similarX, similarY, listofZ,zlim)
-        if (newPoints[0] <= 0 or newPoints[1] <= 0 or newPoints[2] <= 0 ): #Why do I have negative values? BUG
-            continue
-        newx.append(newPoints[0])
-        newy.append(newPoints[1])
-        newz.append(newPoints[2])
-
-    newx= numpy.array(newx); newy = numpy.array(newy); newz = numpy.array(newz)
-    newx = newx.astype(float); newy= newy.astype(float); newz= newz.astype(float)
-    print(len(newx)); print(len(newy)); print(len(newz))
-    return (newx, newy, newz);
-#End of cluster method
-
-#Clustering 0.54 points
-cluster3 = cluster(X3, Y3, Z3, S3)
-cluster3= numpy.array(cluster3)
-cluster3= cluster3.astype(float)
-
-#Clustering 0.45 points
-cluster2 = cluster(X2, Y2, Z2, S2)
-cluster2= numpy.array(cluster2)
-cluster2 = cluster2.astype(float)
-
-#Clustering 0.36 points
-cluster1 = cluster(X1, Y1, Z1, S1)
-cluster1= numpy.array(cluster1)
-cluster1 = cluster1.astype(float)
-
-#Cluster 3 has x,y,z of 0.54
-#Cluster 2 has x,y,z of 0.45
-#Cluster 1 has x,y,z of 0.36
-#Write out to a csv file named deconvoluted.csv - should contain list of x,y,z from cluster4,3,2
-
-#First create 4 numpy arrays for x,y,z, size data
-dX = list(); dY = list(); dZ = list(); dS = list()
-dX = numpy.array(dX); dY = numpy.array(dY); dZ = numpy.array(dZ); dS = numpy.array(dS);
-dX = dX.astype(float); dY= dY.astype(float); dZ= dZ.astype(float); dS= dS.astype(float)
-
-dX = numpy.concatenate((cluster3[0], cluster2[0], cluster1[0]), axis=0)
-dY = numpy.concatenate((cluster3[1], cluster2[1], cluster1[1]), axis=0)
-dZ = numpy.concatenate((cluster3[2], cluster2[2], cluster1[2]), axis=0)
-print (len(dX))
-print (len(dY))
-print (len(dZ))
-
-numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
-
-
-
+    #Sorting data
+    sortedData = Sort(X, Y, Z)
     
+    #Grouping points
+    groupedPoints = Groups(sortedData[0],sortedData[1],sortedData[2],radius)
     
+    #Getting the zThreshold
+    numberOfZSplits = list()
+    for i in range(0, len(groupedPoints[2])):
+        if(len(groupedPoints[2][i]) != 1):
+            numberOfZSplits.append(len(groupedPoints[2][i]))
+    MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
+    zThreshold = MedianZSplits*Z[Z.size-1]
+    print(radius)
+    print(zThreshold)
+
+    #Creating lists to store the coordinates of clustered points
+    xPoints = list(); yPoints = list(); zPoints = list(); ClusterPoints = list()
+
+    #Going through each group and clustering points
+    for i in range(0, len(groupedPoints[0])):
+        ClusterPoints = generateCluster(groupedPoints[0][i], groupedPoints[1][i],groupedPoints[2][i], zThreshold)
+        if (ClusterPoints[0] <= 0 or ClusterPoints[1] <= 0 or ClusterPoints[2] <= 0 ): 
+            continue
+        xPoints.append(ClusterPoints[0]); yPoints.append(ClusterPoints[1]); zPoints.append(ClusterPoints[2])
+    xPoints = numpy.array(xPoints, dtype = float); yPoints = numpy.array(yPoints, dtype = float); zPoints = numpy.array(zPoints, dtype = float) 
+    return(xPoints, yPoints, zPoints)         
+
+#Clustering Points
+cX = list(); cY = list(); cZ = list()
+cX = numpy.array(cX, dtype = float); cY = numpy.array(cY, dtype = float); cZ = numpy.array(cZ, dtype = float)
+for i in range (0, len(sizes)):
+    clusteredPoints = Cluster(sizeLists[i][0],sizeLists[i][1],sizeLists[i][2], float(sizes[i]))
+    clusteredPoints= numpy.array(clusteredPoints, dtype = float)
+    cX = numpy.concatenate((cX, clusteredPoints[0]), axis=0)
+    cY = numpy.concatenate((cY, clusteredPoints[1]), axis=0)
+    cZ = numpy.concatenate((cZ, clusteredPoints[2]), axis=0)
+
+numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
 
 
