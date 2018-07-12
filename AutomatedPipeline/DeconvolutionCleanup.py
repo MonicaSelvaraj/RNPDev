@@ -37,6 +37,7 @@ sizeLists = []
 for i in range(numLists):
     sizeLists.append([[],[],[]])
 
+
 #      S1           S2           S3
 #{[[x][y][z]], [[x][y][z]], [[x][y][z]]]- size lists
 #       0            1               2
@@ -48,6 +49,9 @@ for i in range(0, len(sizes)): #Going through the coordinates 3 times
             sizeLists[i][0].append(X[j])
             sizeLists[i][1].append(Y[j])
             sizeLists[i][2].append(Z[j])
+
+#TESTING INPUT: print(sizeLists[0][0]); print(sizeLists[0][1]); print(sizeLists[0][2]) #output: should be x,y,z of 0.36 points
+
 '''
 Given three numpy arrays x,y,z sorts the arrays consecutively and returns
 sorted numpy arrays Xs, Ys, Zs
@@ -91,7 +95,7 @@ def Groups(x,y,z, radius):
 
         if(visited[i] == 1):
             continue
-        visited[i] == 1
+        visited[i] = 1
         similarX.append(x[i]) #adding the first x to the list
         similarY.append(y[i]) #adding the corresponding y to the list
         listofZ.append(z[i]) #adding the corresponding z to the list
@@ -100,13 +104,15 @@ def Groups(x,y,z, radius):
         for j in range(i, len(x)-1):
             if (visited[j] == 1):
                 continue
-            visited[j] == 1
             if ((x[j]>=x[i]-radius and  x[j]<=x[i]+radius) and (y[j]>=y[i]-radius and y[j]<=y[i]+radius)):
                 similarX.append(x[j])
                 similarY.append(y[j])
                 listofZ.append(z[j])
+                visited[j] = 1
         #When you come out of the inner loop, you have one group of points
         XGroups.append(similarX); YGroups.append(similarY); ZGroups.append(listofZ)
+        
+    print("Testing: ");print(len(XGroups))
     return(XGroups, YGroups, ZGroups)
 
 '''
@@ -147,7 +153,8 @@ def Cluster(X,Y,Z, radius):
 
     #Sorting data
     sortedData = Sort(X, Y, Z)
-
+    #TESTING SORT: print(sortedData[0]); print(sortedData[1]); print(sortedData[2])
+    
     #Grouping points
     groupedPoints = Groups(sortedData[0],sortedData[1],sortedData[2],radius)
     
@@ -179,7 +186,6 @@ for i in range (0, len(sizes)):
     cX.append(clusteredPoints[0])
     cY.append(clusteredPoints[1])
     cZ.append(clusteredPoints[2])
-print(cX); print(cY); print(cZ)
     
 numpy.savetxt("deconvolutedC1.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
 

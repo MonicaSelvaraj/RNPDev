@@ -47,6 +47,8 @@ X3 = numpy.array(X3); Y3 = numpy.array(Y3); Z3 = numpy.array(Z3); S3 = numpy.arr
 X1 = X1.astype(float); Y1= Y1.astype(float); Z1= Z1.astype(float); S1= S1.astype(float)	
 X2 = X2.astype(float); Y2= Y2.astype(float); Z2 = Z2.astype(float); S2= S2.astype(float)	
 X3 = X3.astype(float); Y3= Y3.astype(float); Z3= Z3.astype(float); S3= S3.astype(float)
+
+#TESTING INPUT: print(X1); print(Y1); print (Z1)
             
 '''
 Given three numpy arrays x,y,z sorts the arrays consecutively and returns
@@ -89,6 +91,8 @@ def MedianZ(X,Y,Z,S):
     #New multidimensional arrays for cluster points - This is what the cluster method returns 
     zSplits = list()
 
+    XGroups = list(); YGroups = list(); ZGroups = list()
+       
     #Iterating through x,y,z at the same time
     for x,y,z in zip (X, Y, Z):
         #Refreshing the lists before generating another cluster
@@ -115,12 +119,15 @@ def MedianZ(X,Y,Z,S):
                 similarY.append(b)
                 listofZ.append(c)
                 visited[pos2] = 1
+        XGroups.append(similarX); YGroups.append(similarY); ZGroups.append(listofZ)
         #When you come out of the inner loop, you have one set of aligned points
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
+                
         if (listofZ.size != 1): #We don't care about the points that are not being split
             zSplits.append(listofZ.size)
     zthreshold = math.ceil(statistics.median(zSplits))
+    print("Testing: ");print(len(XGroups))
     return (zthreshold);
 
 #Clusters points
@@ -131,6 +138,7 @@ def cluster(X,Y,Z,S):
     #Sorting data 
     sortedData = numpy.array(0); alignedData = numpy.array(0)
     sortedData = Sort(X, Y, Z)
+#TESTING SORT:print(sortedData[0]); print(sortedData[1]); print(sortedData[2])
 
     #Getting the z threshold
     zlim = MedianZ(sortedData[0], sortedData[1], sortedData[2], xylim)*Z[Z.size-1] 
