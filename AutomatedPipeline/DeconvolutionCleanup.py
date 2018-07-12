@@ -17,7 +17,7 @@ import math
 
 #Reading in all the x,y,z,size data for one channel 
 X = list(); Y = list(); Z = list(); S = list()
-with open ('C1.csv', 'r') as csv_file:
+with open ('C2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         X.append(line[0])
@@ -49,8 +49,6 @@ for i in range(0, len(sizes)): #Going through the coordinates 3 times
             sizeLists[i][0].append(X[j])
             sizeLists[i][1].append(Y[j])
             sizeLists[i][2].append(Z[j])
-
-#TESTING INPUT: print(sizeLists[0][0]); print(sizeLists[0][1]); print(sizeLists[0][2]) #output: should be x,y,z of 0.36 points
 
 '''
 Given three numpy arrays x,y,z sorts the arrays consecutively and returns
@@ -87,7 +85,7 @@ def Groups(x,y,z, radius):
     #Keeping track of the points that have been visited, to avoid adding the same point to two clusters
     visited = numpy.zeros(x.size)
 
-    for i in range(0, len(x)-1):
+    for i in range(0, len(x)):
         #Refreshing the lists before generating another cluster
         similarX = list()
         similarY = list()
@@ -101,7 +99,7 @@ def Groups(x,y,z, radius):
         listofZ.append(z[i]) #adding the corresponding z to the list
 
         #Iterating through the rest of the array to find similar values that could be added to the group
-        for j in range(i, len(x)-1):
+        for j in range(i, len(x)):
             if (visited[j] == 1):
                 continue
             if ((x[j]>=x[i]-radius and  x[j]<=x[i]+radius) and (y[j]>=y[i]-radius and y[j]<=y[i]+radius)):
@@ -111,8 +109,7 @@ def Groups(x,y,z, radius):
                 visited[j] = 1
         #When you come out of the inner loop, you have one group of points
         XGroups.append(similarX); YGroups.append(similarY); ZGroups.append(listofZ)
-        
-    print("Testing: ");print(len(XGroups))
+
     return(XGroups, YGroups, ZGroups)
 
 '''
@@ -125,7 +122,7 @@ def generateCluster(xGroup, yGroup, zGroup, zThreshold):
     minz = numpy.amin(zGroup)
     zlength = len(zGroup)
     zdist = maxz - minz #How spread apart the points are
-        
+    
     #In case I need to split up the arrays for recursion
     xarrays = list(); yarrays = list();zarrays = list()
 
@@ -153,16 +150,14 @@ def Cluster(X,Y,Z, radius):
 
     #Sorting data
     sortedData = Sort(X, Y, Z)
-    #TESTING SORT: print(sortedData[0]); print(sortedData[1]); print(sortedData[2])
     
     #Grouping points
     groupedPoints = Groups(sortedData[0],sortedData[1],sortedData[2],radius)
     
     #Getting the zThreshold
     numberOfZSplits = list()
-    for i in range(0, len(groupedPoints[2])-1):
+    for i in range(0, len(groupedPoints[2])):
         if(len(groupedPoints[2][i]) != 1):
-            print(i)
             numberOfZSplits.append(len(groupedPoints[2][i]))
     MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
     zThreshold = MedianZSplits*Z[Z.size-1]
@@ -170,14 +165,16 @@ def Cluster(X,Y,Z, radius):
     print(zThreshold)
 
     #Creating lists to store the coordinates of clustered points
-    XPoints = list(); YPoints = list(); ZPoints = list(); ClusterPoints = list()
-    
-    #Going through each group and clustering points
-    for i in range(0, len(groupedPoints[0])-1):
-        ClusterPoints.append(generateCluster(groupedPoints[0][i], groupedPoints[1][i],groupedPoints[2][i], zThreshold))
+    xPoints = list(); yPoints = list(); zPoints = list(); ClusterPoints = list()
 
-    ClusterPoints[0]= numpy.array(ClusterPoints[0], dtype = float); ClusterPoints[1] = numpy.array(ClusterPoints[1], dtype = float); ClusterPoints[2] = numpy.array(ClusterPoints[2], dtype = float)
-    return(ClusterPoints[0], ClusterPoints[1], ClusterPoints[2])          
+    #Going through each group and clustering points
+    for i in range(0, len(groupedPoints[0])):
+        ClusterPoints = generateCluster(groupedPoints[0][i], groupedPoints[1][i],groupedPoints[2][i], zThreshold)
+        if (ClusterPoints[0] <= 0 or ClusterPoints[1] <= 0 or ClusterPoints[2] <= 0 ): 
+            continue
+        xPoints.append(ClusterPoints[0]); yPoints.append(ClusterPoints[1]); zPoints.append(ClusterPoints[2])
+    xPoints = numpy.array(xPoints, dtype = float); yPoints = numpy.array(yPoints, dtype = float); zPoints = numpy.array(zPoints, dtype = float); 
+    return(xPoints, yPoints, zPoints)         
 
 #Clustering Points
 cX = list(); cY = list(); cZ = list()
@@ -187,6 +184,6 @@ for i in range (0, len(sizes)):
     cY.append(clusteredPoints[1])
     cZ.append(clusteredPoints[2])
     
-numpy.savetxt("deconvolutedC1.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
+numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
 
 

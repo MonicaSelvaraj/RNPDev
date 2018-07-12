@@ -21,7 +21,7 @@ X2 = list(); Y2 = list(); Z2 = list(); S2 = list()#0.45
 X3 = list(); Y3 = list(); Z3 = list(); S3 = list() #0.54
 
 #Reading in the data
-with open ('C1.csv', 'r') as csv_file:
+with open ('C2.csv', 'r') as csv_file:
      csv_reader = csv.reader (csv_file)
      for line in csv_reader:
          #each line has X,Y,Z,S
@@ -90,8 +90,6 @@ def MedianZ(X,Y,Z,S):
 
     #New multidimensional arrays for cluster points - This is what the cluster method returns 
     zSplits = list()
-
-    XGroups = list(); YGroups = list(); ZGroups = list()
        
     #Iterating through x,y,z at the same time
     for x,y,z in zip (X, Y, Z):
@@ -119,7 +117,6 @@ def MedianZ(X,Y,Z,S):
                 similarY.append(b)
                 listofZ.append(c)
                 visited[pos2] = 1
-        XGroups.append(similarX); YGroups.append(similarY); ZGroups.append(listofZ)
         #When you come out of the inner loop, you have one set of aligned points
         similarX = numpy.array(similarX); similarY = numpy.array(similarY); listofZ = numpy.array(listofZ)
         similarX = similarX.astype(float); similarY = similarY.astype(float); listofZ = listofZ.astype(float)
@@ -127,7 +124,6 @@ def MedianZ(X,Y,Z,S):
         if (listofZ.size != 1): #We don't care about the points that are not being split
             zSplits.append(listofZ.size)
     zthreshold = math.ceil(statistics.median(zSplits))
-    print("Testing: ");print(len(XGroups))
     return (zthreshold);
 
 #Clusters points
@@ -230,6 +226,7 @@ def cluster(X,Y,Z,S):
 
     newx= numpy.array(newx); newy = numpy.array(newy); newz = numpy.array(newz)
     newx = newx.astype(float); newy= newy.astype(float); newz= newz.astype(float)
+    print(len(newx)); print(len(newy)); print(len(newz))
     return (newx, newy, newz);
 #End of cluster method
 
@@ -265,7 +262,7 @@ dZ = numpy.concatenate((cluster3[2], cluster2[2], cluster1[2]), axis=0)
 #print (dY)
 #print (dZ)
 
-numpy.savetxt("deconvolutedC1.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
+numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
 
 
 
