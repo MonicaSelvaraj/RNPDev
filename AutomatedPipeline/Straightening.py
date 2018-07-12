@@ -30,7 +30,7 @@ Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 '''
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
-    with open ('Input.csv', 'r') as csv_file:
+    with open ('deconvolutedC1.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0])
@@ -150,10 +150,10 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =movingaverage(x, 3)
-    yline =movingaverage(y, 3)
-    zline =movingaverage(z, 3)
-    ax.plot3D(xline,yline,zline,'green')
+    xline =movingaverage(x, 5)
+    yline =movingaverage(y, 5)
+    zline =movingaverage(z, 5)
+    ax.plot3D(xline,yline,zline,'blue')
     plt.show()
     return(xline, yline, zline);
 
@@ -167,12 +167,12 @@ draw the bezier curve
 def BezierInput(smaPoints):
     last = len(smaPoints[0]) #Makes sure we include the last point in the curve
     xB = list(); yB = list(); zB = list()
-    interval = 1 #Keeps track of which points to add
+    interval = 0 #Keeps track of which points to add
     for i,j,k in zip(smaPoints[0], smaPoints[1], smaPoints[2]):
         interval = interval +1
         if (interval == 1):
             xB.append(i); yB.append(j);  zB.append(k)
-        if (interval%10 == 0 or interval == last -1): #picking every 10 points on the sma
+        if (interval%25 == 0 or interval == last -1): #picking every 10 points on the sma
             xB.append(i); yB.append(j);  zB.append(k)
     xB = numpy.array(xB); yB = numpy.array(yB); zB = numpy.array(zB)
     xB = xB.astype(float); yB= yB.astype(float); zB= zB.astype(float)
@@ -292,7 +292,7 @@ ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'green')
+ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'blue')
 plt.show()
 #Straightening points
 StraightenedPts = Straighten(bezierLine,newPoints[0], newPoints[1], newPoints[2])
@@ -305,7 +305,9 @@ ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 plt.show()
 
-
+#Writing straightened points to a file
+StraightenedPts= numpy.array(StraightenedPts, dtype = float)
+numpy.savetxt("StraightenedC1.csv", numpy.column_stack((StraightenedPts[0], StraightenedPts[1], StraightenedPts[2])), delimiter=",", fmt='%s')
 
 
 
