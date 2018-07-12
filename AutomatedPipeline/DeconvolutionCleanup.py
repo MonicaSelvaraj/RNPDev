@@ -173,17 +173,21 @@ def Cluster(X,Y,Z, radius):
         if (ClusterPoints[0] <= 0 or ClusterPoints[1] <= 0 or ClusterPoints[2] <= 0 ): 
             continue
         xPoints.append(ClusterPoints[0]); yPoints.append(ClusterPoints[1]); zPoints.append(ClusterPoints[2])
-    xPoints = numpy.array(xPoints, dtype = float); yPoints = numpy.array(yPoints, dtype = float); zPoints = numpy.array(zPoints, dtype = float); 
+    xPoints = numpy.array(xPoints, dtype = float); yPoints = numpy.array(yPoints, dtype = float); zPoints = numpy.array(zPoints, dtype = float) 
     return(xPoints, yPoints, zPoints)         
 
 #Clustering Points
 cX = list(); cY = list(); cZ = list()
+cX = numpy.array(cX, dtype = float); cY = numpy.array(cY, dtype = float); cZ = numpy.array(cZ, dtype = float)
 for i in range (0, len(sizes)):
     clusteredPoints = Cluster(sizeLists[i][0],sizeLists[i][1],sizeLists[i][2], float(sizes[i]))
-    cX.append(clusteredPoints[0])
-    cY.append(clusteredPoints[1])
-    cZ.append(clusteredPoints[2])
-    
+    clusteredPoints= numpy.array(clusteredPoints, dtype = float)
+    cX = numpy.concatenate((cX, clusteredPoints[0]), axis=0)
+    cY = numpy.concatenate((cY, clusteredPoints[1]), axis=0)
+    cZ = numpy.concatenate((cZ, clusteredPoints[2]), axis=0)
+
+#cX = numpy.array(cX, dtype = float); cY = numpy.array(cY, dtype = float); cZ = numpy.array(cZ, dtype = float)
+print(len(cX)); print(len(cY)); print(len(cZ))
 numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
 
 

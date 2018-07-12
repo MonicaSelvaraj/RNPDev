@@ -258,9 +258,9 @@ dX = dX.astype(float); dY= dY.astype(float); dZ= dZ.astype(float); dS= dS.astype
 dX = numpy.concatenate((cluster3[0], cluster2[0], cluster1[0]), axis=0)
 dY = numpy.concatenate((cluster3[1], cluster2[1], cluster1[1]), axis=0)
 dZ = numpy.concatenate((cluster3[2], cluster2[2], cluster1[2]), axis=0)
-#print (dX)
-#print (dY)
-#print (dZ)
+print (len(dX))
+print (len(dY))
+print (len(dZ))
 
 numpy.savetxt("deconvolutedC2.csv", numpy.column_stack((dX, dY, dZ)), delimiter=",", fmt='%s')
 
