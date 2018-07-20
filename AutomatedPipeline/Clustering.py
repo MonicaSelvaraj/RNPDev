@@ -9,6 +9,7 @@ For each size:
 '''
 
 #!/usr/bin/python
+import sys
 import scipy.stats
 import statistics
 import numpy 
@@ -17,7 +18,7 @@ import math
 
 #Reading in all the x,y,z,size data for one channel 
 X = list(); Y = list(); Z = list(); S = list()
-with open ('C1.csv', 'r') as csv_file:
+with open (sys.argv[1], 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         X.append(line[0])
@@ -186,6 +187,6 @@ for i in range (0, len(sizes)):
     cY = numpy.concatenate((cY, clusteredPoints[1]), axis=0)
     cZ = numpy.concatenate((cZ, clusteredPoints[2]), axis=0)
 
-numpy.savetxt("ClusteredC1.csv", numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
+numpy.savetxt(sys.argv[2], numpy.column_stack((cX, cY, cZ)), delimiter=",", fmt='%s')
 
 

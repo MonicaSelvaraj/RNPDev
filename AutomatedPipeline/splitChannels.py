@@ -3,7 +3,7 @@ This script reads in the csv file with coorindates of all channels, and saves th
 of each of the channels as individual files, after removing particles with radius less than 0.28
 '''
 #!/usr/bin/python
-
+import sys, os
 import numpy 
 import csv
 
@@ -16,7 +16,7 @@ X2 = list(); Y2 =  list(); Z2 = list(); S2 = list()
 #opening the csv file
 # 'r' specifies that we want to read this file
 #csv_reader is the name of the reader object that we have created 
-with open ('Input/vasaC1dazlC2.csv', 'r') as csv_file:
+with open (sys.argv[1], 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:

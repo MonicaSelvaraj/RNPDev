@@ -6,6 +6,7 @@ writing C1s, C2s and C3s into a new file
 '''
 
 #!/usr/bin/python
+import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d.axes3d import Axes3D
@@ -23,7 +24,7 @@ plt.style.use('dark_background')
 X = list(); Y = list(); Z = list() 
 
 #Reading in the data 
-with open ('StraightenedC1.csv', 'r') as csv_file:
+with open (sys.argv[1], 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
             X.append(line[0])
@@ -57,7 +58,7 @@ lineptsPC1 += PCsOutput[3]; lineptsPC2 += PCsOutput[3]; lineptsPC3 += PCsOutput[
 #Principal components plot
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.grid(False)
-ax.scatter (X, Y, Z, c = 'g', marker='o', linewidths=2)
+ax.scatter (X, Y, Z, c = sys.argv[3], marker='o', linewidths=2)
 ax.set_title('Principal Components')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
@@ -80,7 +81,7 @@ C2s = numpy.dot(Points - center, Pc2) # Components in second PC direction
 C3s = numpy.dot(Points - center, Pc3) # Components in third PC direction
 
 #Writing C1s, C2s, and C3s into a file
-numpy.savetxt("ComponentsC1.csv", numpy.column_stack((C1s, C2s, C3s)), delimiter=",", fmt='%s')
+numpy.savetxt(sys.argv[2], numpy.column_stack((C1s, C2s, C3s)), delimiter=",", fmt='%s')
 
 
 
