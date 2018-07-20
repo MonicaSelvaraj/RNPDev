@@ -76,7 +76,8 @@ plt.scatter(C2r, C3r, c='r') # True
 plt.plot(C2Pr, C3Pr, c='b') # Fit
 plt.title(' C2 vs C3 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.show()
+plt.savefig('Output/C2C3Fit.png')
+plt.close()
 
 plt.scatter(C1g, C2g, c='g') # True
 plt.plot(C1g, C2Pg, c= 'y') # Fit
@@ -84,7 +85,8 @@ plt.scatter(C1r, C2r, c='r') # True
 plt.plot(C1r, C2Pr, c= 'b') # Fit
 plt.title(' C1 vs C2 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.show()
+plt.savefig('Output/C1C2Fit.png')
+plt.close()
 
 plt.scatter(C1g, C3g, c='g') # True
 plt.plot(C1g, C3Pg, c='y') # Fit
@@ -92,7 +94,8 @@ plt.scatter(C1r, C3r, c='r') # True
 plt.plot(C1r, C3Pr, c='b') # Fit
 plt.title(' C1 vs C3 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.show()
+plt.savefig('Output/C1C3Fit.png')
+plt.close()
 
 #3D fit
 
@@ -103,27 +106,22 @@ X1 = list(); Y1 = list(); Z1 = list()
 #Variables for C2
 X2 = list(); Y2 =  list(); Z2 = list()
 
-with open ('deconvolutedC1.csv', 'r') as csv_file:
+with open ('clusteredC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
-        #each line has X,Y,Z,S
-         if (float(line[1]) > 10):
-                X1.append(line[0])
-                Y1.append(line[1])
-                Z1.append(line[2])
+            X1.append(line[0])
+            Y1.append(line[1])
+            Z1.append(line[2])
         
-with open ('deconvolutedC2.csv', 'r') as csv_file:
+with open ('clusteredC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
-        #each line has X,Y,Z,S
-              if (float(line[1]) > 10):
-                     X2.append(line[0])
-                     Y2.append(line[1])
-                     Z2.append(line[2])
+            X2.append(line[0])
+            Y2.append(line[1])
+            Z2.append(line[2])
         
-
 X1 = numpy.array(X1); Y1 = numpy.array(Y1); Z1 = numpy.array(Z1)
 X2 = numpy.array(X2); Y2 = numpy.array(Y2); Z2 = numpy.array(Z2)
 X1 = X1.astype(float); Y1 = Y1.astype(float); Z1 = Z1.astype(float)
@@ -165,7 +163,7 @@ for i in range(len(C1g)-1): #Go from the center into the PC's direction by this 
         end = centerC2 + C1g[i+1]*C2Pc1 + C2Pg[i+1]*C2Pc2 + C3Pg[i+1]*C2Pc3
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3) #alpha=0.5) 
         ax.set_title('overall fit')
-plt.show()
+fig.savefig('Output/3DFit.png')
 
 #Parameters
 def Pitch(x, y):
