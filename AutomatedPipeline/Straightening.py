@@ -30,16 +30,24 @@ Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 '''
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
-    with open ('deconvolutedC1.csv', 'r') as csv_file:
+    x1 = list(); y1 = list(); z1 = list(); x2 = list(); y2 = list(); z2 = list()
+    with open ('ClusteredC1.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
-            x.append(line[0])
-            y.append(line[1])
-            z.append(line[2])
+            x.append(line[0]); x1.append(line[0])
+            y.append(line[1]); y1.append(line[1])
+            z.append(line[2]); z1.append(line[2])
+    with open ('ClusteredC2.csv', 'r') as csv_file:
+        csv_reader = csv.reader (csv_file)
+        for line in csv_reader:
+            x.append(line[0]); x2.append(line[0])
+            y.append(line[1]); y2.append(line[1])
+            z.append(line[2]); z2.append(line[2])
 
-    x = numpy.array(x); y = numpy.array(y); z = numpy.array(z)
-    x = x.astype(float); y = y.astype(float); z = z.astype(float)
-    return (x, y, z);
+    x = numpy.array(x, dtype = float); y = numpy.array(y, dtype = float); z = numpy.array(z, dtype = float)
+    x1 = numpy.array(x1, dtype = float); y1 = numpy.array(y1, dtype = float); z1 = numpy.array(z1, dtype = float)
+    x2 = numpy.array(x2, dtype = float); y2 = numpy.array(y2, dtype = float); z2 = numpy.array(z2, dtype = float)
+    return (x, y, z, x1, y1, z1, x2, y2, z2);
 
 
 '''
@@ -93,7 +101,7 @@ returns: --
 Converting the output csr matrix to a coo matrix
 Iterating through the coo matrix to draw the minimum spanning tree
 '''
-def drawMinimumSpanningTree(MST, X, Y, Z):
+def drawMinimumSpanningTree(MST, X, Y, Z, X1, Y1, Z1, X2, Y2, Z2):
     A = list(); B = list() #These lists store which points need to be connected A-row, B-col
     cx = scipy.sparse.coo_matrix(MST)
     for i, j, v in zip(cx.row, cx.col, cx.data):
@@ -102,13 +110,14 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
     #A, B have the indices of the points that need to be connected
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1, projection = '3d')
-    ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+    ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
+    ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
     for a, b in zip(A, B):
         ax.plot3D([X[a], X[b]], [Y[a], Y[b]], [Z[a], Z[b]], c='b')
-    plt.show()
+    fig.savefig('Output/MinimumSpanningTree.png')
     return();
 
 '''
@@ -146,7 +155,8 @@ returns: sma in x,y,z direction
 def drawMovingAverage(x,y,z):
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1, projection = '3d')
-    ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+    ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
+    ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
@@ -154,7 +164,7 @@ def drawMovingAverage(x,y,z):
     yline =movingaverage(y, 40)
     zline =movingaverage(z, 40)
     ax.plot3D(xline,yline,zline,'blue')
-    plt.show()
+    fig.savefig('Output/MovingAverage.png')
     return(xline, yline, zline);
 
 '''
@@ -271,9 +281,10 @@ def Straighten(LinePts,x,y,z):
     return(dx, dy, dz)
 
 #Reading and storing the input
-In = readAndStoreInput(); X = In[0]; Y = In[1]; Z = In[2]
+In = readAndStoreInput()
+X = In[0]; Y = In[1]; Z = In[2];X1 = In[3]; Y1 = In[4]; Z1 = In[5];X2 = In[6]; Y2 = In[7]; Z2 = In[8]
 #Producing a scatter plot of the original data
-ScatterPlot(X, Y, Z)
+#ScatterPlot(X, Y, Z)
 #Computing the minimum spanning tree for the data
 minimumSpanningTree= minSpanningTree(X, Y, Z)
 #Drawing the minimum spanning tree through the data
@@ -288,27 +299,31 @@ bezierPoints = BezierInput(smaPoints)
 bezierLine = bezier_curve(bezierPoints)
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
-ax.scatter (X, Y, Z, c = 'r', marker='o', s=1, linewidths=2)
+ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
+ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'blue')
-plt.show()
-#Straightening points
-StraightenedPts = Straighten(bezierLine,newPoints[0], newPoints[1], newPoints[2])
+fig.savefig('Output/BezierCurve.png')
+#Straightening points for C1
+StraightenedPts1 = Straighten(bezierLine,X1, Y1, Z1)
+StraightenedPts2 = Straighten(bezierLine,X2, Y2, Z2)
 #Plotting the straightened points
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
-ax.scatter (StraightenedPts[0],StraightenedPts[1],StraightenedPts[2], c = 'r', marker='o', s=1, linewidths=2)
+ax.scatter (StraightenedPts1[0],StraightenedPts1[1],StraightenedPts1[2], c = 'r', marker='o', s=1, linewidths=2)
+ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g', marker='o', s=1, linewidths=2)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-plt.show()
+fig.savefig('Output/Straightened.png')
 
 #Writing straightened points to a file
-StraightenedPts= numpy.array(StraightenedPts, dtype = float)
-numpy.savetxt("StraightenedC1.csv", numpy.column_stack((StraightenedPts[0], StraightenedPts[1], StraightenedPts[2])), delimiter=",", fmt='%s')
-
+StraightenedPts1= numpy.array(StraightenedPts, dtype = float)
+StraightenedPts2= numpy.array(StraightenedPts, dtype = float)
+numpy.savetxt("StraightenedC1.csv", numpy.column_stack((StraightenedPts1[0], StraightenedPts1[1], StraightenedPts1[2])), delimiter=",", fmt='%s')
+numpy.savetxt("StraightenedC2.csv", numpy.column_stack((StraightenedPts2[0], StraightenedPts2[1], StraightenedPts2[2])), delimiter=",", fmt='%s')
 
 
 
