@@ -65,7 +65,7 @@ ax.set_zlabel ('z axis')
 ax.plot3D(*lineptsPC1.T)
 ax.plot3D(*lineptsPC2.T)
 ax.plot3D(*lineptsPC3.T)
-plt.show()        
+fig.savefig('Output/PrincipalComponents.png')
 
 #2D projections
 Points = list(zip(X,Y,Z))
