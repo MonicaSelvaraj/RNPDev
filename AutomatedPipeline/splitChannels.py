@@ -16,7 +16,7 @@ X2 = list(); Y2 =  list(); Z2 = list(); S2 = list()
 #opening the csv file
 # 'r' specifies that we want to read this file
 #csv_reader is the name of the reader object that we have created 
-with open ('vasaC1dazlC2.csv', 'r') as csv_file:
+with open ('Input/vasaC1dazlC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:

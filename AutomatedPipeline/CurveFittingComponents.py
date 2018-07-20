@@ -52,20 +52,20 @@ def helixFit(pc1, r, frequency, phase):
     return r*numpy.cos(pc1*frequency + phase) #Doesn't matter if it's sin or cos
 
 #Need to fit each of the components separately - C1
-popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[10, 0.3, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[10, 0.6, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pr = [helixFit(c1, *popt) for c1 in C1r]
 
-popt, pcov = curve_fit(helixFit, C1r, C3r, p0=[10, 0.3, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1r, C3r, p0=[10, 0.6, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pr = [helixFit(c1, *popt) for c1 in C1r]
 
 #Need to fit each of the components separately - C2
-popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[10, 0.3, -numpy.pi/2]) # Predicts C2 given C1
+popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[10, 0.6, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pg = [helixFit(c1, *popt) for c1 in C1g]
 
-popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[10, 0.3, 0]) # Predicts C3 given C1
+popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[10, 0.6, 0]) # Predicts C3 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pg = [helixFit(c1, *popt) for c1 in C1g]
 

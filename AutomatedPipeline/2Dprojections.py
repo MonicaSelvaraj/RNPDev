@@ -23,11 +23,9 @@ plt.style.use('dark_background')
 X = list(); Y = list(); Z = list() 
 
 #Reading in the data 
-with open ('deconvolutedC1.csv', 'r') as csv_file:
+with open ('StraightenedC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
-        #each line has X,Y,Z
-            #if (float(line[2])>0 and float(line[2]) < 100):
             X.append(line[0])
             Y.append(line[1])
             Z.append(line[2])
@@ -59,7 +57,7 @@ lineptsPC1 += PCsOutput[3]; lineptsPC2 += PCsOutput[3]; lineptsPC3 += PCsOutput[
 #Principal components plot
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.grid(False)
-ax.scatter (X, Y, Z, c = 'r', marker='o', linewidths=2)
+ax.scatter (X, Y, Z, c = 'g', marker='o', linewidths=2)
 ax.set_title('Principal Components')
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')

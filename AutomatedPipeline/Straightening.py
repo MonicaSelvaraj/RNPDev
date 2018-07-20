@@ -150,9 +150,9 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =movingaverage(x, 5)
-    yline =movingaverage(y, 5)
-    zline =movingaverage(z, 5)
+    xline =movingaverage(x, 40)
+    yline =movingaverage(y, 40)
+    zline =movingaverage(z, 40)
     ax.plot3D(xline,yline,zline,'blue')
     plt.show()
     return(xline, yline, zline);
@@ -172,7 +172,7 @@ def BezierInput(smaPoints):
         interval = interval +1
         if (interval == 1):
             xB.append(i); yB.append(j);  zB.append(k)
-        if (interval%25 == 0 or interval == last -1): #picking every 10 points on the sma
+        if (interval%1 == 0 or interval == last -1): #picking every 10 points on the sma
             xB.append(i); yB.append(j);  zB.append(k)
     xB = numpy.array(xB); yB = numpy.array(yB); zB = numpy.array(zB)
     xB = xB.astype(float); yB= yB.astype(float); zB= zB.astype(float)
