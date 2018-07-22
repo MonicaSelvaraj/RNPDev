@@ -160,7 +160,10 @@ def Cluster(X,Y,Z, radius):
     for i in range(0, len(groupedPoints[2])):
         if(len(groupedPoints[2][i]) != 1):
             numberOfZSplits.append(len(groupedPoints[2][i]))
-    MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
+    if(numberOfZSplits == 0):
+        MedianZSplits = 0
+    else:
+        MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
     zThreshold = MedianZSplits*Z[Z.size-1]
     print(radius)
     print(zThreshold)
