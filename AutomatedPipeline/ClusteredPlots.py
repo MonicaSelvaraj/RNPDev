@@ -13,6 +13,8 @@ import csv
 fig = plt.figure( )
 plt.style.use('dark_background')
 
+print("Producing scatter plot after clustering")
+
 #Plot of original data
 #Variables for C1
 X1 = list(); Y1 = list(); Z1 = list()

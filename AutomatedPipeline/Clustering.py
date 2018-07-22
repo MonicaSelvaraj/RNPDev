@@ -16,6 +16,10 @@ import numpy
 import csv
 import math
 
+if(sys.argv[1] == "C1.csv"): print("Clustering C1")
+else: print("Clustering C2")
+
+
 #Reading in all the x,y,z,size data for one channel 
 X = list(); Y = list(); Z = list(); S = list()
 with open (sys.argv[1], 'r') as csv_file:
@@ -160,13 +164,13 @@ def Cluster(X,Y,Z, radius):
     for i in range(0, len(groupedPoints[2])):
         if(len(groupedPoints[2][i]) != 1):
             numberOfZSplits.append(len(groupedPoints[2][i]))
-    if(numberOfZSplits == 0):
+    if(len(numberOfZSplits) == 0):
         MedianZSplits = 0
     else:
         MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
     zThreshold = MedianZSplits*Z[Z.size-1]
-    print(radius)
-    print(zThreshold)
+    print("Radius of RNP: ", radius)
+    print("Median point spread: ", zThreshold)
 
     #Creating lists to store the coordinates of clustered points
     xPoints = list(); yPoints = list(); zPoints = list(); ClusterPoints = list()

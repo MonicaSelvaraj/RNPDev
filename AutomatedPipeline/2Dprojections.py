@@ -20,6 +20,9 @@ from scipy.optimize import curve_fit
 fig = plt.figure( )
 plt.style.use('dark_background')
 
+if(sys.argv[3] == "r" ): print("Drawing PCs through C1 & Creating 2D projections")
+else: print("Drawing PCs through C2 & Creating 2D projections")
+
 #Variables to store deconvoluted points 
 X = list(); Y = list(); Z = list() 
 
@@ -39,7 +42,6 @@ def PCs(X,Y,Z):
                        Y[:, numpy.newaxis], 
                        Z[:, numpy.newaxis]), 
                       axis=1)
-        print (data)
         datamean = data.mean(axis=0) #Center of helix
         uu, dd, vv = numpy.linalg.svd(data - datamean)
         #Taking the variation in the z dimension, because this is the dimension of PC1
@@ -66,7 +68,7 @@ ax.set_zlabel ('z axis')
 ax.plot3D(*lineptsPC1.T)
 ax.plot3D(*lineptsPC2.T)
 ax.plot3D(*lineptsPC3.T)
-fig.savefig('Output/PrincipalComponents.png')
+fig.savefig(sys.argv[4])
 
 #2D projections
 Points = list(zip(X,Y,Z))

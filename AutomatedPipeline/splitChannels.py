@@ -7,6 +7,8 @@ import sys, os
 import numpy 
 import csv
 
+print("Splitting Channels")
+
 #Variables to store Channel 1 data
 X1 = list(); Y1 = list(); Z1 = list(); S1 = list()
 

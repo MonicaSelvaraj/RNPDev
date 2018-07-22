@@ -19,6 +19,8 @@ import networkx as nx
 import itertools
 from scipy.misc import comb
 
+print("Straightening")
+
 plt.style.use('dark_background')
 
 
@@ -101,7 +103,7 @@ returns: --
 Converting the output csr matrix to a coo matrix
 Iterating through the coo matrix to draw the minimum spanning tree
 '''
-def drawMinimumSpanningTree(MST, X, Y, Z, X1, Y1, Z1, X2, Y2, Z2):
+def drawMinimumSpanningTree(MST, X, Y, Z):
     A = list(); B = list() #These lists store which points need to be connected A-row, B-col
     cx = scipy.sparse.coo_matrix(MST)
     for i, j, v in zip(cx.row, cx.col, cx.data):
@@ -320,8 +322,8 @@ ax.set_zlabel ('z axis')
 fig.savefig('Output/Straightened.png')
 
 #Writing straightened points to a file
-StraightenedPts1= numpy.array(StraightenedPts, dtype = float)
-StraightenedPts2= numpy.array(StraightenedPts, dtype = float)
+StraightenedPts1= numpy.array(StraightenedPts1, dtype = float)
+StraightenedPts2= numpy.array(StraightenedPts2, dtype = float)
 numpy.savetxt("StraightenedC1.csv", numpy.column_stack((StraightenedPts1[0], StraightenedPts1[1], StraightenedPts1[2])), delimiter=",", fmt='%s')
 numpy.savetxt("StraightenedC2.csv", numpy.column_stack((StraightenedPts2[0], StraightenedPts2[1], StraightenedPts2[2])), delimiter=",", fmt='%s')
 

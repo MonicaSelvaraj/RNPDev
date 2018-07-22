@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy 
 import csv
 
+print("Producing Scatter Plot")
 #Creating a 3D axes by using the keyword projection = '3D'
 fig = plt.figure( )
 plt.style.use('dark_background')

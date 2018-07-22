@@ -17,7 +17,9 @@ import numpy
 import csv
 import math
 from matplotlib import style
-from scipy.spatial import distance 
+from scipy.spatial import distance
+
+print("Removing Outliers")
 
 plt.style.use('dark_background')
 
@@ -66,13 +68,13 @@ def removeOutliers(C1, C2, C3, sd):
         #plt.hist(dst) #Auto binned histogram
         #plt.show()
  
-        meanDst = numpy.mean(dst, axis = 0); print (meanDst)
-        sdDst = numpy.std(dst, axis = 0); print (sdDst)
+        meanDst = numpy.mean(dst, axis = 0); #print (meanDst)
+        sdDst = numpy.std(dst, axis = 0); #print (sdDst)
 
         #outliersIndex contains the positions of the outliers
         outliersIndex = numpy.where(dst > meanDst + sd * sdDst)
         lineDst = meanDst + sd * sdDst
-        print (outliersIndex)
+        #print (outliersIndex)
         #Removing the outliers from C1, C2, C3
         newC1 = numpy.delete (C1, outliersIndex)
         newC2 = numpy.delete (C2, outliersIndex)
@@ -81,10 +83,10 @@ def removeOutliers(C1, C2, C3, sd):
 
 CleanedChannel1 = removeOutliers (C1r, C2r, C3r,2)
 lineC1 = CleanedChannel1[3]
-print (lineC1)
+#print (lineC1)
 CleanedChannel2 = removeOutliers (C1g, C2g, C3g, 2)
 lineC2 = CleanedChannel2[3]
-print (lineC2)
+#print (lineC2)
 
 #Writing cleaned data to a new file
 numpy.savetxt("CleanedComponentsC1.csv", numpy.column_stack((CleanedChannel1[0], CleanedChannel1[1], CleanedChannel1[2])), delimiter=",", fmt='%s')

@@ -21,6 +21,8 @@ from scipy.optimize import curve_fit
 
 plt.style.use('dark_background')
 
+print("Curve Fitting")
+
 #2D curve fitting 
 #Original data 
 C1r = list(); C2r = list(); C3r = list()#C1 - red
@@ -52,6 +54,7 @@ def helixFit(pc1, r, frequency, phase):
     return r*numpy.cos(pc1*frequency + phase) #Doesn't matter if it's sin or cos
 
 #Need to fit each of the components separately - C1
+print("Channel1")
 popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[10, 0.6, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pr = [helixFit(c1, *popt) for c1 in C1r]
@@ -61,6 +64,7 @@ print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
 C3Pr = [helixFit(c1, *popt) for c1 in C1r]
 
 #Need to fit each of the components separately - C2
+print("Channel2")
 popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[10, 0.6, -numpy.pi/2]) # Predicts C2 given C1
 print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
 C2Pg = [helixFit(c1, *popt) for c1 in C1g]
@@ -134,7 +138,7 @@ def PCs(X,Y,Z):
                       axis=1)
         #print(data)
         datamean = data.mean(axis=0)
-        print (datamean) #This is going to be the center of my helix
+        #print (datamean) #This is going to be the center of my helix
         uu, dd, vv = numpy.linalg.svd(data - datamean)
         #Taking the variation in the z dimension, because this is the dimension of PC1
         #Linear algebra - figure out what exactly is happening in terms of dimensional collapsation
@@ -191,10 +195,10 @@ def Pitch(x, y):
         pitch = distance.euclidean(p1,p2)
         return (pitch);
 
-print (Pitch(C1r, C2Pr))
-print (Pitch(C1r, C3Pr))
-print (Pitch(C1g, C2Pg))
-print (Pitch(C1g, C3Pg))
+print ("Channel1 mean Pitch: ", ((Pitch(C1r, C2Pr) + Pitch(C1r, C3Pr))/2) )
+#print (Pitch(C1r, C3Pr))
+print ("Channel2 mean Pitch: ", ((Pitch(C1g, C2Pg) + Pitch(C1g, C3Pg))/2) )
+#print (Pitch(C1g, C3Pg))
 
         
 
