@@ -119,6 +119,7 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
     ax.set_zlabel ('z axis')
     for a, b in zip(A, B):
         ax.plot3D([X[a], X[b]], [Y[a], Y[b]], [Z[a], Z[b]], c='b')
+    plt.show()
     fig.savefig('Output/MinimumSpanningTree.png')
     return();
 
@@ -162,10 +163,11 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =movingaverage(x, 40)
-    yline =movingaverage(y, 40)
-    zline =movingaverage(z, 40)
+    xline =movingaverage(x, 70)
+    yline =movingaverage(y, 70)
+    zline =movingaverage(z, 70)
     ax.plot3D(xline,yline,zline,'blue')
+    plt.show()
     fig.savefig('Output/MovingAverage.png')
     return(xline, yline, zline);
 
@@ -307,6 +309,7 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'blue')
+plt.show()
 fig.savefig('Output/BezierCurve.png')
 #Straightening points for C1
 StraightenedPts1 = Straighten(bezierLine,X1, Y1, Z1)
@@ -319,6 +322,7 @@ ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g'
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
+plt.show()
 fig.savefig('Output/Straightened.png')
 
 #Writing straightened points to a file

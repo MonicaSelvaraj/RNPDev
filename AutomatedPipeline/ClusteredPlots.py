@@ -105,6 +105,7 @@ ax.legend((red, green),
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
+plt.show()
 fig.savefig('Output/ClusterPlot.png')
 
 
