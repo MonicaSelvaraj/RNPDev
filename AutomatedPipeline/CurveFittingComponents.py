@@ -44,42 +44,37 @@ with open ('CleanedComponentsC2.csv', 'r') as csv_file:
             C3g.append(line[2])
         
        
-C1r = numpy.array(C1r); C2r = numpy.array(C2r); C3r = numpy.array(C3r)
-C1g = numpy.array(C1g); C2g = numpy.array(C2g); C3g = numpy.array(C3g)
-C1r = C1r.astype(float); C2r= C2r.astype(float); C3r = C3r.astype(float)
-C1g = C1g.astype(float); C2g= C2g.astype(float); C3g = C3g.astype(float)
+C1r = numpy.array(C1r, dtype = float); C2r = numpy.array(C2r, dtype = float); C3r = numpy.array(C3r, dtype = float)
+C1g = numpy.array(C1g, dtype = float); C2g = numpy.array(C2g, dtype = float); C3g = numpy.array(C3g, dtype = float)
 
 #This is to input to scipy.optimize.curvefit
 def helixFit(pc1, r, frequency, phase):
     return r*numpy.cos(pc1*frequency + phase) #Doesn't matter if it's sin or cos
 
-#Need to fit each of the components separately - C1
+#Given x, predict the best y 
+def BestFit(x,y):
+        minError = 1000; radius = 0; frequency = 0; phase = 0; yOpt = list()
+         #Outer loop for generating radii, Inner loop for generating frequencies
+        for r in range(0, 50, 2):
+                for f in range(0, 20, 2):
+                        popt, pcov = curve_fit(helixFit, x, y, p0=[r, f/10.0, 0])
+                        StandardErr = numpy.sqrt(numpy.diag(pcov))
+                        currentFitErr = (StandardErr[0] + StandardErr[1])/2
+                        if(currentFitErr < minError):
+                                minError = currentFitErr
+                                radius = popt[0]; frequency = popt[1]; phase = popt[2]
+                                yOpt = [helixFit(c1, *popt) for c1 in x]
+        print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase, "Mean Standard Error: ", minError)
+        return(yOpt)
+
+
 print("Channel1")
-popt, pcov = curve_fit(helixFit, C1r, C2r, p0=[5, 0.4, -numpy.pi/2]) # Predicts C2 given C1
-print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
-C2Pr = [helixFit(c1, *popt) for c1 in C1r]
-StandardErr1 = numpy.sqrt(numpy.diag(pcov))
-print(StandardErr1)
+C2Pr = BestFit(C1r, C2r) # Predicts C2 given C1
+C3Pr = BestFit(C1r, C3r)  # Predicts C3 given C1
 
-popt, pcov = curve_fit(helixFit, C1r, C3r, p0=[5, 0.4, 0]) # Predicts C3 given C1
-print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
-C3Pr = [helixFit(c1, *popt) for c1 in C1r]
-StandardErr2 = numpy.sqrt(numpy.diag(pcov))
-print(StandardErr2)
-
-#Need to fit each of the components separately - C2
 print("Channel2")
-popt, pcov = curve_fit(helixFit, C1g, C2g, p0=[5, 0.4, -numpy.pi/2]) # Predicts C2 given C1
-print("Fit parameters (radius, frequency, phase) for C1 -> C2:", popt)
-C2Pg = [helixFit(c1, *popt) for c1 in C1g]
-StandardErr3 = numpy.sqrt(numpy.diag(pcov))
-print(StandardErr3)
-
-popt, pcov = curve_fit(helixFit, C1g, C3g, p0=[5, 0.4, 0]) # Predicts C3 given C1
-print("Fit parameters (radius, frequency, phase) for C1 -> C3:", popt)
-C3Pg = [helixFit(c1, *popt) for c1 in C1g]
-StandardErr4 = numpy.sqrt(numpy.diag(pcov))
-print(StandardErr4)
+C2Pg = BestFit(C1g, C2g) # Predicts C2 given C1
+C3Pg = BestFit(C1g, C3g)  # Predicts C3 given C1
 
 #2D plots after fit
 plt.scatter(C2g, C3g, c='g') # True
@@ -211,10 +206,3 @@ print ("Channel1 mean Pitch: ", ((Pitch(C1r, C2Pr) + Pitch(C1r, C3Pr))/2) )
 #print (Pitch(C1r, C3Pr))
 print ("Channel2 mean Pitch: ", ((Pitch(C1g, C2Pg) + Pitch(C1g, C3Pg))/2) )
 #print (Pitch(C1g, C3Pg))
-
-        
-
-
-
-
-
