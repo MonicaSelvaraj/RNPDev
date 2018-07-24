@@ -1,1 +1,10 @@
 .DS_Store
+CurveFitting/
+ExampleCode/
+LineOfBestFit/
+OriginalData/
+Plots/
+Results/
+RNPClustering/
+RNPShapeDetermination/
+StraighteningSamples/
