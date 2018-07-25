@@ -202,7 +202,6 @@ def Pitch(x, y):
         pitch = distance.euclidean(p1,p2)
         return (pitch);
 
-print ("Channel1 mean Pitch: ", ((Pitch(C1r, C2Pr) + Pitch(C1r, C3Pr))/2) )
-#print (Pitch(C1r, C3Pr))
-print ("Channel2 mean Pitch: ", ((Pitch(C1g, C2Pg) + Pitch(C1g, C3Pg))/2) )
-#print (Pitch(C1g, C3Pg))
+print ("Channel1 Pitch: C1 C2 Pitch -  ", Pitch(C1r, C2Pr) ," C1 C3 Pitch - " ,Pitch(C1r, C3Pr))
+print ("Channel2 Pitch: C1 C2 Pitch -  ", Pitch(C1g, C2Pg) ," C1 C3 Pitch - " ,Pitch(C1g, C3Pg))
+
