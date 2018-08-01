@@ -194,12 +194,20 @@ def Pitch(x, y):
         minm = argrelextrema(y, numpy.less)
         
         #maxm and minm contains the indices of minima and maxima respectively
-        maxima = maxm[0]
+
+        if(len(maxm[0]) != 0):
+                maxima = maxm[0]
+                #Now finding the distance between the first two maxima
+                p1 = (x[maxima[0]], y[maxima[0]])
+                p2 = (x[maxima[1]], y[maxima[1]])
+                pitch = distance.euclidean(p1,p2)
+        else:
+                mimina = minm[0]
+                #Now finding the distance between the first two maxima
+                p1 = (x[minima[0]], y[minima[0]])
+                p2 = (x[minima[1]], y[minima[1]])
+                pitch = distance.euclidean(p1,p2)
         
-        #Now finding the distance between the first two maxima 
-        p1 = (x[maxima[0]], y[maxima[0]])
-        p2 = (x[maxima[1]], y[maxima[1]])
-        pitch = distance.euclidean(p1,p2)
         return (pitch);
 
 print ("Channel1 Pitch: C1 C2 Pitch -  ", Pitch(C1r, C2Pr) ," C1 C3 Pitch - " ,Pitch(C1r, C3Pr))
