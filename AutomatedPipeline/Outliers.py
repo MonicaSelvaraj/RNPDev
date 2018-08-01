@@ -81,10 +81,10 @@ def removeOutliers(C1, C2, C3, sd):
         newC3 = numpy.delete (C3, outliersIndex)
         return (newC1, newC2, newC3, lineDst);
 
-CleanedChannel1 = removeOutliers (C1r, C2r, C3r,2.5)
+CleanedChannel1 = removeOutliers (C1r, C2r, C3r,2)
 lineC1 = CleanedChannel1[3]
 #print (lineC1)
-CleanedChannel2 = removeOutliers (C1g, C2g, C3g, 0.8)
+CleanedChannel2 = removeOutliers (C1g, C2g, C3g, 2)
 lineC2 = CleanedChannel2[3]
 #print (lineC2)
 
