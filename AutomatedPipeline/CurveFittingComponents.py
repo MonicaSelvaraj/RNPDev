@@ -54,10 +54,11 @@ def helixFit(pc1, r, frequency, phase):
 #Given x, predict the best y 
 def BestFit(x,y):
         minError = 1000; radius = 0; frequency = 0; phase = 0; yOpt = list()
+        frequencies = numpy.arange(0.0 , 1.0 , 0.2)
          #Outer loop for generating radii, Inner loop for generating frequencies
-        for r in range(0, 50, 2):
-                for f in range(0, 20, 2):
-                        popt, pcov = curve_fit(helixFit, x, y, p0=[r, f/10.0, 0])
+        for r in range(0, 15, 2):
+                for f in frequencies:
+                        popt, pcov = curve_fit(helixFit, x, y, p0=[r, f, 0])
                         StandardErr = numpy.sqrt(numpy.diag(pcov))
                         currentFitErr = (StandardErr[0] + StandardErr[1])/2
                         if(currentFitErr < minError):
