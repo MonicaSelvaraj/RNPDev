@@ -150,8 +150,15 @@ def movingaverage(values, window):
     #valid only runs the sma's on valid points
     smas = numpy.convolve(values, weights, 'valid')
     return smas #returns a numpy array
-'''
 
+def expMovingAverage(values, window):
+    weights = numpy.exp(numpy.linspace(-1.,0.,window))
+    weights /= weights.sum()
+    a = numpy.convolve(values, weights) [:len(values)]
+    a[:window] = a[window]
+    return (a)
+
+'''
 args: ranked x,y,z coordinates
 returns: sma in x,y,z direction
 '''
@@ -163,9 +170,9 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =movingaverage(x, 40)
-    yline =movingaverage(y, 40)
-    zline =movingaverage(z, 40)
+    xline =expMovingAverage(x, 3)
+    yline =expMovingAverage(y, 3)
+    zline =expMovingAverage(z, 3)
     ax.plot3D(xline,yline,zline,'blue')
     plt.show()
     fig.savefig('Output/MovingAverage.png')
