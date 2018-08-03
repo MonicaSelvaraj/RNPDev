@@ -53,19 +53,27 @@ def helixFit(pc1, r, frequency, phase):
 
 #Given x, predict the best y 
 def BestFit(x,y):
-        minError = 1000; radius = 0; frequency = 0; phase = 0; yOpt = list()
-        frequencies = numpy.arange(0.0 , 1.0 , 0.2)
+#        minError = 1000; radius = 0; frequency = 0; phase = 0; yOpt = list()
+#        frequencies = numpy.arange(0.0 , 0.5 , 0.1)
          #Outer loop for generating radii, Inner loop for generating frequencies
-        for r in range(0, 15, 2):
-                for f in frequencies:
-                        popt, pcov = curve_fit(helixFit, x, y, p0=[r, f, 0])
-                        StandardErr = numpy.sqrt(numpy.diag(pcov))
-                        currentFitErr = (StandardErr[0] + StandardErr[1])/2
-                        if(currentFitErr < minError):
-                                minError = currentFitErr
-                                radius = popt[0]; frequency = popt[1]; phase = popt[2]
-                                yOpt = [helixFit(c1, *popt) for c1 in x]
-        print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase, "Mean Standard Error: ", minError)
+#        for r in range(0, 15, 2):
+#                for f in frequencies:
+#                        popt, pcov = curve_fit(helixFit, x, y, p0=[r, f, 0])
+#                        StandardErr = numpy.sqrt(numpy.diag(pcov))
+#                        currentFitErr = (StandardErr[0] + StandardErr[1])/2
+#                        if(currentFitErr < minError):
+#                                minError = currentFitErr
+#                                radius = popt[0]; frequency = popt[1]; phase = popt[2]
+#                                yOpt = [helixFit(c1, *popt) for c1 in x]
+#        print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase, "Mean Standard Error: ", minError)
+
+        #Alternative - constraining optimization 
+        popt, pcov = curve_fit(helixFit, x, y, bounds=(0, [15, 1, 2*math.pi]))
+        radius = popt[0]; frequency = popt[1]; phase = popt[2]
+        yOpt = [helixFit(c1, *popt) for c1 in x]
+        StandardErr = numpy.sqrt(numpy.diag(pcov))
+        print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase,  "Standard Error in each parameter: ", StandardErr)        
+        
         return(yOpt)
 
 
