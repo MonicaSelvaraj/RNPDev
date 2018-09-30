@@ -6,6 +6,9 @@
 import matplotlib.pyplot as plt
 import numpy 
 import csv
+from matplotlib import style
+style.use("ggplot")
+from sklearn.cluster import MeanShift #as ms
 
 fig = plt.figure( )
 
@@ -50,7 +53,25 @@ plt.scatter(uniqueZ, zCount)
 plt.show()
 
 #How should we decide which is cortex
+#Trying different clustering algorithms
+clusterInput = numpy.array(list(zip(uniqueZ,zCount)))
+clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(float)
+#Clustering
+ms = MeanShift()
+ms.fit(clusterInput)
+labels = ms.labels_
+cluster_centers = ms.cluster_centers_ #Predicted cluster centers
 
-    
+n_clusters = len(numpy.unique(labels))
 
+print("Number of estimated clusters: ", n_clusters)
 
+colors = 10*['r.','g.','b.','c.','k.']
+print(colors)
+print(labels)
+
+for i in range (len(clusterInput)):
+    plt.plot(clusterInput[i][0], clusterInput[i][1],colors[labels[i]], markersize = 10)
+
+plt.scatter(cluster_centers[:,0], cluster_centers[:,1] , marker = 'x', s=10)
+plt.show()

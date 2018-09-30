@@ -4,7 +4,7 @@ Runs all other files
 #!/usr/bin/python
 import sys, os
 #Splitting channels and visualizing
-os.system('python splitChannels.py Input/aa.aura_dnd_nanos.UW-39_63x_e1_1.csv')
+os.system('python splitChannels.py Input/aa.WT_dnd_nanos.wt_189x_e3.csv')
 os.system('python ScatterPlot.py')
 
 #Clustering
