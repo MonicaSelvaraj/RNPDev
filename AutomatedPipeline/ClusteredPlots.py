@@ -50,7 +50,7 @@ ax = fig.add_subplot(1,2,1, projection = '3d')
 ax.grid(False)
 red = ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
 green = ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
-ax.set_title('Convoluted')
+ax.set_title('Unclustered')
 ax.legend((red, green),
            ( 'C1', 'C2'),
            scatterpoints=1,
@@ -95,7 +95,7 @@ ax = fig.add_subplot(1,2,2, projection = '3d')
 ax.grid(False)
 red = ax.scatter (dX1, dY1, dZ1, c = 'r', marker='o', s=1, linewidths=2)
 green = ax.scatter (dX2, dY2, dZ2, c = 'g', marker='o', s=1, linewidths=2)
-ax.set_title('Deconvoluted')
+ax.set_title('Clustered')
 ax.legend((red, green),
            ( 'C1', 'C2'),
            scatterpoints=1,
@@ -108,6 +108,9 @@ ax.set_zlabel ('z axis')
 plt.show()
 fig.savefig('Output/ClusterPlot.png')
 
+#plt.scatter(X1, Y1); plt.show()
+#plt.scatter(X1, Z1); plt.show()
+#plt.scatter(Y1, Z1); plt.show()
 
 
     

@@ -33,13 +33,13 @@ Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
     x1 = list(); y1 = list(); z1 = list(); x2 = list(); y2 = list(); z2 = list()
-    with open ('ClusteredC1.csv', 'r') as csv_file:
+    with open ('C1test.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x1.append(line[0])
             y.append(line[1]); y1.append(line[1])
             z.append(line[2]); z1.append(line[2])
-    with open ('ClusteredC2.csv', 'r') as csv_file:
+    with open ('C2test.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x2.append(line[0])
@@ -143,6 +143,8 @@ def RankPoints(MST, X, Y, Z):
     #mergedRanks contains the indices of the ranks
     for r in mergedRanks:
         rX.append(X[r]); rY.append(Y[r]); rZ.append(Z[r])
+    rX= numpy.array(rX, dtype = float); rY = numpy.array(rY, dtype = float);rZ= numpy.array(rZ, dtype = float)
+    numpy.savetxt("RankedPoints.csv", numpy.column_stack((rX, rY, rZ)), delimiter=",", fmt='%s')
     return (rX, rY, rZ)
 
 def movingaverage(values, window):
@@ -150,6 +152,36 @@ def movingaverage(values, window):
     #valid only runs the sma's on valid points
     smas = numpy.convolve(values, weights, 'valid')
     return smas #returns a numpy array
+
+def pickWindowSize(x,y,z):
+    residuals = list()
+    #Calculating moving averages for window size 2-50
+    for w in range(2, 50):
+        dst = 0
+        xline = movingaverage(x, w)
+        yline = movingaverage(y, w)
+        zline = movingaverage(z, w)
+        #Calculating residuals of coordinates from the moving average
+        for i in range (0, len(xline)):
+            a = (xline[i], yline[i], zline[i])
+            b = (x[i+(w-1)], y[i+(w-1)], z[i+(w-1)])
+            dst = dst + distance.euclidean(a,b)
+        residuals.append(dst)
+
+    #Plotting residuals 
+    xarg = numpy.arange(2 , 50 , 1)
+    plt.scatter(xarg, residuals); plt.show()
+
+    #Calculating the rate of change of residuals
+    rateOfChange = list()
+    for r in range(0, len(residuals)-1):
+        rateOfChange.append(residuals[r+1] - residuals[r])
+
+    print(rateOfChange)
+    #Plotting rate of change of residuals
+    xarg = numpy.arange(0 , len(residuals)-1 , 1)
+    plt.scatter(xarg, rateOfChange); plt.show()
+    return ();
 
 def expMovingAverage(values, window):
     weights = numpy.exp(numpy.linspace(-1.,0.,window))
@@ -170,9 +202,9 @@ def drawMovingAverage(x,y,z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    xline =expMovingAverage(x, 40)
-    yline =expMovingAverage(y, 40)
-    zline =expMovingAverage(z, 40)
+    xline =movingaverage(x, 40)
+    yline =movingaverage(y, 40)
+    zline =movingaverage(z, 40)
     ax.plot3D(xline,yline,zline,'blue')
     plt.show()
     fig.savefig('Output/MovingAverage.png')
@@ -230,7 +262,8 @@ def bezier_curve(points, nTimes =1000):
     t = numpy.linspace(0.0, 1.0, nTimes)
 
     polynomial_array = numpy.array([ bernstein_poly(i, nPoints-1, t) for i in range(0, nPoints)])
-
+    print(polynomial_array)
+    
     xvals = numpy.dot(xPoints, polynomial_array)
     yvals = numpy.dot(yPoints, polynomial_array)
     zvals = numpy.dot(zPoints, polynomial_array)
@@ -302,10 +335,12 @@ minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
 #Re-ordering the x,y,z coordinates to give the data a direction
 newPoints = RankPoints(minimumSpanningTree, X, Y, Z); bezierPointsLength = len(newPoints[0])
+#Drawing sma through points and determining the window size
+#window = pickWindowSize(newPoints[0], newPoints[1], newPoints[2])
 #Drawing the simple moving average through the ranked points
-smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+emaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
 #Picking sample points as input to draw the bezier curve
-bezierPoints = BezierInput(smaPoints)
+bezierPoints = BezierInput(emaPoints)
 #Drawing the bezier curve through the data
 bezierLine = bezier_curve(bezierPoints)
 fig = plt.figure()

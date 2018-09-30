@@ -1,0 +1,1180 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{ContourDetection}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{}Using the x\PYZhy{}y view to detect the largest segement \PYZhy{} as the images have always been taken with the cortex facing up.}
+        
+        \PY{c+c1}{\PYZsh{}Importing required modules}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{image} \PY{k}{as} \PY{n+nn}{mpimg}
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{k+kn}{import} \PY{n+nn}{math} 
+        \PY{k+kn}{import} \PY{n+nn}{cv2}
+        
+        \PY{c+c1}{\PYZsh{}To plot in jupyter }
+        \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{c+c1}{\PYZsh{}Reading in xy image }
+        \PY{n}{original\PYZus{}image} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{imread}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{xy.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}Displaying xy image, channel doesn\PYZsq{}t matter}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{original\PYZus{}image}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_1_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{c+c1}{\PYZsh{}Converting image to grayscale}
+        \PY{n}{original\PYZus{}image\PYZus{}gray} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{cvtColor}\PY{p}{(}\PY{n}{original\PYZus{}image}\PY{p}{,}\PY{n}{cv2}\PY{o}{.}\PY{n}{COLOR\PYZus{}BGR2GRAY}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{original\PYZus{}image\PYZus{}gray}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{gray}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}Switching black and white, to input to contour detection function}
+        \PY{n}{img} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{subtract}\PY{p}{(}\PY{l+m+mi}{255}\PY{p}{,} \PY{n}{original\PYZus{}image\PYZus{}gray}\PY{p}{)} 
+        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{img}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{gray}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_2_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{c+c1}{\PYZsh{}https://www.youtube.com/watch?v=IG3UkAqHnQI}
+        \PY{c+c1}{\PYZsh{}Finding contours}
+        \PY{n}{\PYZus{}}\PY{p}{,}\PY{n}{contours}\PY{p}{,}\PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{findContours}\PY{p}{(}\PY{n}{img}\PY{p}{,} \PY{n}{cv2}\PY{o}{.}\PY{n}{RETR\PYZus{}TREE}\PY{p}{,} \PY{n}{cv2}\PY{o}{.}\PY{n}{CHAIN\PYZus{}APPROX\PYZus{}SIMPLE}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}Printing the number of contours found }
+        \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{contours}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+95
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{}Approximating a polygon for each contour, and drawing them out }
+        \PY{k}{for} \PY{n}{cnt} \PY{o+ow}{in} \PY{n}{contours}\PY{p}{:}
+            \PY{c+c1}{\PYZsh{}epsilon \PYZhy{} is the maximum distance from contour to approximated contour \PYZhy{} set as 1\PYZpc{} }
+            \PY{c+c1}{\PYZsh{}epsilon = error\PYZus{}rate + actual\PYZus{}arc\PYZus{}length}
+            
+            \PY{n}{epsilon} \PY{o}{=} \PY{l+m+mf}{0.01}\PY{o}{*}\PY{n}{cv2}\PY{o}{.}\PY{n}{arcLength}\PY{p}{(}\PY{n}{cnt}\PY{p}{,} \PY{k+kc}{True}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{}Use approxPolyDP to approximate a polygon to each contour}
+            
+            \PY{n}{approx} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{approxPolyDP}\PY{p}{(}\PY{n}{cnt}\PY{p}{,} \PY{n}{epsilon}\PY{p}{,} \PY{k+kc}{True}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{}Draw the approximated contours around the image using drawContours}
+            \PY{n}{img} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{drawContours}\PY{p}{(}\PY{n}{img}\PY{p}{,} \PY{p}{[}\PY{n}{approx}\PY{p}{]}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{255}\PY{p}{,} \PY{l+m+mi}{255}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{)} 
+            
+        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{img}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_4_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{c+c1}{\PYZsh{}Finding center, area and perimeter of the polygons using Hu moments}
+        \PY{n}{area} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{perimeter} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{p}{)}
+        \PY{k}{for} \PY{n}{cnt} \PY{o+ow}{in} \PY{n}{contours}\PY{p}{:}
+            \PY{n}{M} \PY{o}{=} \PY{n}{cv2}\PY{o}{.}\PY{n}{moments}\PY{p}{(}\PY{n}{cnt}\PY{p}{)}
+        
+            \PY{c+c1}{\PYZsh{}Center}
+            \PY{n}{cx} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{M}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m10}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{n}{M}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m00}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+            \PY{n}{cy} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{M}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m01}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{n}{M}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{m00}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+            \PY{n}{center} \PY{o}{=} \PY{p}{(}\PY{n}{cx}\PY{p}{,} \PY{n}{cy}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{}Area}
+            \PY{n}{area}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{cv2}\PY{o}{.}\PY{n}{contourArea}\PY{p}{(}\PY{n}{cnt}\PY{p}{)}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{}Perimeter}
+            \PY{n}{perimeter}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{cv2}\PY{o}{.}\PY{n}{arcLength}\PY{p}{(}\PY{n}{cnt}\PY{p}{,} \PY{k+kc}{True}\PY{p}{)}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}Finding the index of the largest polygon}
+        \PY{n}{maxArea} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{area}\PY{p}{)}
+        \PY{n}{maxPerimeter} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{perimeter}\PY{p}{)}
+        
+        \PY{n}{area} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{area}\PY{p}{,} \PY{n}{dtype} \PY{o}{=} \PY{n+nb}{float}\PY{p}{)}
+        \PY{n}{perimeter} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{perimeter}\PY{p}{,} \PY{n}{dtype} \PY{o}{=} \PY{n+nb}{float}\PY{p}{)}
+        
+        \PY{n}{MaxAreaPos} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{n}{area} \PY{o}{==} \PY{n}{maxArea}\PY{p}{)}
+        \PY{n}{MaxPerimeterPos} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{n}{perimeter} \PY{o}{==} \PY{n}{maxPerimeter}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{c+c1}{\PYZsh{}Displaying the coordinates of the largest contour}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{contours}\PY{p}{[}\PY{n}{MaxAreaPos}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[[[191 211]]
+
+ [[188 214]]
+
+ [[185 214]]
+
+ [[182 217]]
+
+ [[182 221]]
+
+ [[181 222]]
+
+ [[177 222]]
+
+ [[175 220]]
+
+ [[165 220]]
+
+ [[163 222]]
+
+ [[161 222]]
+
+ [[159 224]]
+
+ [[152 224]]
+
+ [[149 227]]
+
+ [[149 231]]
+
+ [[150 232]]
+
+ [[150 236]]
+
+ [[153 239]]
+
+ [[156 239]]
+
+ [[157 240]]
+
+ [[157 242]]
+
+ [[160 245]]
+
+ [[162 245]]
+
+ [[163 246]]
+
+ [[167 246]]
+
+ [[168 245]]
+
+ [[169 245]]
+
+ [[171 243]]
+
+ [[175 247]]
+
+ [[181 247]]
+
+ [[184 244]]
+
+ [[184 243]]
+
+ [[185 242]]
+
+ [[186 242]]
+
+ [[187 243]]
+
+ [[191 243]]
+
+ [[192 242]]
+
+ [[194 242]]
+
+ [[198 238]]
+
+ [[200 240]]
+
+ [[205 240]]
+
+ [[208 243]]
+
+ [[209 243]]
+
+ [[210 244]]
+
+ [[211 244]]
+
+ [[212 245]]
+
+ [[212 247]]
+
+ [[215 250]]
+
+ [[215 251]]
+
+ [[218 254]]
+
+ [[222 254]]
+
+ [[225 251]]
+
+ [[225 249]]
+
+ [[226 248]]
+
+ [[227 248]]
+
+ [[230 251]]
+
+ [[234 251]]
+
+ [[238 247]]
+
+ [[241 250]]
+
+ [[245 250]]
+
+ [[246 249]]
+
+ [[247 249]]
+
+ [[250 252]]
+
+ [[255 252]]
+
+ [[261 246]]
+
+ [[262 246]]
+
+ [[266 250]]
+
+ [[274 250]]
+
+ [[275 251]]
+
+ [[275 253]]
+
+ [[282 260]]
+
+ [[286 260]]
+
+ [[287 259]]
+
+ [[290 259]]
+
+ [[294 263]]
+
+ [[300 263]]
+
+ [[303 260]]
+
+ [[303 258]]
+
+ [[304 257]]
+
+ [[305 257]]
+
+ [[307 255]]
+
+ [[312 255]]
+
+ [[314 253]]
+
+ [[316 253]]
+
+ [[317 252]]
+
+ [[325 252]]
+
+ [[328 255]]
+
+ [[329 255]]
+
+ [[330 256]]
+
+ [[330 259]]
+
+ [[331 260]]
+
+ [[331 261]]
+
+ [[334 264]]
+
+ [[338 264]]
+
+ [[340 266]]
+
+ [[340 274]]
+
+ [[343 277]]
+
+ [[347 277]]
+
+ [[349 275]]
+
+ [[352 275]]
+
+ [[354 273]]
+
+ [[355 273]]
+
+ [[358 276]]
+
+ [[362 276]]
+
+ [[363 277]]
+
+ [[367 277]]
+
+ [[370 274]]
+
+ [[371 275]]
+
+ [[375 275]]
+
+ [[378 272]]
+
+ [[379 272]]
+
+ [[382 275]]
+
+ [[386 275]]
+
+ [[387 274]]
+
+ [[390 274]]
+
+ [[395 269]]
+
+ [[396 269]]
+
+ [[401 274]]
+
+ [[404 274]]
+
+ [[405 275]]
+
+ [[406 275]]
+
+ [[407 276]]
+
+ [[412 276]]
+
+ [[419 283]]
+
+ [[422 283]]
+
+ [[423 284]]
+
+ [[427 284]]
+
+ [[430 281]]
+
+ [[431 282]]
+
+ [[435 282]]
+
+ [[439 278]]
+
+ [[440 278]]
+
+ [[444 274]]
+
+ [[445 274]]
+
+ [[446 275]]
+
+ [[449 275]]
+
+ [[450 276]]
+
+ [[450 277]]
+
+ [[456 283]]
+
+ [[460 283]]
+
+ [[462 281]]
+
+ [[463 281]]
+
+ [[465 279]]
+
+ [[466 279]]
+
+ [[467 280]]
+
+ [[471 280]]
+
+ [[472 279]]
+
+ [[477 279]]
+
+ [[478 280]]
+
+ [[480 280]]
+
+ [[481 281]]
+
+ [[481 285]]
+
+ [[485 289]]
+
+ [[495 289]]
+
+ [[496 290]]
+
+ [[496 293]]
+
+ [[500 297]]
+
+ [[497 300]]
+
+ [[497 304]]
+
+ [[500 307]]
+
+ [[504 307]]
+
+ [[507 304]]
+
+ [[507 303]]
+
+ [[508 302]]
+
+ [[512 302]]
+
+ [[513 301]]
+
+ [[514 301]]
+
+ [[515 302]]
+
+ [[522 302]]
+
+ [[525 299]]
+
+ [[525 297]]
+
+ [[526 296]]
+
+ [[527 296]]
+
+ [[530 293]]
+
+ [[530 291]]
+
+ [[531 290]]
+
+ [[531 289]]
+
+ [[533 287]]
+
+ [[533 283]]
+
+ [[534 282]]
+
+ [[535 282]]
+
+ [[538 279]]
+
+ [[538 270]]
+
+ [[535 267]]
+
+ [[531 267]]
+
+ [[528 270]]
+
+ [[528 271]]
+
+ [[527 272]]
+
+ [[526 272]]
+
+ [[525 271]]
+
+ [[525 270]]
+
+ [[524 269]]
+
+ [[525 268]]
+
+ [[525 264]]
+
+ [[519 258]]
+
+ [[517 258]]
+
+ [[513 254]]
+
+ [[511 254]]
+
+ [[508 251]]
+
+ [[502 251]]
+
+ [[499 248]]
+
+ [[496 248]]
+
+ [[495 247]]
+
+ [[491 247]]
+
+ [[487 251]]
+
+ [[485 251]]
+
+ [[482 254]]
+
+ [[481 253]]
+
+ [[477 253]]
+
+ [[474 256]]
+
+ [[469 256]]
+
+ [[465 260]]
+
+ [[462 257]]
+
+ [[458 257]]
+
+ [[457 258]]
+
+ [[454 255]]
+
+ [[450 255]]
+
+ [[447 258]]
+
+ [[444 255]]
+
+ [[446 253]]
+
+ [[446 250]]
+
+ [[448 248]]
+
+ [[448 244]]
+
+ [[445 241]]
+
+ [[440 241]]
+
+ [[437 244]]
+
+ [[437 246]]
+
+ [[433 250]]
+
+ [[433 251]]
+
+ [[432 252]]
+
+ [[428 252]]
+
+ [[424 256]]
+
+ [[422 254]]
+
+ [[421 254]]
+
+ [[420 253]]
+
+ [[420 248]]
+
+ [[416 244]]
+
+ [[416 243]]
+
+ [[413 240]]
+
+ [[409 240]]
+
+ [[406 243]]
+
+ [[406 247]]
+
+ [[405 248]]
+
+ [[404 248]]
+
+ [[403 247]]
+
+ [[403 244]]
+
+ [[400 241]]
+
+ [[396 241]]
+
+ [[394 239]]
+
+ [[390 239]]
+
+ [[389 240]]
+
+ [[387 240]]
+
+ [[385 242]]
+
+ [[382 242]]
+
+ [[380 240]]
+
+ [[376 240]]
+
+ [[373 243]]
+
+ [[373 244]]
+
+ [[372 245]]
+
+ [[370 243]]
+
+ [[366 243]]
+
+ [[364 245]]
+
+ [[363 245]]
+
+ [[362 246]]
+
+ [[352 246]]
+
+ [[351 245]]
+
+ [[351 240]]
+
+ [[348 237]]
+
+ [[347 237]]
+
+ [[346 236]]
+
+ [[342 236]]
+
+ [[339 239]]
+
+ [[336 239]]
+
+ [[335 240]]
+
+ [[334 240]]
+
+ [[331 237]]
+
+ [[329 237]]
+
+ [[328 236]]
+
+ [[328 234]]
+
+ [[325 231]]
+
+ [[321 231]]
+
+ [[320 232]]
+
+ [[318 230]]
+
+ [[315 230]]
+
+ [[314 229]]
+
+ [[310 229]]
+
+ [[308 231]]
+
+ [[306 231]]
+
+ [[303 234]]
+
+ [[303 235]]
+
+ [[302 236]]
+
+ [[301 235]]
+
+ [[297 235]]
+
+ [[295 237]]
+
+ [[292 237]]
+
+ [[289 240]]
+
+ [[288 240]]
+
+ [[286 238]]
+
+ [[282 238]]
+
+ [[281 239]]
+
+ [[280 239]]
+
+ [[278 241]]
+
+ [[277 240]]
+
+ [[277 235]]
+
+ [[274 232]]
+
+ [[269 232]]
+
+ [[267 234]]
+
+ [[265 234]]
+
+ [[262 237]]
+
+ [[258 233]]
+
+ [[256 233]]
+
+ [[254 231]]
+
+ [[249 231]]
+
+ [[247 229]]
+
+ [[243 229]]
+
+ [[242 230]]
+
+ [[239 230]]
+
+ [[236 233]]
+
+ [[236 237]]
+
+ [[237 238]]
+
+ [[237 241]]
+
+ [[238 242]]
+
+ [[238 243]]
+
+ [[237 244]]
+
+ [[234 241]]
+
+ [[232 241]]
+
+ [[231 240]]
+
+ [[232 239]]
+
+ [[232 235]]
+
+ [[229 232]]
+
+ [[229 230]]
+
+ [[227 228]]
+
+ [[227 227]]
+
+ [[224 224]]
+
+ [[223 224]]
+
+ [[220 221]]
+
+ [[216 221]]
+
+ [[213 224]]
+
+ [[213 229]]
+
+ [[212 230]]
+
+ [[209 227]]
+
+ [[205 227]]
+
+ [[204 228]]
+
+ [[199 228]]
+
+ [[198 229]]
+
+ [[194 225]]
+
+ [[193 225]]
+
+ [[191 223]]
+
+ [[191 222]]
+
+ [[192 221]]
+
+ [[198 221]]
+
+ [[201 218]]
+
+ [[201 214]]
+
+ [[198 211]]]
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{c+c1}{\PYZsh{}Vizualizing the coordinates of the largest contour }
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{c} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{original\PYZus{}image}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}12}]:} <matplotlib.image.AxesImage at 0x123ed0a20>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_7_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{c+c1}{\PYZsh{}looking at plot with the original coordinates overlayed }
+         \PY{k+kn}{import} \PY{n+nn}{csv}
+         \PY{n}{X} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{Y} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{Z} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{p}{)}
+         \PY{k}{with} \PY{n+nb}{open} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ClusteredC1.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{csv\PYZus{}file}\PY{p}{:}
+             \PY{n}{csv\PYZus{}reader} \PY{o}{=} \PY{n}{csv}\PY{o}{.}\PY{n}{reader} \PY{p}{(}\PY{n}{csv\PYZus{}file}\PY{p}{)}
+             \PY{c+c1}{\PYZsh{}Iterating through contents in the file}
+             \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{csv\PYZus{}reader}\PY{p}{:}
+                 \PY{c+c1}{\PYZsh{}each line has X,Y,Z,S}
+                 \PY{n}{X}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+                 \PY{n}{Y}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+                 \PY{n}{Z}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+                 
+         \PY{k}{with} \PY{n+nb}{open} \PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ClusteredC2.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{csv\PYZus{}file}\PY{p}{:}
+             \PY{n}{csv\PYZus{}reader} \PY{o}{=} \PY{n}{csv}\PY{o}{.}\PY{n}{reader} \PY{p}{(}\PY{n}{csv\PYZus{}file}\PY{p}{)}
+             \PY{c+c1}{\PYZsh{}Iterating through contents in the file}
+             \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{csv\PYZus{}reader}\PY{p}{:}
+                 \PY{c+c1}{\PYZsh{}each line has X,Y,Z,S}
+                 \PY{n}{X}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+                 \PY{n}{Y}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+                 \PY{n}{Z}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{line}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+                 
+         
+         \PY{n}{X} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{X}\PY{p}{)}\PY{p}{;} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{Y}\PY{p}{)}\PY{p}{;} \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{Z}\PY{p}{)}
+         \PY{n}{X} \PY{o}{=} \PY{n}{X}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{;} \PY{n}{Y} \PY{o}{=} \PY{n}{Y}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{;} \PY{n}{Z} \PY{o}{=} \PY{n}{Z}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}
+         
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{contours}\PY{p}{[}\PY{l+m+mi}{28}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{c} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{b}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{X}\PY{o}{*}\PY{l+m+mi}{10}\PY{p}{,}\PY{n}{Y}\PY{o}{*}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{c}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{g}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{original\PYZus{}image}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:} <matplotlib.image.AxesImage at 0x121bed940>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_8_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
