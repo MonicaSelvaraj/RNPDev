@@ -56,7 +56,9 @@ plt.show()
 #Trying different clustering algorithms
 clusterInput = numpy.array(list(zip(uniqueZ,zCount)))
 clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(float)
-#Clustering
+
+'''
+#Clustering - mean shift 
 ms = MeanShift()
 ms.fit(clusterInput)
 labels = ms.labels_
@@ -75,3 +77,20 @@ for i in range (len(clusterInput)):
 
 plt.scatter(cluster_centers[:,0], cluster_centers[:,1] , marker = 'x', s=10)
 plt.show()
+'''
+
+#Clustering - Agglomerative Hierarchical 
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
+hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
+y_hc = hc.fit_predict(clusterInput)
+plt.show()
+
+plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
+plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
+plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
+plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
+plt.show()
+
+
