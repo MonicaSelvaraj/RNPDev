@@ -44,11 +44,11 @@ for z in Z:
     if z not in uniqueZ:
         uniqueZ.append(z)
 
+print(uniqueZ)
+
 Z = numpy.array(Z); Z = Z.astype(float)
 uniqueZ = numpy.array(uniqueZ); uniqueZ = uniqueZ.astype(float)
-uniqueZ = numpy.sort(uniqueZ)
-
-print(uniqueZ)
+uniqueZ = numpy.sort(uniqueZ) #This is a list of Z's from highest to lowest
 
 zCount = list()
 for uz in uniqueZ:
@@ -57,15 +57,54 @@ for uz in uniqueZ:
         if (z == uz):
             counter = counter+1
     zCount.append(counter)
-print(zCount)
 
 plt.scatter(uniqueZ, zCount)
 plt.show()
 
-#How should we decide which is cortex
-#Trying different clustering algorithms
+#The input for clustering is in the form [[z, count], [z, count], .. ]
 clusterInput = numpy.array(list(zip(uniqueZ,zCount)))
 clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(float)
+
+#Agglomerative Clustering
+
+#Creating Dendrogram
+dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
+plt.show()
+
+#Creating four clusters 
+hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
+y_hc = hc.fit_predict(clusterInput)#Labels each point as cluster 0,1,2, or 3
+
+#Displaying the clusters 
+plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
+plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
+plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
+plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
+plt.show()
+
+
+#Finding the cluster centers 
+centroidX = list(); centroidY = list()
+
+for c in range(4):
+    zList = list(); zDensity = list() #Creating  a new list for each cluster 
+    zList = clusterInput[y_hc ==c,0] #Creates a list of all the z's in that cluster
+    zDensity = clusterInput[y_hc == c,1] #Creates a list of densities for the z's of that cluster 
+    #Finding the centroids
+    centroidX.append(sum(zList) / len(zList))
+    centroidY.append(sum(zDensity) / len(zDensity))
+print(centroidX)
+print(centroidY)              
+
+#Displaying the clusters with centroids
+plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
+plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
+plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
+plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
+plt.scatter(centroidX, centroidY, s = 200, c = 'green')
+plt.show()
+
+#Finding the cluster with highest zDensity
 
 '''
 #Clustering - mean shift 
@@ -88,18 +127,4 @@ for i in range (len(clusterInput)):
 plt.scatter(cluster_centers[:,0], cluster_centers[:,1] , marker = 'x', s=10)
 plt.show()
 '''
-
-#Clustering - Agglomerative Hierarchical 
-dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
-hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
-y_hc = hc.fit_predict(clusterInput)
-cluster_centers = hc.cluster_centers_ 
-plt.show()
-
-plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
-plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
-plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
-plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
-plt.show()
-
 
