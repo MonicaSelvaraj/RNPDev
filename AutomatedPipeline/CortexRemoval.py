@@ -1,5 +1,14 @@
 '''
-- Counting the number of points in each z - plotting it out - see if there is a large drop
+- Counting the number of points in each z
+- Creating a scatter plot with z in the x axis and number of points in the y axis
+- Clustering points using agglomerative clustering
+- Finding the centroids of each cluster
+- Picking the centroid with highest number of points(y)
+- Seeing if it is within the first 10 z's or the last 10 z's 
+- If it is - find the z spread in that cluster and determine where to chop off the z  
+- Should I check if the cluster centers are significantly different instead?
+
+
 '''
 
 #!/usr/bin/python
@@ -8,7 +17,8 @@ import numpy
 import csv
 from matplotlib import style
 style.use("ggplot")
-from sklearn.cluster import MeanShift #as ms
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
 
 fig = plt.figure( )
 
@@ -80,11 +90,10 @@ plt.show()
 '''
 
 #Clustering - Agglomerative Hierarchical 
-import scipy.cluster.hierarchy as sch
-from sklearn.cluster import AgglomerativeClustering
 dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
 hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
 y_hc = hc.fit_predict(clusterInput)
+cluster_centers = hc.cluster_centers_ 
 plt.show()
 
 plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
