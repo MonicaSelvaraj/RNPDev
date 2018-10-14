@@ -4,13 +4,17 @@ Runs all other files
 #!/usr/bin/python
 import sys, os
 #Splitting channels and visualizing
-os.system('python splitChannels.py Input/aa.WT_dnd_nanos.wt_189x_e3.csv')
+os.system('python splitChannels.py Inputaa.WT_dnd_nanos.126x_4c_dndnanos_3.csv')
 os.system('python ScatterPlot.py')
 
 #Clustering
 os.system('python Clustering.py C1.csv ClusteredC1.csv')
 os.system('python Clustering.py C2.csv ClusteredC2.csv')
 os.system('python ClusteredPlots.py')
+
+#CortexRemoval
+os.system('python CortexRemoval.py')
+os.system('python ScatterPlotCortexRemoved.py')
 
 #Straightening
 #os.system('python Straightening.py')

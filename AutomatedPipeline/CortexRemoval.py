@@ -7,8 +7,6 @@
 - Seeing if it is within the first 10 z's or the last 10 z's 
 - If it is - find the z spread in that cluster and determine where to chop off the z  
 - Should I check if the cluster centers are significantly different instead?
-
-
 '''
 
 #!/usr/bin/python
@@ -106,7 +104,9 @@ plt.scatter(centroidX, centroidY, s = 200, c = 'green')
 plt.show()
 
 centroidX = numpy.array(centroidX, dtype = float)
+print(centroidX)
 centroidY = numpy.array(centroidY, dtype = float)
+print(centroidY)
 
 #Finding the cluster center with highest zDensity
 highestDensityCluster = numpy.amax(centroidY)
@@ -122,44 +122,46 @@ for z in PossibleCortexZPositions:
 
 #Mean and standard deviation of the z density 
 MeanDensity = numpy.mean(centroidY, axis = 0)
+print(MeanDensity)
 sdDensity= numpy.std(centroidY, axis = 0)
+print(sdDensity)
 
 
 #Checking if the standard deviation of the density of the clusters is greater than 10
-if(sdDensity >= 10):
+if(sdDensity >= 5):
     #Checking if the cluster center with highest density of greater than one sd away from the mean density
     if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
-        if(highestDensityPos >= uniqueZ[10]): #Within the last 10 z's
+        if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's
             #Finding the lowest z in that cluster and removing all the z's after it
             lowestZ = numpy.amin(PossibleCortexZs)
             with open ('C1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[3]) < lowestZ):
+                    if(float(line[2]) < lowestZ):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
             with open ('C2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[3]) < lowestZ):
+                    if(float(line[2]) < lowestZ):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
-        elif(highestDensityPos <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
+        elif(centroidX[highestDensityPos] <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
             #Finding the highest z in that cluster and all the z's before it
             highestZ = numpy.amax(PossibleCortexZs)
             with open ('C1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[3]) > highestZ):
+                    if(float(line[2]) > highestZ):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
             with open ('C2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[3]) < highestZ):
+                    if(float(line[2]) < highestZ):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
