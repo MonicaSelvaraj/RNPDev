@@ -126,7 +126,7 @@ print(MeanDensity)
 sdDensity= numpy.std(centroidY, axis = 0)
 print(sdDensity)
 
-
+cortexFound = True
 #Checking if the standard deviation of the density of the clusters is greater than 10
 if(sdDensity >= 5):
     #Checking if the cluster center with highest density of greater than one sd away from the mean density
@@ -134,14 +134,14 @@ if(sdDensity >= 5):
         if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's
             #Finding the lowest z in that cluster and removing all the z's after it
             lowestZ = numpy.amin(PossibleCortexZs)
-            with open ('C1.csv', 'r') as csv_file:
+            with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) < lowestZ):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
-            with open ('C2.csv', 'r') as csv_file:
+            with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) < lowestZ):
@@ -151,14 +151,14 @@ if(sdDensity >= 5):
         elif(centroidX[highestDensityPos] <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
             #Finding the highest z in that cluster and all the z's before it
             highestZ = numpy.amax(PossibleCortexZs)
-            with open ('C1.csv', 'r') as csv_file:
+            with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) > highestZ):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
-            with open ('C2.csv', 'r') as csv_file:
+            with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) < highestZ):
@@ -167,10 +167,28 @@ if(sdDensity >= 5):
                         Z2.append(line[2])
         else:
             print("No cortex found")
+            cortexFound = False
     else:
         print("No cortex found")
+        cortexFound = False
 else:
     print("No cortex found")
+    cortexFound = False
+
+if(!cortexFound)
+    with open ('ClusteredC1.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    X1.append(line[0])
+                    Y1.append(line[1])
+                    Z1.append(line[2])
+            with open ('ClusteredC2.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    X2.append(line[0])
+                    Y2.append(line[1])
+                    Z2.append(line[2])
+
     
 X1 = numpy.array(X1, dtype=float); Y1 = numpy.array(Y1, dtype=float); Z1 = numpy.array(Z1, dtype=float)
 X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy.array(Z2, dtype=float)
