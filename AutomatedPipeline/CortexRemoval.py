@@ -24,17 +24,22 @@ fig = plt.figure( )
 
 print("Removing the cortex")
 
-#Variables for C1
+#Variables for cortex removal
 Z = list()
 uniqueZ = list()
 
-with open ('C1.csv', 'r') as csv_file:
+#Variables to store Channel 1 data after cortex removal
+X1 = list(); Y1 = list(); Z1 = list()
+#Variables to store Channel 2 data after cortex removal 
+X2 = list(); Y2 =  list(); Z2 = list()
+
+with open ('ClusteredC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
         Z.append(line[2])
         
-with open ('C2.csv', 'r') as csv_file:
+with open ('ClusteredC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
@@ -43,8 +48,6 @@ with open ('C2.csv', 'r') as csv_file:
 for z in Z:
     if z not in uniqueZ:
         uniqueZ.append(z)
-
-print(uniqueZ)
 
 Z = numpy.array(Z); Z = Z.astype(float)
 uniqueZ = numpy.array(uniqueZ); uniqueZ = uniqueZ.astype(float)
@@ -93,38 +96,87 @@ for c in range(4):
     #Finding the centroids
     centroidX.append(sum(zList) / len(zList))
     centroidY.append(sum(zDensity) / len(zDensity))
-print(centroidX)
-print(centroidY)              
 
 #Displaying the clusters with centroids
 plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
 plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
-plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
+plt.scatter(clusterInput[y_hc == 2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
 plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
 plt.scatter(centroidX, centroidY, s = 200, c = 'green')
 plt.show()
 
-#Finding the cluster with highest zDensity
+centroidX = numpy.array(centroidX, dtype = float)
+centroidY = numpy.array(centroidY, dtype = float)
 
-'''
-#Clustering - mean shift 
-ms = MeanShift()
-ms.fit(clusterInput)
-labels = ms.labels_
-cluster_centers = ms.cluster_centers_ #Predicted cluster centers
+#Finding the cluster center with highest zDensity
+highestDensityCluster = numpy.amax(centroidY)
+#Finding the position of that cluster 
+highestDensityPos = numpy.where(highestDensityCluster == centroidY)
+highestDensityPos = highestDensityPos[0][0]
 
-n_clusters = len(numpy.unique(labels))
+PossibleCortexZPositions = numpy.where(y_hc == highestDensityPos)
+PossibleCortexZs = list()
+for z in PossibleCortexZPositions:
+    PossibleCortexZs.append(clusterInput[z, 0])
 
-print("Number of estimated clusters: ", n_clusters)
 
-colors = 10*['r.','g.','b.','c.','k.']
-print(colors)
-print(labels)
+#Mean and standard deviation of the z density 
+MeanDensity = numpy.mean(centroidY, axis = 0)
+sdDensity= numpy.std(centroidY, axis = 0)
 
-for i in range (len(clusterInput)):
-    plt.plot(clusterInput[i][0], clusterInput[i][1],colors[labels[i]], markersize = 10)
 
-plt.scatter(cluster_centers[:,0], cluster_centers[:,1] , marker = 'x', s=10)
-plt.show()
-'''
+#Checking if the standard deviation of the density of the clusters is greater than 10
+if(sdDensity >= 10):
+    #Checking if the cluster center with highest density of greater than one sd away from the mean density
+    if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
+        if(highestDensityPos >= uniqueZ[10]): #Within the last 10 z's
+            #Finding the lowest z in that cluster and removing all the z's after it
+            lowestZ = numpy.amin(PossibleCortexZs)
+            with open ('C1.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    if(float(line[3]) < lowestZ):
+                        X1.append(line[0])
+                        Y1.append(line[1])
+                        Z1.append(line[2])
+            with open ('C2.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    if(float(line[3]) < lowestZ):
+                        X2.append(line[0])
+                        Y2.append(line[1])
+                        Z2.append(line[2])
+        elif(highestDensityPos <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
+            #Finding the highest z in that cluster and all the z's before it
+            highestZ = numpy.amax(PossibleCortexZs)
+            with open ('C1.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    if(float(line[3]) > highestZ):
+                        X1.append(line[0])
+                        Y1.append(line[1])
+                        Z1.append(line[2])
+            with open ('C2.csv', 'r') as csv_file:
+                csv_reader = csv.reader (csv_file)
+                for line in csv_reader:
+                    if(float(line[3]) < highestZ):
+                        X2.append(line[0])
+                        Y2.append(line[1])
+                        Z2.append(line[2])
+        else:
+            print("No cortex found")
+    else:
+        print("No cortex found")
+else:
+    print("No cortex found")
+    
+X1 = numpy.array(X1, dtype=float); Y1 = numpy.array(Y1, dtype=float); Z1 = numpy.array(Z1, dtype=float)
+X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy.array(Z2, dtype=float)
+
+#Saving each channel's data after removing the cortex in new files
+numpy.savetxt("CortexRemovedC1.csv", numpy.column_stack((X1, Y1, Z1)), delimiter=",", fmt='%s')
+numpy.savetxt("CortexRemovedC2.csv", numpy.column_stack((X2, Y2, Z2)), delimiter=",", fmt='%s')
+
+
+
 
