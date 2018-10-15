@@ -1,6 +1,7 @@
 '''
 This script reads in the csv file with coorindates of all channels, and saves the data
 of each of the channels as individual files, after removing particles with radius less than 0.28
+Writes out the filename into results.txt
 '''
 #!/usr/bin/python
 import sys, os
@@ -19,6 +20,7 @@ X2 = list(); Y2 =  list(); Z2 = list(); S2 = list()
 # 'r' specifies that we want to read this file
 #csv_reader is the name of the reader object that we have created 
 with open (sys.argv[1], 'r') as csv_file:
+    filename = sys.argv[1][6:]
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
@@ -42,5 +44,6 @@ X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy
 numpy.savetxt("C1.csv", numpy.column_stack((X1, Y1, Z1, S1)), delimiter=",", fmt='%s')
 numpy.savetxt("C2.csv", numpy.column_stack((X2, Y2, Z2, S2)), delimiter=",", fmt='%s')
 
-
+with open("Results.txt", "a") as text_file:
+    text_file.write( filename + "\n")
 
