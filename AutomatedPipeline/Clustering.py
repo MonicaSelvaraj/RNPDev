@@ -169,8 +169,8 @@ def Cluster(X,Y,Z, radius):
     else:
         MedianZSplits = math.ceil(statistics.median(numberOfZSplits))
     zThreshold = MedianZSplits*Z[Z.size-1]
-    print("Radius of RNP: ", radius)
-    print("Median point spread: ", zThreshold)
+    #print("Radius of RNP: ", radius)
+    #print("Median point spread: ", zThreshold)
 
     #Creating lists to store the coordinates of clustered points
     xPoints = list(); yPoints = list(); zPoints = list(); ClusterPoints = list()

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy 
 import csv
+import os
 
 print("Producing Scatter Plot")
 #Creating a 3D axes by using the keyword projection = '3D'
@@ -52,4 +53,10 @@ ax.set_xlabel ('x, axis'); ax.set_ylabel ('y axis'); ax.set_zlabel ('z axis')
 ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1*5)
 ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=S2*5)
 plt.show()
-fig.savefig('Output/ScatterPlot.png')
+
+f_read = open("Results.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1]
+f_read.close()
+
+fig.savefig('Output/%s/ScatterPlot.png' % last_line)

@@ -2,6 +2,7 @@
 This script reads in the csv file with coorindates of all channels, and saves the data
 of each of the channels as individual files, after removing particles with radius less than 0.28
 Writes out the filename into results.txt
+Creates a directory for every file's output images
 '''
 #!/usr/bin/python
 import sys, os
@@ -45,5 +46,6 @@ numpy.savetxt("C1.csv", numpy.column_stack((X1, Y1, Z1, S1)), delimiter=",", fmt
 numpy.savetxt("C2.csv", numpy.column_stack((X2, Y2, Z2, S2)), delimiter=",", fmt='%s')
 
 with open("Results.txt", "a") as text_file:
+    filename = filename[:-4]
     text_file.write( filename + "\n")
 

@@ -128,12 +128,12 @@ print(sdDensity)
 
 cortexFound = True
 #Checking if the standard deviation of the density of the clusters is greater than 10
-if(sdDensity >= 5):
+if(sdDensity >= 7):
     #Checking if the cluster center with highest density of greater than one sd away from the mean density
     if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
         if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's
             #Finding the lowest z in that cluster and removing all the z's after it
-            lowestZ = numpy.amin(PossibleCortexZs)
+            lowestZ = numpy.amin(PossibleCortexZs) - 2
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
@@ -150,7 +150,7 @@ if(sdDensity >= 5):
                         Z2.append(line[2])
         elif(centroidX[highestDensityPos] <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
             #Finding the highest z in that cluster and all the z's before it
-            highestZ = numpy.amax(PossibleCortexZs)
+            highestZ = numpy.amax(PossibleCortexZs) + 2
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
@@ -175,19 +175,19 @@ else:
     print("No cortex found")
     cortexFound = False
 
-if(!cortexFound)
+if(cortexFound == False):
     with open ('ClusteredC1.csv', 'r') as csv_file:
-                csv_reader = csv.reader (csv_file)
-                for line in csv_reader:
-                    X1.append(line[0])
-                    Y1.append(line[1])
-                    Z1.append(line[2])
-            with open ('ClusteredC2.csv', 'r') as csv_file:
-                csv_reader = csv.reader (csv_file)
-                for line in csv_reader:
-                    X2.append(line[0])
-                    Y2.append(line[1])
-                    Z2.append(line[2])
+        csv_reader = csv.reader (csv_file)
+        for line in csv_reader:
+            X1.append(line[0])
+            Y1.append(line[1])
+            Z1.append(line[2])
+    with open ('ClusteredC2.csv', 'r') as csv_file:
+        csv_reader = csv.reader (csv_file)
+        for line in csv_reader:
+            X2.append(line[0])
+            Y2.append(line[1])
+            Z2.append(line[2])
 
     
 X1 = numpy.array(X1, dtype=float); Y1 = numpy.array(Y1, dtype=float); Z1 = numpy.array(Z1, dtype=float)
