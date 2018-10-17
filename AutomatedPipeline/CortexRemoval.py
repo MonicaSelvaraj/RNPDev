@@ -19,6 +19,10 @@ import scipy.cluster.hierarchy as sch
 from sklearn.cluster import AgglomerativeClustering
 
 fig = plt.figure( )
+f_read = open("FileNames.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1] #Ignoring newline character
+f_read.close()
 
 print("Removing the cortex")
 
@@ -60,7 +64,9 @@ for uz in uniqueZ:
     zCount.append(counter)
 
 plt.scatter(uniqueZ, zCount)
-plt.show()
+fig.savefig('Output/%s/ZvsDensity.png' % last_line)
+#plt.show()
+plt.clf()
 
 #The input for clustering is in the form [[z, count], [z, count], .. ]
 clusterInput = numpy.array(list(zip(uniqueZ,zCount)))
@@ -70,18 +76,20 @@ clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(
 
 #Creating Dendrogram
 dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
-plt.show()
+fig.savefig('Output/%s/Dendrogram.png' % last_line)
+#plt.show()
+plt.clf()
 
 #Creating four clusters 
 hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
 y_hc = hc.fit_predict(clusterInput)#Labels each point as cluster 0,1,2, or 3
 
 #Displaying the clusters 
-plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
-plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
-plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
-plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
-plt.show()
+#plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
+#plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
+#plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
+#plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
+#plt.show()
 
 
 #Finding the cluster centers 
@@ -101,12 +109,13 @@ plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black'
 plt.scatter(clusterInput[y_hc == 2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
 plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
 plt.scatter(centroidX, centroidY, s = 200, c = 'green')
-plt.show()
+fig.savefig('Output/%s/AgglomerativeClustering.png' % last_line)
+plt.clf()
+#plt.show()
 
 centroidX = numpy.array(centroidX, dtype = float)
-print(centroidX)
 centroidY = numpy.array(centroidY, dtype = float)
-print(centroidY)
+
 
 #Finding the cluster center with highest zDensity
 highestDensityCluster = numpy.amax(centroidY)
@@ -122,13 +131,17 @@ for z in PossibleCortexZPositions:
 
 #Mean and standard deviation of the z density 
 MeanDensity = numpy.mean(centroidY, axis = 0)
-print(MeanDensity)
+with open("MeanCortexDensity.txt", "a") as text_file:
+    text_file.write( str(MeanDensity) + "\n" )
+    
 sdDensity= numpy.std(centroidY, axis = 0)
-print(sdDensity)
+with open("sdCortexDensity.txt", "a") as text_file:
+    text_file.write( str(sdDensity) + "\n" )
+
 
 cortexFound = True
-#Checking if the standard deviation of the density of the clusters is greater than 10
-if(sdDensity >= 7):
+#Checking if the standard deviation of the density of the clusters is greater than 7
+if(sdDensity >= 5):
     #Checking if the cluster center with highest density of greater than one sd away from the mean density
     if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
         if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's

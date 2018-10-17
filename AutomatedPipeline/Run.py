@@ -7,6 +7,8 @@ import sys, os
 InputPath = 'Input'
 os.mkdir("Output")
 for filename in os.listdir(InputPath):
+    if (filename == '.DS_Store'):
+        continue
     os.chdir('Output')
     outputFile = filename[:-4]
     os.mkdir('%s' % outputFile)
@@ -15,7 +17,6 @@ for filename in os.listdir(InputPath):
     os.system('python splitChannels.py Input/%s' % filename)
     os.system('python ScatterPlot.py')
     
-'''
     #Clustering
     os.system('python Clustering.py C1.csv ClusteredC1.csv')
     os.system('python Clustering.py C2.csv ClusteredC2.csv')
@@ -24,7 +25,8 @@ for filename in os.listdir(InputPath):
     #CortexRemoval
     os.system('python CortexRemoval.py')
     os.system('python ScatterPlotCortexRemoved.py')
-
+    
+'''
 #Straightening
     os.system('python Straightening.py')
 

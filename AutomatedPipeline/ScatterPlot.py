@@ -52,11 +52,11 @@ ax.grid(False)
 ax.set_xlabel ('x, axis'); ax.set_ylabel ('y axis'); ax.set_zlabel ('z axis')
 ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=S1*5)
 ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=S2*5)
-plt.show()
+#plt.show()
 
-f_read = open("Results.txt", "r")
+f_read = open("FileNames.txt", "r")
 last_line = f_read.readlines()[-1]
-last_line = last_line[:-1]
+last_line = last_line[:-1] #Ignoring newline character
 f_read.close()
 
 fig.savefig('Output/%s/ScatterPlot.png' % last_line)

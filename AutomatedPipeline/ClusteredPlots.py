@@ -105,12 +105,13 @@ ax.legend((red, green),
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-plt.show()
-fig.savefig('Output/ClusterPlot.png')
+#plt.show()
 
-#plt.scatter(X1, Y1); plt.show()
-#plt.scatter(X1, Z1); plt.show()
-#plt.scatter(Y1, Z1); plt.show()
+f_read = open("FileNames.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1] #Ignoring newline character
+f_read.close()
+fig.savefig('Output/%s/ClusteredPlot.png' % last_line)
 
 
     

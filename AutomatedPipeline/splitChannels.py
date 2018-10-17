@@ -45,7 +45,7 @@ X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy
 numpy.savetxt("C1.csv", numpy.column_stack((X1, Y1, Z1, S1)), delimiter=",", fmt='%s')
 numpy.savetxt("C2.csv", numpy.column_stack((X2, Y2, Z2, S2)), delimiter=",", fmt='%s')
 
-with open("Results.txt", "a") as text_file:
+with open("FileNames.txt", "a") as text_file:
     filename = filename[:-4]
     text_file.write( filename + "\n")
 
