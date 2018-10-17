@@ -51,68 +51,69 @@ k = open('Pitch.txt','r')
 for line in k:
     pitch.append(line.strip())
 
-for i in range(0,len(r)-1,4):
+for i in range(0,len(r),4):
     C1C1C2r.append(r[i])
-for i in range(1,len(r)-1,4):
+for i in range(1,len(r),4):
     C1C1C3r.append(r[i])
-for i in range(2,len(r)-1,4):
+for i in range(2,len(r),4):
     C2C1C2r.append(r[i])
-for i in range(3,len(r)-1,4):
+for i in range(3,len(r),4):
     C2C1C3r.append(r[i])
 
-for i in range(0,len(f)-1,4):
+for i in range(0,len(f),4):
     C1C1C2f.append(f[i])
-for i in range(1,len(f)-1,4):
+for i in range(1,len(f),4):
     C1C1C3f.append(f[i])
-for i in range(2,len(f)-1,4):
+for i in range(2,len(f),4):
     C2C1C2f.append(f[i])
-for i in range(3,len(f)-1,4):
+for i in range(3,len(f),4):
     C2C1C3f.append(f[i])
 
-for i in range(0,len(p)-1,4):
+for i in range(0,len(p),4):
     C1C1C2p.append(p[i])
-for i in range(1,len(p)-1,4):
+for i in range(1,len(p),4):
     C1C1C3p.append(p[i])
-for i in range(2,len(p)-1,4):
+for i in range(2,len(p),4):
     C2C1C2p.append(p[i])
-for i in range(3,len(p)-1,4):
+for i in range(3,len(p),4):
     C2C1C3p.append(p[i])
 
-for i in range(0,len(rse)-1,4):
+for i in range(0,len(rse),4):
     C1C1C2rse.append(rse[i])
-for i in range(1,len(rse)-1,4):
+for i in range(1,len(rse),4):
     C1C1C3rse.append(rse[i])
-for i in range(2,len(rse)-1,4):
+for i in range(2,len(rse),4):
     C2C1C2rse.append(rse[i])
-for i in range(3,len(rse)-1,4):
+for i in range(3,len(rse),4):
     C2C1C3rse.append(rse[i])
 
-for i in range(0,len(fse)-1,4):
+for i in range(0,len(fse),4):
     C1C1C2fse.append(fse[i])
-for i in range(1,len(fse)-1,4):
+for i in range(1,len(fse),4):
     C1C1C3fse.append(fse[i])
-for i in range(2,len(fse)-1,4):
+for i in range(2,len(fse),4):
     C2C1C2fse.append(fse[i])
-for i in range(3,len(fse)-1,4):
+for i in range(3,len(fse),4):
     C2C1C3fse.append(fse[i])
 
-for i in range(0,len(pse)-1,4):
+for i in range(0,len(pse),4):
     C1C1C2pse.append(pse[i])
-for i in range(1,len(pse)-1,4):
+for i in range(1,len(pse),4):
     C1C1C3pse.append(pse[i])
-for i in range(2,len(pse)-1,4):
+for i in range(2,len(pse),4):
     C2C1C2pse.append(pse[i])
-for i in range(3,len(pse)-1,4):
+for i in range(3,len(pse),4):
     C2C1C3pse.append(pse[i])
 
-for i in range(0,len(pitch)-1,4):
+for i in range(0,len(pitch),4):
     C1C1C2Pitch.append(pitch[i])
-for i in range(1,len(pitch)-1,4):
+for i in range(1,len(pitch),4):
     C1C1C3Pitch.append(pitch[i])
-for i in range(2,len(pitch)-1,4):
+for i in range(2,len(pitch),4):
     C2C1C2Pitch.append(pitch[i])
-for i in range(3,len(pitch)-1,4):
+for i in range(3,len(pitch),4):
     C2C1C3Pitch.append(pitch[i])
+
 
 
 fn = numpy.array(fn); mcd = numpy.array(mcd); sdcd = numpy.array(sdcd)
@@ -147,4 +148,8 @@ C2C1C2Pitch = numpy.array(C2C1C2Pitch)
 C2C1C3Pitch  = numpy.array(C2C1C3Pitch)
 
 
-    
+numpy.savetxt('Results.csv', numpy.column_stack((fn, mcd, sdcd,C1C1C2r,C1C1C2f,C1C1C2p, C1C1C2Pitch,
+                                                 C1C1C2rse , C1C1C2fse, C1C1C2pse, C1C1C3r, C1C1C3f, C1C1C3p,C1C1C3Pitch,
+                                                 C1C1C3rse, C1C1C3fse,C1C1C3pse,C2C1C2r,C2C1C2f,C2C1C2p, C2C1C2Pitch,
+                                                 C2C1C2rse, C2C1C2fse, C2C1C2pse, C2C1C3r, C2C1C3f, C2C1C3p,C2C1C3Pitch,
+                                                 C2C1C3rse,C2C1C3fse,C2C1C3pse)), delimiter=",", fmt='%s')    
