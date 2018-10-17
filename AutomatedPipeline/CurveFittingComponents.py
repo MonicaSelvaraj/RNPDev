@@ -19,6 +19,11 @@ from scipy.spatial import distance
 from scipy.signal import argrelextrema
 from scipy.optimize import curve_fit
 
+f_read = open("FileNames.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1] #Ignoring newline character
+f_read.close()
+
 plt.style.use('dark_background')
 
 print("Curve Fitting")
@@ -72,8 +77,19 @@ def BestFit(x,y):
         radius = popt[0]; frequency = popt[1]; phase = popt[2]
         yOpt = [helixFit(c1, *popt) for c1 in x]
         StandardErr = numpy.sqrt(numpy.diag(pcov))
-        print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase,  "Standard Error in each parameter: ", StandardErr)        
-        
+        #print("Fit parameters - Radius: ", radius, "Frequency: ", frequency, "Phase: ", phase,  "Standard Error in each parameter: ", StandardErr)        
+        with open("FitRadius.txt", "a") as text_file:
+                text_file.write( str(radius) + "\n" )
+        with open("FitFrequency.txt", "a") as text_file:
+                text_file.write( str(frequency) + "\n" )
+        with open("FitPhase.txt", "a") as text_file:
+                text_file.write( str(phase) + "\n" )
+        with open("FitRadiusSE.txt", "a") as text_file:
+                text_file.write( str(StandardErr[0]) + "\n" )
+        with open("FitFrequencySE.txt", "a") as text_file:
+                text_file.write( str(StandardErr[1]) + "\n" )
+        with open("FitPhaseSE.txt", "a") as text_file:
+                text_file.write( str(StandardErr[2]) + "\n" )
         return(yOpt)
 
 
@@ -92,8 +108,8 @@ plt.scatter(C2r, C3r, c='r') # True
 plt.plot(C2Pr, C3Pr, c='b') # Fit
 plt.title(' C2 vs C3 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.savefig('Output/C2C3Fit.png')
-plt.show()
+plt.savefig('Output/%s/C2C3Fit.png' % last_line)
+#plt.show()
 plt.close()
 
 plt.scatter(C1g, C2g, c='g') # True
@@ -102,8 +118,8 @@ plt.scatter(C1r, C2r, c='r') # True
 plt.plot(C1r, C2Pr, c= 'b') # Fit
 plt.title(' C1 vs C2 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.savefig('Output/C1C2Fit.png')
-plt.show()
+plt.savefig('Output/%s/C1C2Fit.png' % last_line)
+#plt.show()
 plt.close()
 
 plt.scatter(C1g, C3g, c='g') # True
@@ -112,8 +128,8 @@ plt.scatter(C1r, C3r, c='r') # True
 plt.plot(C1r, C3Pr, c='b') # Fit
 plt.title(' C1 vs C3 fit')
 plt.ylim(-20, 20); plt.xlim(-20,20)
-plt.savefig('Output/C1C3Fit.png')
-plt.show()
+plt.savefig('Output/%s/C1C3Fit.png' % last_line)
+#plt.show()
 plt.close()
 
 #3D fit
@@ -182,8 +198,8 @@ for i in range(len(C1g)-1): #Go from the center into the PC's direction by this 
         end = centerC2 + C1g[i+1]*C2Pc1 + C2Pg[i+1]*C2Pc2 + C3Pg[i+1]*C2Pc3
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3) #alpha=0.5) 
         ax.set_title('overall fit')
-plt.show()
-fig.savefig('Output/3DFit.png')
+#plt.show()
+fig.savefig('Output/%s/3DFit.png' % last_line)
 
 #Parameters
 def Pitch(x, y):
@@ -204,21 +220,36 @@ def Pitch(x, y):
         
         #maxm and minm contains the indices of minima and maxima respectively
 
-        if(len(maxm[0]) != 0):
+        if(len(maxm[0]) >= 2):
                 maxima = maxm[0]
                 #Now finding the distance between the first two maxima
                 p1 = (x[maxima[0]], y[maxima[0]])
                 p2 = (x[maxima[1]], y[maxima[1]])
                 pitch = distance.euclidean(p1,p2)
-        else:
-                mimina = minm[0]
+        elif(len(minm[0]) >= 2):
+                minima = minm[0]
                 #Now finding the distance between the first two maxima
                 p1 = (x[minima[0]], y[minima[0]])
                 p2 = (x[minima[1]], y[minima[1]])
                 pitch = distance.euclidean(p1,p2)
+        elif(len(minm[0]) == 1 and len(maxm[0]) == 1):
+                minima = minm[0]
+                maxima = maxm[0]
+                #Now finding the distance between the first two maxima
+                p1 = (x[minima[0]], y[minima[0]])
+                p2 = (x[maxima[0]], y[maxima[0]])
+                pitch = distance.euclidean(p1,p2)
+        else:
+                pitch = 0
         
         return (pitch);
 
-print ("Channel1 Pitch: C1 C2 Pitch -  ", Pitch(C1r, C2Pr) ," C1 C3 Pitch - " ,Pitch(C1r, C3Pr))
-print ("Channel2 Pitch: C1 C2 Pitch -  ", Pitch(C1g, C2Pg) ," C1 C3 Pitch - " ,Pitch(C1g, C3Pg))
+#print ("Channel1 Pitch: C1 C2 Pitch -  ", Pitch(C1r, C2Pr) ," C1 C3 Pitch - " ,Pitch(C1r, C3Pr))
+#print ("Channel2 Pitch: C1 C2 Pitch -  ", Pitch(C1g, C2Pg) ," C1 C3 Pitch - " ,Pitch(C1g, C3Pg))
 
+with open("Pitch.txt", "a") as text_file:
+                text_file.write( str(Pitch(C1r, C2Pr)) + "\n" )
+                text_file.write( str(Pitch(C1r, C3Pr)) + "\n" )
+                text_file.write( str(Pitch(C1g, C2Pg)) + "\n" )
+                text_file.write( str(Pitch(C1g, C3Pg)) + "\n" )
+                

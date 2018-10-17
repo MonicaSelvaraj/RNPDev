@@ -20,7 +20,10 @@ import itertools
 from scipy.misc import comb
 
 print("Straightening")
-
+f_read = open("FileNames.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1] #Ignoring newline character
+f_read.close()
 plt.style.use('dark_background')
 
 
@@ -33,13 +36,13 @@ Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
     x1 = list(); y1 = list(); z1 = list(); x2 = list(); y2 = list(); z2 = list()
-    with open ('C1test.csv', 'r') as csv_file:
+    with open ('C1T.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x1.append(line[0])
             y.append(line[1]); y1.append(line[1])
             z.append(line[2]); z1.append(line[2])
-    with open ('C2test.csv', 'r') as csv_file:
+    with open ('C2T.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x2.append(line[0])
@@ -66,7 +69,7 @@ def ScatterPlot(x, y, z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    plt.show()
+ #   plt.show()
     return();
 
 '''
@@ -119,8 +122,8 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
     ax.set_zlabel ('z axis')
     for a, b in zip(A, B):
         ax.plot3D([X[a], X[b]], [Y[a], Y[b]], [Z[a], Z[b]], c='b')
-    plt.show()
-    fig.savefig('Output/MinimumSpanningTree.png')
+ #   plt.show()
+    fig.savefig('Output/%s/MinimumSpanningTree.png' % last_line)
     return();
 
 '''
@@ -153,43 +156,6 @@ def movingaverage(values, window):
     smas = numpy.convolve(values, weights, 'valid')
     return smas #returns a numpy array
 
-def pickWindowSize(x,y,z):
-    residuals = list()
-    #Calculating moving averages for window size 2-50
-    for w in range(2, 50):
-        dst = 0
-        xline = movingaverage(x, w)
-        yline = movingaverage(y, w)
-        zline = movingaverage(z, w)
-        #Calculating residuals of coordinates from the moving average
-        for i in range (0, len(xline)):
-            a = (xline[i], yline[i], zline[i])
-            b = (x[i+(w-1)], y[i+(w-1)], z[i+(w-1)])
-            dst = dst + distance.euclidean(a,b)
-        residuals.append(dst)
-
-    #Plotting residuals 
-    xarg = numpy.arange(2 , 50 , 1)
-    plt.scatter(xarg, residuals); plt.show()
-
-    #Calculating the rate of change of residuals
-    rateOfChange = list()
-    for r in range(0, len(residuals)-1):
-        rateOfChange.append(residuals[r+1] - residuals[r])
-
-    print(rateOfChange)
-    #Plotting rate of change of residuals
-    xarg = numpy.arange(0 , len(residuals)-1 , 1)
-    plt.scatter(xarg, rateOfChange); plt.show()
-    return ();
-
-def expMovingAverage(values, window):
-    weights = numpy.exp(numpy.linspace(-1.,0.,window))
-    weights /= weights.sum()
-    a = numpy.convolve(values, weights) [:len(values)]
-    a[:window] = a[window]
-    return (a)
-
 '''
 args: ranked x,y,z coordinates
 returns: sma in x,y,z direction
@@ -206,8 +172,8 @@ def drawMovingAverage(x,y,z):
     yline =movingaverage(y, 40)
     zline =movingaverage(z, 40)
     ax.plot3D(xline,yline,zline,'blue')
-    plt.show()
-    fig.savefig('Output/MovingAverage.png')
+ #  plt.show()
+    fig.savefig('Output/%s/MovingAverage.png' % last_line)
     return(xline, yline, zline);
 
 '''
@@ -262,7 +228,6 @@ def bezier_curve(points, nTimes =1000):
     t = numpy.linspace(0.0, 1.0, nTimes)
 
     polynomial_array = numpy.array([ bernstein_poly(i, nPoints-1, t) for i in range(0, nPoints)])
-    print(polynomial_array)
     
     xvals = numpy.dot(xPoints, polynomial_array)
     yvals = numpy.dot(yPoints, polynomial_array)
@@ -335,12 +300,10 @@ minimumSpanningTree= minSpanningTree(X, Y, Z)
 drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
 #Re-ordering the x,y,z coordinates to give the data a direction
 newPoints = RankPoints(minimumSpanningTree, X, Y, Z); bezierPointsLength = len(newPoints[0])
-#Drawing sma through points and determining the window size
-#window = pickWindowSize(newPoints[0], newPoints[1], newPoints[2])
 #Drawing the simple moving average through the ranked points
-emaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
 #Picking sample points as input to draw the bezier curve
-bezierPoints = BezierInput(emaPoints)
+bezierPoints = BezierInput(smaPoints)
 #Drawing the bezier curve through the data
 bezierLine = bezier_curve(bezierPoints)
 fig = plt.figure()
@@ -351,9 +314,9 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'blue')
-plt.show()
-fig.savefig('Output/BezierCurve.png')
-#Straightening points for C1
+#plt.show()
+fig.savefig('Output/%s/BezierCurve.png' % last_line)
+#Straightening points 
 StraightenedPts1 = Straighten(bezierLine,X1, Y1, Z1)
 StraightenedPts2 = Straighten(bezierLine,X2, Y2, Z2)
 #Plotting the straightened points
@@ -364,8 +327,8 @@ ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g'
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-plt.show()
-fig.savefig('Output/Straightened.png')
+#plt.show()
+fig.savefig('Output/%s/Straightened.png' % last_line)
 
 #Writing straightened points to a file
 StraightenedPts1= numpy.array(StraightenedPts1, dtype = float)

@@ -26,17 +26,15 @@ for filename in os.listdir(InputPath):
     os.system('python CortexRemoval.py')
     os.system('python ScatterPlotCortexRemoved.py')
     
-'''
 #Straightening
     os.system('python Straightening.py')
 
 #PCA and 2D plots
-    os.system('python 2DProjections.py StraightenedC1.csv ComponentsC1.csv r Output/PrincipalComponentsC1.png')
-    os.system('python 2DProjections.py StraightenedC2.csv ComponentsC2.csv g Output/PrincipalComponentsC2.png')
+    os.system('python 2DProjections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)
+    os.system('python 2DProjections.py StraightenedC2.csv ComponentsC2.csv g Output/%s/PrincipalComponentsC2.png' % outputFile)
 
 #Removing outliers
     os.system('python Outliers.py')
 
 #Curve Fitting
     os.system('python CurveFittingComponents.py')
-'''

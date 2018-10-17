@@ -19,6 +19,11 @@ import math
 from matplotlib import style
 from scipy.spatial import distance
 
+f_read = open("FileNames.txt", "r")
+last_line = f_read.readlines()[-1]
+last_line = last_line[:-1] #Ignoring newline character
+f_read.close()
+
 print("Removing Outliers")
 
 plt.style.use('dark_background')
@@ -49,9 +54,12 @@ C1r = C1r.astype(float); C2r= C2r.astype(float); C3r = C3r.astype(float)
 C1g = C1g.astype(float); C2g= C2g.astype(float); C3g = C3g.astype(float)       
 
 #Shows plots before removing outliers
-plt.scatter(C2g, C3g, c='g'); plt.scatter(C2r, C3r, c='r'); plt.title('C2 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C2C3WithOutliers.png'); plt.show(); plt.close() # Shows plot without first PC
-plt.scatter(C1g, C2g, c='g'); plt.scatter(C1r, C2r, c='r'); plt.title('C1 vs C2');  plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C1C2WithOutliers.png'); plt.show();plt.close() # Shows plot without third PC
-plt.scatter(C1g, C3g, c='g'); plt.scatter(C1r, C3r, c='r'); plt.title(' C1 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C1C3WithOutliers.png');plt.show(); plt.close()# Shows plot without second PC
+plt.scatter(C2g, C3g, c='g'); plt.scatter(C2r, C3r, c='r'); plt.title('C2 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20);  plt.savefig('Output/%s/C2C3WithOutliers.png' % last_line); #plt.show();
+plt.close() # Shows plot without first PC
+plt.scatter(C1g, C2g, c='g'); plt.scatter(C1r, C2r, c='r'); plt.title('C1 vs C2');  plt.ylim(-20, 20); plt.xlim(-20,20);plt.savefig('Output/%s/C1C2WithOutliers.png' % last_line); #plt.show()
+plt.close() # Shows plot without third PC
+plt.scatter(C1g, C3g, c='g'); plt.scatter(C1r, C3r, c='r'); plt.title(' C1 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20);plt.savefig('Output/%s/C1C3WithOutliers.png' % last_line);#plt.show();
+plt.close()# Shows plot without second PC
 
 #REMOVING OUTLIERS
 def removeOutliers(C1, C2, C3, sd):
@@ -96,28 +104,31 @@ numpy.savetxt("CleanedComponentsC2.csv", numpy.column_stack((CleanedChannel2[0],
 plt.scatter(C2g, C3g, c='g'); plt.scatter(C2r, C3r, c='r'); plt.title('C2 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20)
 plt.axvline(x=lineC1, c='r'); plt.axvline(x=-lineC1, c='r'); plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
 plt.axvline(x=lineC2, c='g'); plt.axvline(x=-lineC2, c='g'); plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
-plt.savefig('Output/C2C3OutliersBoundary.png')# Shows plot without first PC
-plt.show()
+plt.savefig('Output/%s/C2C3OutliersBoundary.png' % last_line)# Shows plot without first PC
+#plt.show()
 plt.close()
 
 plt.scatter(C1g, C2g, c='g'); plt.scatter(C1r, C2r, c='r'); plt.title('C1 vs C2');  plt.ylim(-20, 20); plt.xlim(-20,20)
 plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
 plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
-plt.savefig('Output/C1C2OutliersBoundary.png') # Shows plot without third PC
-plt.show()
+plt.savefig('Output/%s/C1C2OutliersBoundary.png' % last_line) # Shows plot without third PC
+#plt.show()
 plt.close()
 
 plt.scatter(C1g, C3g, c='g'); plt.scatter(C1r, C3r, c='r'); plt.title(' C1 vs C3');  plt.ylim(-20, 20); plt.xlim(-20,20)
 plt.axhline(y=lineC1, c='r'); plt.axhline(y=-lineC1, c='r') #C1 lines
 plt.axhline(y=lineC2, c='g'); plt.axhline(y=-lineC2, c='g') #C2 lines
-plt.savefig('Output/C1C3OutliersBoundary.png')# Shows plot without second PC
-plt.show()
+plt.savefig('Output/%s/C1C3OutliersBoundary.png' % last_line)# Shows plot without second PC
+#plt.show()
 plt.close()
 
 #Shows plots after removing outliers
-plt.scatter(CleanedChannel2[2], CleanedChannel2[1], c='g'); plt.scatter(CleanedChannel1[2],CleanedChannel1[1],c='r');plt.title('C2 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C2C3WithoutOutliers.png');plt.show(); plt.close() # Shows plot without first PC
-plt.scatter(CleanedChannel2[0], CleanedChannel2[1], c='g'); plt.scatter(CleanedChannel1[0], CleanedChannel1[1], c='r'); plt.title('C1 vs C2'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C1C2WithoutOutliers.png');plt.show(); plt.close() # Shows plot without third PC
-plt.scatter(CleanedChannel2[0], CleanedChannel2[2], c='g');plt.scatter(CleanedChannel1[0], CleanedChannel1[2],  c='r'); plt.title(' C1 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/C1C3WithoutOutliers.png');plt.show(); plt.close()# Shows plot without second PC
+plt.scatter(CleanedChannel2[2], CleanedChannel2[1], c='g'); plt.scatter(CleanedChannel1[2],CleanedChannel1[1],c='r');plt.title('C2 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/%s/C2C3WithoutOutliers.png' % last_line);#plt.show();
+plt.close() # Shows plot without first PC
+plt.scatter(CleanedChannel2[0], CleanedChannel2[1], c='g'); plt.scatter(CleanedChannel1[0], CleanedChannel1[1], c='r'); plt.title('C1 vs C2'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/%s/C1C2WithoutOutliers.png' % last_line);#plt.show();
+plt.close() # Shows plot without third PC
+plt.scatter(CleanedChannel2[0], CleanedChannel2[2], c='g');plt.scatter(CleanedChannel1[0], CleanedChannel1[2],  c='r'); plt.title(' C1 vs C3'); plt.ylim(-20, 20); plt.xlim(-20,20); plt.savefig('Output/%s/C1C3WithoutOutliers.png' % last_line);#plt.show();
+plt.close()# Shows plot without second PC
 
 
 
