@@ -38,3 +38,16 @@ for filename in os.listdir(InputPath):
 
 #Curve Fitting
     os.system('python CurveFittingComponents.py')
+
+#Formatting the data collected
+os.system('python DataFormatting.py')
+
+
+
+
+
+
+
+
+
+    

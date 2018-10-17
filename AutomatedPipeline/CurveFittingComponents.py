@@ -99,7 +99,7 @@ C3Pr = BestFit(C1r, C3r)  # Predicts C3 given C1
 
 print("Channel2")
 C2Pg = BestFit(C1g, C2g) # Predicts C2 given C1
-C3Pg = BestFit(C1g, C3g)  # Predicts C3 given C1
+C3Pg = BestFit(C1g, C3g)# Predicts C3 given C1
 
 #2D plots after fit
 plt.scatter(C2g, C3g, c='g') # True
@@ -238,7 +238,7 @@ def Pitch(x, y):
                 #Now finding the distance between the first two maxima
                 p1 = (x[minima[0]], y[minima[0]])
                 p2 = (x[maxima[0]], y[maxima[0]])
-                pitch = distance.euclidean(p1,p2)
+                pitch = distance.euclidean(p1,p2)*2
         else:
                 pitch = 0
         
