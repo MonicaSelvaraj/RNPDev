@@ -132,7 +132,7 @@ def generateCluster(xGroup, yGroup, zGroup, zThreshold):
     xarrays = list(); yarrays = list();zarrays = list()
 
     if (zdist<zThreshold): #Is one cluster
-        pointpos = math.floor((zlength/2.0))
+        pointpos = int(math.floor((zlength/2.0)))
         xOfCluster = xGroup[pointpos]
         yOfCluster = yGroup[pointpos]
         zOfCluster = zGroup[pointpos]

@@ -1,5 +1,7 @@
 import numpy
 
+print('Formatting Data')
+
 fn = list(); mcd = list();sdcd = list()
 r = list();f = list(); p=list(); rse = list(); fse = list();pse = list();pitch = list()
 #Channel 1 

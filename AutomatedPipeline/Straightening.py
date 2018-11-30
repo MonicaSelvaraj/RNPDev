@@ -36,13 +36,13 @@ Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
 def readAndStoreInput( ):
     x = list(); y = list(); z = list()
     x1 = list(); y1 = list(); z1 = list(); x2 = list(); y2 = list(); z2 = list()
-    with open ('C1T.csv', 'r') as csv_file:
+    with open ('CortexRemovedC1.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x1.append(line[0])
             y.append(line[1]); y1.append(line[1])
             z.append(line[2]); z1.append(line[2])
-    with open ('C2T.csv', 'r') as csv_file:
+    with open ('CortexRemovedC2.csv', 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
             x.append(line[0]); x2.append(line[0])

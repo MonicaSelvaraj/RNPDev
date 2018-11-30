@@ -64,6 +64,8 @@ for uz in uniqueZ:
     zCount.append(counter)
 
 plt.scatter(uniqueZ, zCount)
+plt.xlabel('Z')
+plt.ylabel('ZPointCount')
 fig.savefig('Output/%s/ZvsDensity.png' % last_line)
 #plt.show()
 plt.clf()
@@ -109,6 +111,8 @@ plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black'
 plt.scatter(clusterInput[y_hc == 2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
 plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
 plt.scatter(centroidX, centroidY, s = 200, c = 'green')
+plt.xlabel('Z')
+plt.ylabel('ZPointCount')
 fig.savefig('Output/%s/AgglomerativeClustering.png' % last_line)
 plt.clf()
 #plt.show()

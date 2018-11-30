@@ -9,6 +9,7 @@ os.mkdir("Output")
 for filename in os.listdir(InputPath):
     if (filename == '.DS_Store'):
         continue
+    os.system('echo && echo && echo'); os.system('echo Input/%s' % filename); os.system('echo')
     os.chdir('Output')
     outputFile = filename[:-4]
     os.mkdir('%s' % outputFile)
@@ -30,8 +31,8 @@ for filename in os.listdir(InputPath):
     os.system('python Straightening.py')
 
 #PCA and 2D plots
-    os.system('python 2DProjections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)
-    os.system('python 2DProjections.py StraightenedC2.csv ComponentsC2.csv g Output/%s/PrincipalComponentsC2.png' % outputFile)
+    os.system('python 2Dprojections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)
+    os.system('python 2Dprojections.py StraightenedC2.csv ComponentsC2.csv g Output/%s/PrincipalComponentsC2.png' % outputFile)
 
 #Removing outliers
     os.system('python Outliers.py')
