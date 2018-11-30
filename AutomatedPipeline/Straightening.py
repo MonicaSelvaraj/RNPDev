@@ -126,6 +126,37 @@ def drawMinimumSpanningTree(MST, X, Y, Z):
     fig.savefig('Output/%s/MinimumSpanningTree.png' % last_line)
     return();
 
+def polyReg(X,Y,Z):
+
+    #Making the principal componenets the axes of the coordinates
+    points = numpy.concatenate((X[:, numpy.newaxis], 
+                       Y[:, numpy.newaxis], Z[:, numpy.newaxis]), axis = 1)
+    center = points.mean(axis = 0)
+    centered = points-center
+    centeredT = numpy.transpose(centered)
+    constant = 1/(len(X)-1)
+    covarianceM = constant*numpy.matmul(centeredT, centered)
+    w, v = numpy.linalg.eig(covarianceM)
+    Pc1 = v[:,0]
+    Pc2 = v[:,1]
+    Pc3 = v[:, 2]
+    #New points
+    C1s = numpy.dot(centered , Pc1) 
+    C2s = numpy.dot(centered , Pc2)
+    C3s = numpy.dot(centered, Pc3)
+
+    #Fitting a polynomial to new coordinates 
+    yP = numpy.polyfit(C1s, C2s, 2)
+    zP = numpy.polyfit(C1s, C3s, 2)
+
+    C1s.sort()
+    fitY = list(); fitZ = list()
+    #Generating y and z fit points
+    for c in C1s:
+        fitY.append((yP[0]*(c**2)) +(yP[1] *c) + yP[2])
+        fitZ.append((zP[0]*(c**2)) +(zP[1] *c) + zP[2])
+    return(C1s, fitY, fitZ)
+    
 '''
 args: csr graph of minimum spanning tree, original coordinates
 returns: ranked coordinates
@@ -295,17 +326,18 @@ X = In[0]; Y = In[1]; Z = In[2];X1 = In[3]; Y1 = In[4]; Z1 = In[5];X2 = In[6]; Y
 #Producing a scatter plot of the original data
 #ScatterPlot(X, Y, Z)
 #Computing the minimum spanning tree for the data
-minimumSpanningTree= minSpanningTree(X, Y, Z)
+#minimumSpanningTree= minSpanningTree(X, Y, Z)
 #Drawing the minimum spanning tree through the data
-drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
+#drawMinimumSpanningTree(minimumSpanningTree, X, Y, Z)
 #Re-ordering the x,y,z coordinates to give the data a direction
-newPoints = RankPoints(minimumSpanningTree, X, Y, Z); bezierPointsLength = len(newPoints[0])
+#newPoints = RankPoints(minimumSpanningTree, X, Y, Z); bezierPointsLength = len(newPoints[0])
 #Drawing the simple moving average through the ranked points
-smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
+#smaPoints = drawMovingAverage(newPoints[0], newPoints[1], newPoints[2])
 #Picking sample points as input to draw the bezier curve
-bezierPoints = BezierInput(smaPoints)
+#bezierPoints = BezierInput(smaPoints)
 #Drawing the bezier curve through the data
-bezierLine = bezier_curve(bezierPoints)
+#bezierLine = bezier_curve(bezierPoints)
+poly = polyReg(X,Y,Z)
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
 ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
@@ -313,12 +345,13 @@ ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-ax.plot3D(bezierLine[0], bezierLine[1], bezierLine[2],'blue')
+ax.plot3D(poly[0], poly[1], poly[2],'blue')
 #plt.show()
-fig.savefig('Output/%s/BezierCurve.png' % last_line)
+fig.savefig('Output/%s/Polynomial.png' % last_line)
+
 #Straightening points 
-StraightenedPts1 = Straighten(bezierLine,X1, Y1, Z1)
-StraightenedPts2 = Straighten(bezierLine,X2, Y2, Z2)
+StraightenedPts1 = Straighten(poly, X1, Y1, Z1)
+StraightenedPts2 = Straighten(poly, X2, Y2, Z2)
 #Plotting the straightened points
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
