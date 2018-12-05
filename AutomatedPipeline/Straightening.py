@@ -145,6 +145,8 @@ def polyReg(X,Y,Z):
     C2s = numpy.dot(centered , Pc2)
     C3s = numpy.dot(centered, Pc3)
 
+    numpy.savetxt("VariancePoints.csv", numpy.column_stack((C1s, C2s, C3s)), delimiter=",", fmt='%s')
+ 
     #Fitting a polynomial to new coordinates 
     yP = numpy.polyfit(C1s, C2s, 3)
     zP = numpy.polyfit(C1s, C3s, 3)

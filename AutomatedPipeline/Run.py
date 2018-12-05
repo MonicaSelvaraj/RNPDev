@@ -29,6 +29,7 @@ for filename in os.listdir(InputPath):
     
 #Straightening
     os.system('python Straightening.py')
+    os.system('python Variance.py')
 
 #PCA and 2D plots
     os.system('python 2Dprojections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)
