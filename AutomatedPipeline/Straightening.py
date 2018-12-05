@@ -146,15 +146,26 @@ def polyReg(X,Y,Z):
     C3s = numpy.dot(centered, Pc3)
 
     #Fitting a polynomial to new coordinates 
-    yP = numpy.polyfit(C1s, C2s, 2)
-    zP = numpy.polyfit(C1s, C3s, 2)
+    yP = numpy.polyfit(C1s, C2s, 3)
+    zP = numpy.polyfit(C1s, C3s, 3)
 
     C1s.sort()
     fitY = list(); fitZ = list()
     #Generating y and z fit points
     for c in C1s:
-        fitY.append((yP[0]*(c**2)) +(yP[1] *c) + yP[2])
-        fitZ.append((zP[0]*(c**2)) +(zP[1] *c) + zP[2])
+        fitY.append((yP[0]*(c**3)) + (yP[1]*(c**2)) +(yP[2] *c) + yP[3])
+        fitZ.append((zP[0]*(c**3)) + (zP[1]*(c**2)) +(zP[2] *c) + yP[3])
+
+    #Plotting
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1, projection = '3d')
+    ax.scatter (C1s, C2s, C3s, c = 'y', marker='o', s=1, linewidths=2)
+    ax.set_xlabel ('x, axis')
+    ax.set_ylabel ('y axis')
+    ax.set_zlabel ('z axis')
+    ax.plot3D(C1s, fitY, fitZ,'blue')
+    #plt.show()
+    fig.savefig('Output/%s/Polynomial.png' % last_line)
     return(C1s, fitY, fitZ)
     
 '''
@@ -338,17 +349,6 @@ X = In[0]; Y = In[1]; Z = In[2];X1 = In[3]; Y1 = In[4]; Z1 = In[5];X2 = In[6]; Y
 #Drawing the bezier curve through the data
 #bezierLine = bezier_curve(bezierPoints)
 poly = polyReg(X,Y,Z)
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1, projection = '3d')
-ax.scatter (X1, Y1, Z1, c = 'r', marker='o', s=1, linewidths=2)
-ax.scatter (X2, Y2, Z2, c = 'g', marker='o', s=1, linewidths=2)
-ax.set_xlabel ('x, axis')
-ax.set_ylabel ('y axis')
-ax.set_zlabel ('z axis')
-ax.plot3D(poly[0], poly[1], poly[2],'blue')
-#plt.show()
-fig.savefig('Output/%s/Polynomial.png' % last_line)
-
 #Straightening points 
 StraightenedPts1 = Straighten(poly, X1, Y1, Z1)
 StraightenedPts2 = Straighten(poly, X2, Y2, Z2)
