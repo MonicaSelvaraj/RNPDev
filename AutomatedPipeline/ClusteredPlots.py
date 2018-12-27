@@ -1,5 +1,5 @@
 '''
-Plotting original data and deconvoluted data (size has not been taken into account)
+Plotting original data and clustered data (size has not been taken into account)
 '''
 
 #!/usr/bin/python

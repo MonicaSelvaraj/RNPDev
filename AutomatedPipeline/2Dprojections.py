@@ -20,8 +20,8 @@ from scipy.optimize import curve_fit
 fig = plt.figure( )
 plt.style.use('dark_background')
 
-if(sys.argv[3] == "r" ): print("Drawing PCs through C1 & Creating 2D projections")
-else: print("Drawing PCs through C2 & Creating 2D projections")
+if(sys.argv[3] == "r" ): print("C1 2D projections")
+else: print("C2 2D projections")
 
 #Variables to store deconvoluted points 
 X = list(); Y = list(); Z = list() 

@@ -199,12 +199,16 @@ for i in range(len(C1g)-1): #Go from the center into the PC's direction by this 
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3) #alpha=0.5) 
         ax.set_title('overall fit')
 #plt.show()
+ax.grid(False)
+ax.set_xlabel ('x, axis')
+ax.set_ylabel ('y axis')
+ax.set_zlabel ('z axis')
 fig.savefig('Output/%s/3DFit.png' % last_line)
 
 #Parameters
 def Pitch(x, y):
         #x is the array of x coordinates and y is the array of y coordinates
-
+        if(len(x) == 0): return(0)
         #Converting x, y to numpy arrays
         x = numpy.array(x); y = numpy.array(y)
         x = x.astype(float); y = y.astype(float)
@@ -219,7 +223,7 @@ def Pitch(x, y):
         minm = argrelextrema(y, numpy.less)
         
         #maxm and minm contains the indices of minima and maxima respectively
-
+    
         if(len(maxm[0]) >= 2):
                 maxima = maxm[0]
                 #Now finding the distance between the first two maxima

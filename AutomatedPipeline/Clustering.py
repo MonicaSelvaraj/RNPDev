@@ -1,6 +1,6 @@
 '''
-De-convolution approach
-- Particles of each size are de-convoluted separately
+Clustering approach
+- Particles of each size are separately
 For each size:
 - Particles within a specific x,y are grouped
 - The spread in the z is determined for each group
