@@ -76,7 +76,7 @@ clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(
 
 #Agglomerative Clustering
 
-#Creating Dendrogram
+#Creating Dendrogram - change 
 dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
 fig.savefig('Output/%s/Dendrogram.png' % last_line)
 #plt.show()
@@ -144,13 +144,13 @@ with open("sdCortexDensity.txt", "a") as text_file:
 
 
 cortexFound = True
-#Checking if the standard deviation of the density of the clusters is greater than 7
+#Checking if the standard deviation of the density of the clusters is greater than 5
 if(sdDensity >= 5):
     #Checking if the cluster center with highest density of greater than one sd away from the mean density
     if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
         if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's
             #Finding the lowest z in that cluster and removing all the z's after it
-            lowestZ = numpy.amin(PossibleCortexZs) - 2
+            lowestZ = numpy.amin(PossibleCortexZs) 
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
@@ -167,7 +167,7 @@ if(sdDensity >= 5):
                         Z2.append(line[2])
         elif(centroidX[highestDensityPos] <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
             #Finding the highest z in that cluster and all the z's before it
-            highestZ = numpy.amax(PossibleCortexZs) + 2
+            highestZ = numpy.amax(PossibleCortexZs) 
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
