@@ -12,12 +12,12 @@ print("Orienting aggregate")
 
 x = list(); y = list(); z = list(); n = 0; #n keeps track of where channel 1 stops and c2 starts
 
-with open ('ClusteredC1.csv', 'r') as csv_file:
+with open ('CortexRemovedC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         x.append(line[0]); y.append(line[1]); z.append(line[2])
         n = n +1
-with open ('ClusteredC2.csv', 'r') as csv_file:
+with open ('CortexRemovedC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     for line in csv_reader:
         x.append(line[0]); y.append(line[1]); z.append(line[2])

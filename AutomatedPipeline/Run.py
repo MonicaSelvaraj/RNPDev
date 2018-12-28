@@ -33,34 +33,32 @@ for filename in os.listdir(InputPath):
     os.system('python Clustering.py C2.csv ClusteredC2.csv')
     os.system('python ClusteredPlots.py')
 
-     #Orienting aggregate
-    os.system('python Orientation.py')
 
-'''
     #CortexRemoval
     os.system('python CortexRemoval.py')
     os.system('python ScatterPlotCortexRemoved.py')
 
-    
+    #Orienting aggregate
+    os.system('python Orientation.py')
     
     #Straightening
     os.system('python Straightening.py')
  #   os.system('python Variance.py')
 
-#PCA and 2D plots for each RNP type
+    #PCA and 2D plots for each RNP type
     os.system('python 2Dprojections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)
     os.system('python 2Dprojections.py StraightenedC2.csv ComponentsC2.csv g Output/%s/PrincipalComponentsC2.png' % outputFile)
 
-#Removing outliers
+    #Removing outliers
     os.system('python Outliers.py')
 
-#Curve Fitting
+    #Curve Fitting
     os.system('python CurveFittingComponents.py')
 
 #Formatting the data collected
 os.system('python DataFormatting.py')
 
-'''
+
 
 
 

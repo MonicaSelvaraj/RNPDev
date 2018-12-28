@@ -1,5 +1,5 @@
 '''
-- Drawing a third degree polynomial through the whole aggregate
+- Drawing a third degree polynomial through the whole aggregate - oriented in the z now instead of x 
 - Straightening the aggregate 
 '''
 
@@ -45,16 +45,16 @@ def readAndStoreInput( ):
     return (x, y, z, x1, y1, z1, x2, y2, z2);
 
 def polyReg(X,Y,Z): 
-    #Fitting a polynomial to new coordinates 
-    yP = numpy.polyfit(X, Y, 3)
-    zP = numpy.polyfit(X, Z, 3)
+    #Fitting a polynomial to new coordinates
+    xP = numpy.polyfit(Z, X, 3)
+    yP = numpy.polyfit(Z, Y, 3)
     
-    X.sort()
-    fitY = list(); fitZ = list()
+    Z.sort()
+    fitX = list(); fitY = list()
     #Generating y and z fit points
-    for x in X:
-        fitY.append((yP[0]*(x**3)) + (yP[1]*(x**2)) +(yP[2] *x) + yP[3])
-        fitZ.append((zP[0]*(x**3)) + (zP[1]*(x**2)) +(zP[2] *x) + yP[3])
+    for z in Z:
+        fitX.append((xP[0]*(z**3)) + (xP[1]*(z**2)) +(xP[2] *z) + xP[3])
+        fitY.append((yP[0]*(z**3)) + (yP[1]*(z**2)) +(yP[2] *z) + yP[3])
 
     #Plotting the polynomial 
     fig = plt.figure()
@@ -63,14 +63,14 @@ def polyReg(X,Y,Z):
     ax.set_xlabel ('x, axis')
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
-    ax.plot3D(X, fitY, fitZ,'blue')
+    ax.plot3D(fitX, fitY, Z,'blue')
     #plt.show()
     ax.grid(False)
     fig.savefig('Output/%s/Polynomial.png' % last_line)
-    return(X, fitY, fitZ)
+    return(fitX, fitY, Z)
 
 '''
-args - Points on the bezier curve, ranked x,y,z coordinates
+args - Points on the curve, x,y,z coordinates
 returns - straightened points
 
 Finds the distance of every point on the line from the 0th point
@@ -105,9 +105,9 @@ def Straighten(LinePts,x,y,z):
     dx = list(); dy = list(); dz = list()
     for i in range(0, len(x)-1, 1):
         posOnLine = indexOfClosestPoints[i]
-        dx.append((x[i] - xPoints[posOnLine])+linePtsDistances[posOnLine])
+        dx.append(x[i] - xPoints[posOnLine])
         dy.append(y[i] - yPoints[posOnLine])
-        dz.append(z[i] - zPoints[posOnLine])
+        dz.append((z[i] - zPoints[posOnLine])+linePtsDistances[posOnLine])
     return(dx, dy, dz)
 
 #Reading and storing the input
