@@ -3,10 +3,11 @@
 - Creating a scatter plot with z in the x axis and number of points in the y axis
 - Clustering points using agglomerative clustering
 - Finding the centroids of each cluster
+- Checking if the standard deviation of the cluster centeres are greater than 5(arbitrary number)
+- Checking if the highest density cluster is greater than one sd from the mean density 
 - Picking the centroid with highest number of points(y)
 - Seeing if it is within the first 10 z's or the last 10 z's 
 - If it is - find the z spread in that cluster and determine where to chop off the z  
-- Should I check if the cluster centers are significantly different instead?
 '''
 
 #!/usr/bin/python
@@ -27,7 +28,7 @@ f_read.close()
 print("Removing the cortex")
 
 #Variables for cortex removal
-Z = list()
+X = list(); Y = list(); Z = list()
 uniqueZ = list()
 
 #Variables to store Channel 1 data after cortex removal
@@ -39,20 +40,24 @@ with open ('ClusteredC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
+        X.append(line[0])
+        Y.append(line[1])
         Z.append(line[2])
         
 with open ('ClusteredC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
+        X.append(line[0])
+        Y.append(line[1])
         Z.append(line[2])
 
 for z in Z:
     if z not in uniqueZ:
         uniqueZ.append(z)
 
-Z = numpy.array(Z); Z = Z.astype(float)
-uniqueZ = numpy.array(uniqueZ); uniqueZ = uniqueZ.astype(float)
+Z = numpy.array(Z, dtype=float); 
+uniqueZ = numpy.array(uniqueZ, dtype = float)
 uniqueZ = numpy.sort(uniqueZ) #This is a list of Z's from highest to lowest
 
 zCount = list()
@@ -78,21 +83,13 @@ clusterInput = numpy.array(clusterInput ); clusterInput  = clusterInput .astype(
 
 #Creating Dendrogram - change 
 dendrogram = sch.dendrogram(sch.linkage(clusterInput, method='ward'))
-fig.savefig('Output/%s/Dendrogram.png' % last_line)
+#fig.savefig('Output/%s/Dendrogram.png' % last_line)
 #plt.show()
 plt.clf()
 
 #Creating four clusters 
 hc = AgglomerativeClustering(n_clusters=4, affinity = 'euclidean', linkage = 'ward')
 y_hc = hc.fit_predict(clusterInput)#Labels each point as cluster 0,1,2, or 3
-
-#Displaying the clusters 
-#plt.scatter(clusterInput[y_hc ==0,0], clusterInput[y_hc == 0,1], s=100, c='red')
-#plt.scatter(clusterInput[y_hc==1,0], clusterInput[y_hc == 1,1], s=100, c='black')
-#plt.scatter(clusterInput[y_hc ==2,0], clusterInput[y_hc == 2,1], s=100, c='blue')
-#plt.scatter(clusterInput[y_hc ==3,0], clusterInput[y_hc == 3,1], s=100, c='cyan')
-#plt.show()
-
 
 #Finding the cluster centers 
 centroidX = list(); centroidY = list()
@@ -150,35 +147,45 @@ if(sdDensity >= 5):
     if(centroidY[highestDensityPos] >= (sdDensity + MeanDensity)):
         if(centroidX[highestDensityPos] >= uniqueZ[10]): #Within the last 10 z's
             #Finding the lowest z in that cluster and removing all the z's after it
-            lowestZ = numpy.amin(PossibleCortexZs) 
+            lowestZ = numpy.amin(PossibleCortexZs) - 2
+            #Find x's and y's in the three z's below the lowest z 
+            pointsToFindRange = listOfPoints(lowestZ-4, lowestZ-1, X,Y, Z)
+            #Find the x and y range to keep in the cortex
+            xRange = findSpread(pointsToFindRange[0])
+            yRange = findSpread(pointsToFindRange[1])
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < lowestZ):
+                    if(float(line[2]) < lowestZ  or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
             with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < lowestZ):
+                    if(float(line[2]) < lowestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
         elif(centroidX[highestDensityPos] <= uniqueZ[len(uniqueZ) - 10]): #Within the first 10 z's
             #Finding the highest z in that cluster and all the z's before it
-            highestZ = numpy.amax(PossibleCortexZs) 
+            highestZ = numpy.amax(PossibleCortexZs) + 2
+            #Find x's and y's in the three z's above the highest z 
+            pointsToFindRange = listOfPoints(highestZ+1, highestZ+4, X,Y, Z)
+            #Find the x and y range to keep in the cortex
+            xRange = findSpread(pointsToFindRange[0])
+            yRange = findSpread(pointsToFindRange[1])                      
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) > highestZ):
+                    if(float(line[2]) > highestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
             with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < highestZ):
+                    if(float(line[2]) < highestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
@@ -213,3 +220,58 @@ X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy
 #Saving each channel's data after removing the cortex in new files
 numpy.savetxt("CortexRemovedC1.csv", numpy.column_stack((X1, Y1, Z1)), delimiter=",", fmt='%s')
 numpy.savetxt("CortexRemovedC2.csv", numpy.column_stack((X2, Y2, Z2)), delimiter=",", fmt='%s')
+
+'''
+Given a list of x's or y's returns the highest and lowest x's or y's to keep in the cortex
+'''
+def findSpread(a):
+    mean = numpy.mean(a)
+    sd = numpy.std(a)
+
+    #Fnding lower bound 
+    for i in range(0, len(a)):
+        if(a[i] <= (mean - 2*std)):
+            continue
+        else:
+            low = a[i]
+            break
+
+    #Finding upper bound 
+     for i in range(len(a), 0, -1 ):
+        if(a[i] >= (mean + 2*std)):
+            continue
+        else:
+            high = a[i]
+            break
+    return(low, high)
+
+'''
+Given a z-range returns a list of x's and y's within that range
+z1 - lowerz, z2 - upper z
+X, Y - X, Y, Z points 
+'''
+def listOfPoints(z1, z2, x, y, z):
+    xInRange = list(); yInRange = list()
+    for i in range(0, len(Z))
+        if(Z[i] >= z1 or Z[i] <= z2):
+            xInRange.append(X[i])
+            yInRange.append(Y[i])
+    xInRange = numpy.array(xInRange, dtype = float)
+    yInRange = numpy.array(yInRange, dtype = float)
+    return(xInRange, yInRange)
+            
+            
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+    
