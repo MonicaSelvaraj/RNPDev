@@ -5,7 +5,7 @@ Runs the pipeline
 import sys, os
 
 #All the input csv files for analysis should be in the file named Input 
-InputPath = 'Input'
+InputPath = 'TestInput'
 
 #For each input file, a results folder with the same name as the input file can be found in Output 
 os.mkdir("Output")
@@ -25,14 +25,15 @@ for filename in os.listdir(InputPath):
     os.chdir('..')
     
     #Splitting channels and visualizing the aggregate 
-    os.system('python splitChannels.py Input/%s' % filename)
+    os.system('python splitChannels.py TestInput/%s' % filename)
     os.system('python ScatterPlot.py')
-    
+
+    '''
     #Clustering
     os.system('python Clustering.py C1.csv ClusteredC1.csv')
     os.system('python Clustering.py C2.csv ClusteredC2.csv')
     os.system('python ClusteredPlots.py')
-
+    '''
 
     #CortexRemoval
     os.system('python CortexRemoval.py')
