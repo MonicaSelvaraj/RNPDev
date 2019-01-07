@@ -126,7 +126,6 @@ Plot2D(C1r, C2r, C1r, C2Pr, C1g, C2g, C1g,  C2Pg, 'C1 vs C2 fit', 'C1C2Fit.png')
 Plot2D(C1r, C3r, C1r, C3Pr, C1g, C3g, C1g, C3Pg, 'C1 vs C3 fit', 'C1C3Fit.png')
 
 #3D fit
-
 #Original data
 #Variables for C1
 X1 = list(); Y1 = list(); Z1 = list()
@@ -196,56 +195,4 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 fig.savefig('Output/%s/3DFit.png' % last_line)
-
-#Parameters
-def Pitch(x, y):
-        #x is the array of x coordinates and y is the array of y coordinates
-        if(len(x) == 0): return(0)
-        #Converting x, y to numpy arrays
-        x = numpy.array(x); y = numpy.array(y)
-        x = x.astype(float); y = y.astype(float)
-
-        # sort the data in x and rearrange y accordingly
-        sortId = numpy.argsort(x)
-        x = x[sortId]
-        y = y[sortId]
-
-        # this way the x-axis corresponds to the index of x
-        maxm = argrelextrema(y, numpy.greater)  
-        minm = argrelextrema(y, numpy.less)
-        
-        #maxm and minm contains the indices of minima and maxima respectively
-    
-        if(len(maxm[0]) >= 2):
-                maxima = maxm[0]
-                #Now finding the distance between the first two maxima
-                p1 = (x[maxima[0]], y[maxima[0]])
-                p2 = (x[maxima[1]], y[maxima[1]])
-                pitch = distance.euclidean(p1,p2)
-        elif(len(minm[0]) >= 2):
-                minima = minm[0]
-                #Now finding the distance between the first two maxima
-                p1 = (x[minima[0]], y[minima[0]])
-                p2 = (x[minima[1]], y[minima[1]])
-                pitch = distance.euclidean(p1,p2)
-        elif(len(minm[0]) == 1 and len(maxm[0]) == 1):
-                minima = minm[0]
-                maxima = maxm[0]
-                #Now finding the distance between the first two maxima
-                p1 = (x[minima[0]], y[minima[0]])
-                p2 = (x[maxima[0]], y[maxima[0]])
-                pitch = distance.euclidean(p1,p2)*2
-        else:
-                pitch = 0
-        
-        return (pitch);
-
-#print ("Channel1 Pitch: C1 C2 Pitch -  ", Pitch(C1r, C2Pr) ," C1 C3 Pitch - " ,Pitch(C1r, C3Pr))
-#print ("Channel2 Pitch: C1 C2 Pitch -  ", Pitch(C1g, C2Pg) ," C1 C3 Pitch - " ,Pitch(C1g, C3Pg))
-
-with open("Pitch.txt", "a") as text_file:
-                text_file.write( str(Pitch(C1r, C2Pr)) + "\n" )
-                text_file.write( str(Pitch(C1r, C3Pr)) + "\n" )
-                text_file.write( str(Pitch(C1g, C2Pg)) + "\n" )
-                text_file.write( str(Pitch(C1g, C3Pg)) + "\n" )
                 
