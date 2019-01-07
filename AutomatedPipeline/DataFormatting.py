@@ -29,7 +29,7 @@ d = open('FitRadius.txt','r')
 for line in d:
     r.append(line.strip())
 
-e = open('FitFrequency.txt','r')
+e = open('FitPitch.txt','r')
 for line in e:
     f.append(line.strip())
 
@@ -41,7 +41,7 @@ h = open('FitRadiusSE.txt','r')
 for line in h:
     rse.append(line.strip())
 
-i = open('FitFrequencySE.txt','r')
+i = open('FitPitchSE.txt','r')
 for line in i:
     fse.append(line.strip())
 

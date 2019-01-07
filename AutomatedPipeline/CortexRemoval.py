@@ -36,7 +36,7 @@ X1 = list(); Y1 = list(); Z1 = list()
 #Variables to store Channel 2 data after cortex removal 
 X2 = list(); Y2 =  list(); Z2 = list()
 
-with open ('ClusteredC1.csv', 'r') as csv_file:
+with open ('C1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
@@ -44,13 +44,51 @@ with open ('ClusteredC1.csv', 'r') as csv_file:
         Y.append(line[1])
         Z.append(line[2])
         
-with open ('ClusteredC2.csv', 'r') as csv_file:
+with open ('C2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
         X.append(line[0])
         Y.append(line[1])
         Z.append(line[2])
+'''
+Given a list of x's or y's returns the highest and lowest x's or y's to keep in the cortex
+'''
+def findSpread(a):
+    mean = numpy.mean(a)
+    sd = numpy.std(a)
+
+    #Fnding lower bound 
+    for i in range(0, len(a)):
+        if(a[i] <= (mean - 2*sd)):
+            continue
+        else:
+            low = a[i]
+            break
+
+    #Finding upper bound
+    for i in range(len(a)-1, 0, -1):
+        if(a[i] >= (mean + 2*sd)):
+            continue
+        else:
+            high = a[i]
+            break
+    return(low, high)
+
+'''
+Given a z-range returns a list of x's and y's within that range
+z1 - lowerz, z2 - upper z
+X, Y - X, Y, Z points 
+'''
+def listOfPoints(z1, z2, x, y, z):
+    xInRange = list(); yInRange = list()
+    for i in range(0, len(Z)):
+        if(Z[i] >= z1 or Z[i] <= z2):
+            xInRange.append(X[i])
+            yInRange.append(Y[i])
+    xInRange = numpy.array(xInRange, dtype = float)
+    yInRange = numpy.array(yInRange, dtype = float)
+    return(xInRange, yInRange)
 
 for z in Z:
     if z not in uniqueZ:
@@ -149,21 +187,21 @@ if(sdDensity >= 5):
             #Finding the lowest z in that cluster and removing all the z's after it
             lowestZ = numpy.amin(PossibleCortexZs) - 2
             #Find x's and y's in the three z's below the lowest z 
-            pointsToFindRange = listOfPoints(lowestZ-4, lowestZ-1, X,Y, Z)
+            #pointsToFindRange = listOfPoints(lowestZ-4, lowestZ-1, X,Y, Z)
             #Find the x and y range to keep in the cortex
-            xRange = findSpread(pointsToFindRange[0])
-            yRange = findSpread(pointsToFindRange[1])
-            with open ('ClusteredC1.csv', 'r') as csv_file:
+            #xRange = findSpread(pointsToFindRange[0])
+            #yRange = findSpread(pointsToFindRange[1])
+            with open ('C1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < lowestZ  or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
+                    if(float(line[2]) < lowestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
-            with open ('ClusteredC2.csv', 'r') as csv_file:
+            with open ('C2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < lowestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
+                    if(float(line[2]) < lowestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
@@ -171,21 +209,21 @@ if(sdDensity >= 5):
             #Finding the highest z in that cluster and all the z's before it
             highestZ = numpy.amax(PossibleCortexZs) + 2
             #Find x's and y's in the three z's above the highest z 
-            pointsToFindRange = listOfPoints(highestZ+1, highestZ+4, X,Y, Z)
+            #pointsToFindRange = listOfPoints(highestZ+1, highestZ+4, X,Y, Z)
             #Find the x and y range to keep in the cortex
-            xRange = findSpread(pointsToFindRange[0])
-            yRange = findSpread(pointsToFindRange[1])                      
+            #xRange = findSpread(pointsToFindRange[0])
+            #yRange = findSpread(pointsToFindRange[1])                      
             with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) > highestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
+                    if(float(line[2]) > highestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
             with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
-                    if(float(line[2]) < highestZ or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1]):
+                    if(float(line[2]) < highestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):
                         X2.append(line[0])
                         Y2.append(line[1])
                         Z2.append(line[2])
@@ -220,50 +258,6 @@ X2 = numpy.array(X2, dtype=float); Y2 = numpy.array(Y2, dtype=float); Z2 = numpy
 #Saving each channel's data after removing the cortex in new files
 numpy.savetxt("CortexRemovedC1.csv", numpy.column_stack((X1, Y1, Z1)), delimiter=",", fmt='%s')
 numpy.savetxt("CortexRemovedC2.csv", numpy.column_stack((X2, Y2, Z2)), delimiter=",", fmt='%s')
-
-'''
-Given a list of x's or y's returns the highest and lowest x's or y's to keep in the cortex
-'''
-def findSpread(a):
-    mean = numpy.mean(a)
-    sd = numpy.std(a)
-
-    #Fnding lower bound 
-    for i in range(0, len(a)):
-        if(a[i] <= (mean - 2*std)):
-            continue
-        else:
-            low = a[i]
-            break
-
-    #Finding upper bound 
-     for i in range(len(a), 0, -1 ):
-        if(a[i] >= (mean + 2*std)):
-            continue
-        else:
-            high = a[i]
-            break
-    return(low, high)
-
-'''
-Given a z-range returns a list of x's and y's within that range
-z1 - lowerz, z2 - upper z
-X, Y - X, Y, Z points 
-'''
-def listOfPoints(z1, z2, x, y, z):
-    xInRange = list(); yInRange = list()
-    for i in range(0, len(Z))
-        if(Z[i] >= z1 or Z[i] <= z2):
-            xInRange.append(X[i])
-            yInRange.append(Y[i])
-    xInRange = numpy.array(xInRange, dtype = float)
-    yInRange = numpy.array(yInRange, dtype = float)
-    return(xInRange, yInRange)
-            
-            
-    
-    
-    
 
 
 

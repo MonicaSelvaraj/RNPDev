@@ -1,5 +1,5 @@
 '''
-- Reading in the clustered points
+- Reading in the clustered points with cortex removed
 - Centering the points
 - Reorienting the aggregate so PC1 is aligned with z, PC2 is aligned with x, PC3 is aligned with y 
 '''
@@ -7,6 +7,11 @@
 import numpy 
 import csv
 import sys
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure( )
+plt.style.use('dark_background')
 
 print("Orienting aggregate")
 
@@ -30,19 +35,23 @@ def PCA(X, Y, Z, n):
     points = numpy.concatenate((X[:, numpy.newaxis], 
                        Y[:, numpy.newaxis], Z[:, numpy.newaxis]), axis = 1)
     center = points.mean(axis = 0)
-    centered = points-center
-    centeredT = numpy.transpose(centered)
-    constant = 1/(len(X)-1)
-    covarianceM = constant*numpy.matmul(centeredT, centered)
-    w, v = numpy.linalg.eig(covarianceM)
-    Pc1 = v[:,0]
-    Pc2 = v[:,1]
-    Pc3 = v[:, 2]
+    uu, dd, vv = numpy.linalg.svd(points - center)
+    centered = points - center
+    Pc1 = vv[0]
+    Pc2 = vv[1]
+    Pc3 = vv[2]
     #New points 
     Znew = numpy.dot(centered , Pc1) 
     Xnew = numpy.dot(centered , Pc2)
     Ynew = numpy.dot(centered, Pc3)
 
+    ax = fig.add_subplot(111, projection = '3d' )                            
+    ax.grid(False)
+    ax.set_xlabel ('x, axis'); ax.set_ylabel ('y axis'); ax.set_zlabel ('z axis')
+    ax.scatter (Xnew[:n], Ynew[:n], Znew[:n], c = 'r', marker='o')
+    ax.scatter (Xnew[n+1:len(Xnew)], Ynew[n+1:len(Xnew)], Znew[n+1:len(Xnew)], c = 'g', marker='o')
+    plt.show()
+    
     numpy.savetxt("OrientedC1.csv", numpy.column_stack((Xnew[:n], Ynew[:n], Znew[:n])), delimiter=",", fmt='%s')
     numpy.savetxt("OrientedC2.csv", numpy.column_stack((Xnew[n+1:len(Xnew)], Ynew[n+1:len(Xnew)], Znew[n+1:len(Xnew)])), delimiter=",", fmt='%s')
 

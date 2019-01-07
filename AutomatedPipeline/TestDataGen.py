@@ -6,8 +6,8 @@ from random import randint
 #Generating a helix aligned in the z axis
 n = 100
 r1 = 3
-r2 = 2
-p1 = 12
+r2 = 3
+p1 = 14
 p2 = 14
 theta = np.linspace(0, 8*np.pi, n) # 3 turns
 
@@ -19,17 +19,17 @@ x2 = r2*np.cos(theta) + 100
 y2 = r2*np.sin(theta)  + 100
 z2 = (p2/(2*np.pi))*theta
 
-#Generating cortex from z = 55 - 65, x, y = 50 - 150
+#Generating cortex from z = 60 - 75, x, y = 50 - 150
 #Actual x, y is in 104 - 96
 x1Cortex = list(); y1Cortex = list(); z1Cortex = list()
 for i in range(0, 500):
-    z1Cortex.append(randint(50, 65))
+    z1Cortex.append(randint(60, 75))
     x1Cortex.append(randint(75, 125))
     y1Cortex.append(randint(75, 125))
 
 x2Cortex = list(); y2Cortex = list(); z2Cortex = list()
 for i in range(0, 500):
-    z2Cortex.append(randint(50, 65))
+    z2Cortex.append(randint(60, 75))
     x2Cortex.append(randint(75, 125))
     y2Cortex.append(randint(75, 125))
     

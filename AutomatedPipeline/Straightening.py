@@ -64,7 +64,7 @@ def polyReg(X,Y,Z):
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
     ax.plot3D(fitX, fitY, Z,'blue')
-    #plt.show()
+    plt.show()
     ax.grid(False)
     fig.savefig('Output/%s/Polynomial.png' % last_line)
     return(fitX, fitY, Z)
@@ -75,7 +75,7 @@ returns - straightened points
 
 Finds the distance of every point on the line from the 0th point
 Finds the point on the line that every coordinate is closest to
-Finds a vector between the two points, and adds the extra x distance 
+Finds a vector between the two points, and adds the extra z distance 
 '''
 def Straighten(LinePts,x,y,z):
     xPoints = list(); yPoints = list(); zPoints = list()
@@ -126,7 +126,7 @@ ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g'
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-#plt.show()
+plt.show()
 ax.grid(False)
 fig.savefig('Output/%s/Straightened.png' % last_line)
 #Writing straightened points to a file

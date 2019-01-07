@@ -5,7 +5,7 @@ Runs the pipeline
 import sys, os
 
 #All the input csv files for analysis should be in the file named Input 
-InputPath = 'TestInput'
+InputPath = 'Input'
 
 #For each input file, a results folder with the same name as the input file can be found in Output 
 os.mkdir("Output")
@@ -25,7 +25,7 @@ for filename in os.listdir(InputPath):
     os.chdir('..')
     
     #Splitting channels and visualizing the aggregate 
-    os.system('python splitChannels.py TestInput/%s' % filename)
+    os.system('python splitChannels.py Input/%s' % filename)
     os.system('python ScatterPlot.py')
 
     '''
