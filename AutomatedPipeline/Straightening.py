@@ -64,7 +64,7 @@ def polyReg(X,Y,Z):
     ax.set_ylabel ('y axis')
     ax.set_zlabel ('z axis')
     ax.plot3D(fitX, fitY, Z,'blue')
-    plt.show()
+    #plt.show()
     ax.grid(False)
     fig.savefig('Output/%s/Polynomial.png' % last_line)
     return(fitX, fitY, Z)
@@ -73,25 +73,29 @@ def polyReg(X,Y,Z):
 args - Points on the curve, x,y,z coordinates
 returns - straightened points
 
-Finds the distance of every point on the line from the 0th point
+Finds the distance between every pair of points on the line 
 Finds the point on the line that every coordinate is closest to
-Finds a vector between the two points, and adds the extra z distance 
+Finds a vector between the point on the line to the data point
 '''
 def Straighten(LinePts,x,y,z):
     xPoints = list(); yPoints = list(); zPoints = list()
     xPoints = LinePts[0]; yPoints = LinePts[1]; zPoints = LinePts[2]
 
-    #Finding the distance of every point from the 0th point
+    #Finding the distance between every pait of points and storing the cumulative distances to get to that point 
     linePtsDistances = list()
-    for i in range (0, len(xPoints)-1,1):
-        a = (xPoints[0], yPoints[0], zPoints[0])
-        b = (xPoints[i], yPoints[i], zPoints[i])
-        linePtsDistances.append(distance.euclidean(a,b))
+    cumulativeDistance = 0 #Keeps track of cumulative distance till that point
+    linePtsDistances.append(0) #Don't have to add anything for the first point 
+    for i in range (0, len(xPoints)-2,1):
+        a = (xPoints[i], yPoints[i], zPoints[i])
+        b = (xPoints[i+1], yPoints[i+1], zPoints[i+1])
+        dst = distance.euclidean(a,b)
+        cumulativeDistance = cumulativeDistance + dst
+        linePtsDistances.append(cumulativeDistance)
 
     #Creating a list of the index of the point on the line that each x,y,z is closets to
     closestPointPos = 0; i=0; j=0; indexOfClosestPoints = list()
     for i in range (0, len(x)-1): #looping through all the x,y,z coordinates
-        mindst = 1000 #Setting an upper limit on the minimum distance 
+        mindst = 10000 #Setting an upper limit on the minimum distance 
         for j in range(0, len(xPoints)-1): #For every coordinate, looping through each point on the line
             a = (x[i], y[i], z[i])
             b = (xPoints[j], yPoints[j], zPoints[j])
@@ -107,7 +111,7 @@ def Straighten(LinePts,x,y,z):
         posOnLine = indexOfClosestPoints[i]
         dx.append(x[i] - xPoints[posOnLine])
         dy.append(y[i] - yPoints[posOnLine])
-        dz.append((z[i] - zPoints[posOnLine])+linePtsDistances[posOnLine])
+        dz.append(linePtsDistances[posOnLine])
     return(dx, dy, dz)
 
 #Reading and storing the input
@@ -126,7 +130,7 @@ ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g'
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-plt.show()
+#plt.show()
 ax.grid(False)
 fig.savefig('Output/%s/Straightened.png' % last_line)
 #Writing straightened points to a file
