@@ -1,6 +1,6 @@
 '''
-- Drawing a third degree polynomial through the whole aggregate - oriented in the z now instead of x 
-- Straightening the aggregate 
+- Reading in the points and ordering of points from the Principal Curve script
+- Straightening the points of each channel 
 '''
 
 #!/usr/bin/python
@@ -17,65 +17,44 @@ last_line = last_line[:-1] #Ignoring newline character
 f_read.close()
 plt.style.use('dark_background')
 
-'''
-args: --
-returns: numpy arrays with x,y,z coorindates
-
-Reads in deconvoluted points and stores x,y,z coordinates in numpy arrays
-'''
-def readAndStoreInput( ):
+def getPoints(filename):
     x = list(); y = list(); z = list()
-    x1 = list(); y1 = list(); z1 = list(); x2 = list(); y2 = list(); z2 = list()
-    with open ('OrientedC1.csv', 'r') as csv_file:
+    with open (filename, 'r') as csv_file:
         csv_reader = csv.reader (csv_file)
         for line in csv_reader:
-            x.append(line[0]); x1.append(line[0])
-            y.append(line[1]); y1.append(line[1])
-            z.append(line[2]); z1.append(line[2])
-    with open ('OrientedC2.csv', 'r') as csv_file:
-        csv_reader = csv.reader (csv_file)
-        for line in csv_reader:
-            x.append(line[0]); x2.append(line[0])
-            y.append(line[1]); y2.append(line[1])
-            z.append(line[2]); z2.append(line[2])
-
+            x.append(line[0]); y.append(line[1]); z.append(line[2])
     x = numpy.array(x, dtype = float); y = numpy.array(y, dtype = float); z = numpy.array(z, dtype = float)
-    x1 = numpy.array(x1, dtype = float); y1 = numpy.array(y1, dtype = float); z1 = numpy.array(z1, dtype = float)
-    x2 = numpy.array(x2, dtype = float); y2 = numpy.array(y2, dtype = float); z2 = numpy.array(z2, dtype = float)
-    return (x, y, z, x1, y1, z1, x2, y2, z2);
+    return (x, y, z);
 
-def polyReg(X,Y,Z): 
-    #Fitting a polynomial to new coordinates
-    xP = numpy.polyfit(Z, X, 3)
-    yP = numpy.polyfit(Z, Y, 3)
+def reorderPC(x, y, z, r):
+    #For reordered points
+    xs = list(); ys = list(); zs = list()
+    xs = numpy.array(xs, dtype=float); ys = numpy.array(ys, dtype=float); zs = numpy.array(zs, dtype=float)
     
-    Z.sort()
-    fitX = list(); fitY = list()
-    #Generating y and z fit points
-    for z in Z:
-        fitX.append((xP[0]*(z**3)) + (xP[1]*(z**2)) +(xP[2] *z) + xP[3])
-        fitY.append((yP[0]*(z**3)) + (yP[1]*(z**2)) +(yP[2] *z) + yP[3])
-
-    #Plotting the polynomial 
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1, projection = '3d')
-    ax.scatter (X, Y, Z, c = 'y', marker='o', s=1, linewidths=3)
-    ax.set_xlabel ('x, axis')
-    ax.set_ylabel ('y axis')
-    ax.set_zlabel ('z axis')
-    ax.plot3D(fitX, fitY, Z,'blue')
-    #plt.show()
-    ax.grid(False)
-    fig.savefig('Output/%s/Polynomial.png' % last_line)
-    return(fitX, fitY, Z)
-
+    #Concatenating numpy arrays
+    data = numpy.concatenate((r[:, numpy.newaxis],
+                       x[:, numpy.newaxis], 
+                       y[:, numpy.newaxis], 
+                       z[:, numpy.newaxis]), 
+                      axis=1)
+    
+    #Sorting wrt x, y, z consecutively like excel
+    sortedData = data[numpy.lexsort(numpy.transpose(data)[::-1])]
+    
+    #Separating the sorted data into numpy arrays
+    sortedArray = numpy.hsplit(sortedData, 4)
+    xs = numpy.concatenate(sortedArray[1], axis=0)
+    ys = numpy.concatenate(sortedArray[2], axis=0)
+    zs = numpy.concatenate(sortedArray[3], axis=0)
+    numpy.savetxt("reorderCheck.csv", numpy.column_stack((xs, ys, zs)), delimiter=",", fmt='%s')
+    return (xs, ys, zs);
 '''
 args - Points on the curve, x,y,z coordinates
 returns - straightened points
 
-Finds the distance between every pair of points on the line 
-Finds the point on the line that every coordinate is closest to
-Finds a vector between the point on the line to the data point
+Finds the distance between every pair of points on the curve
+Finds the point on the curve that every coordinate is closest to
+Finds a vector between the point on the curve to the data point
 '''
 def Straighten(LinePts,x,y,z):
     xPoints = list(); yPoints = list(); zPoints = list()
@@ -114,14 +93,40 @@ def Straighten(LinePts,x,y,z):
         dz.append(linePtsDistances[posOnLine])
     return(dx, dy, dz)
 
-#Reading and storing the input
-In = readAndStoreInput()
-X = In[0]; Y = In[1]; Z = In[2];X1 = In[3]; Y1 = In[4]; Z1 = In[5];X2 = In[6]; Y2 = In[7]; Z2 = In[8]
-#Drawing a polynomial through the points
-poly = polyReg(X,Y,Z)
-#Straightening points
-StraightenedPts1 = Straighten(poly, X1, Y1, Z1)
-StraightenedPts2 = Straighten(poly, X2, Y2, Z2)
+
+#Reading in C1 and C2 points
+pointsC1 = getPoints('CortexRemovedC1.csv')
+pointsC2 = getPoints('CortexRemovedC2.csv')
+
+#Reading in principal curve points
+pointsPC = getPoints('fitpoints.csv')
+#Reading in order of principal curve points
+ranks = list()
+with open ('fitorder.csv') as csv_file:
+    csv_reader = csv.reader (csv_file)
+    for line in csv_reader:
+        ranks.append(line[0])
+ranks = numpy.array(ranks, dtype = float)
+
+#Reordering points of the principal curve
+orderedpointsPC = reorderPC(pointsPC[0], pointsPC[1], pointsPC[2], ranks)
+
+#Plotting the original points and the principal curve
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1, projection = '3d')
+ax.scatter (pointsC1[0], pointsC1[1], pointsC1[2], c = 'r', marker='o', s=1, linewidths=2)
+ax.scatter (pointsC2[0], pointsC2[1], pointsC2[2], c = 'g', marker='o', s=1, linewidths=2)
+ax.scatter(pointsPC[0], pointsPC[1], pointsPC[2], c = 'b', marker = '*', s=1, linewidths=2)
+ax.set_xlabel ('x, axis')
+ax.set_ylabel ('y axis')
+ax.set_zlabel ('z axis')
+plt.show()
+ax.grid(False)
+fig.savefig('Output/%s/PrincipalCurve.png' % last_line)
+
+#Straightening each of the channels separately and saving the straightened points
+StraightenedPts1 = Straighten(orderedpointsPC, pointsC1[0], pointsC1[1], pointsC1[2])
+StraightenedPts2 = Straighten(orderedpointsPC, pointsC2[0], pointsC2[1], pointsC2[2])
 #Plotting the straightened points
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection = '3d')
@@ -130,7 +135,7 @@ ax.scatter (StraightenedPts2[0],StraightenedPts2[1],StraightenedPts2[2], c = 'g'
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-#plt.show()
+plt.show()
 ax.grid(False)
 fig.savefig('Output/%s/Straightened.png' % last_line)
 #Writing straightened points to a file
@@ -138,6 +143,3 @@ StraightenedPts1= numpy.array(StraightenedPts1, dtype = float)
 StraightenedPts2= numpy.array(StraightenedPts2, dtype = float)
 numpy.savetxt("StraightenedC1.csv", numpy.column_stack((StraightenedPts1[0], StraightenedPts1[1], StraightenedPts1[2])), delimiter=",", fmt='%s')
 numpy.savetxt("StraightenedC2.csv", numpy.column_stack((StraightenedPts2[0], StraightenedPts2[1], StraightenedPts2[2])), delimiter=",", fmt='%s')
-
-
-
