@@ -36,7 +36,7 @@ X1 = list(); Y1 = list(); Z1 = list()
 #Variables to store Channel 2 data after cortex removal 
 X2 = list(); Y2 =  list(); Z2 = list()
 
-with open ('C1.csv', 'r') as csv_file:
+with open ('ClusteredC1.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
@@ -44,7 +44,7 @@ with open ('C1.csv', 'r') as csv_file:
         Y.append(line[1])
         Z.append(line[2])
         
-with open ('C2.csv', 'r') as csv_file:
+with open ('ClusteredC2.csv', 'r') as csv_file:
     csv_reader = csv.reader (csv_file)
     #Iterating through contents in the file
     for line in csv_reader:
@@ -191,14 +191,14 @@ if(sdDensity >= 5):
             #Find the x and y range to keep in the cortex
             #xRange = findSpread(pointsToFindRange[0])
             #yRange = findSpread(pointsToFindRange[1])
-            with open ('C1.csv', 'r') as csv_file:
+            with open ('ClusteredC1.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) < lowestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):
                         X1.append(line[0])
                         Y1.append(line[1])
                         Z1.append(line[2])
-            with open ('C2.csv', 'r') as csv_file:
+            with open ('ClusteredC2.csv', 'r') as csv_file:
                 csv_reader = csv.reader (csv_file)
                 for line in csv_reader:
                     if(float(line[2]) < lowestZ): #or (float(line[0])>xRange[0] and float(line[0])<xRange[1] and float(line[1])>yRange[0] and float(line[1])<yRange[1])):

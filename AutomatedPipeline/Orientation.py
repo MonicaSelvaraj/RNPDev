@@ -50,7 +50,7 @@ def PCA(X, Y, Z, n):
     ax.set_xlabel ('x, axis'); ax.set_ylabel ('y axis'); ax.set_zlabel ('z axis')
     ax.scatter (Xnew[:n], Ynew[:n], Znew[:n], c = 'r', marker='o')
     ax.scatter (Xnew[n+1:len(Xnew)], Ynew[n+1:len(Xnew)], Znew[n+1:len(Xnew)], c = 'g', marker='o')
-    plt.show()
+    #plt.show()
     
     numpy.savetxt("OrientedC1.csv", numpy.column_stack((Xnew[:n], Ynew[:n], Znew[:n])), delimiter=",", fmt='%s')
     numpy.savetxt("OrientedC2.csv", numpy.column_stack((Xnew[n+1:len(Xnew)], Ynew[n+1:len(Xnew)], Znew[n+1:len(Xnew)])), delimiter=",", fmt='%s')

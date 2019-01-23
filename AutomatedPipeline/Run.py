@@ -28,23 +28,23 @@ for filename in os.listdir(InputPath):
     os.system('python splitChannels.py Input/%s' % filename)
     os.system('python ScatterPlot.py')
 
-    '''
+    
     #Clustering
     os.system('python Clustering.py C1.csv ClusteredC1.csv')
     os.system('python Clustering.py C2.csv ClusteredC2.csv')
     os.system('python ClusteredPlots.py')
-    '''
+    
 
     #CortexRemoval
     os.system('python CortexRemoval.py')
     os.system('python ScatterPlotCortexRemoved.py')
 
     #Orienting aggregate
-    os.system('python Orientation.py')
+    #os.system('python Orientation.py')
     
     #Straightening
+    os.system('Rscript PrincipalCurve.R')
     os.system('python Straightening.py')
- #   os.system('python Variance.py')
 
     #PCA and 2D plots for each RNP type
     os.system('python 2Dprojections.py StraightenedC1.csv ComponentsC1.csv r Output/%s/PrincipalComponentsC1.png' % outputFile)

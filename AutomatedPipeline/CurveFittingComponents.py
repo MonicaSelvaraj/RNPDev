@@ -172,6 +172,9 @@ C1Pc1 = C1PCs[0]; C2Pc1 = C2PCs[0]
 C1Pc2 = C1PCs[1]; C2Pc2 = C2PCs[1]
 C1Pc3 = C1PCs[2]; C2Pc3 = C2PCs[2]
 
+OverallFitXC1 = list(); OverallFitYC1 = list(); OverallFitZC1 = list()
+OverallFitXC2 = list(); OverallFitYC2 = list(); OverallFitZC2 = list()
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.scatter3D(X1, Y1, Z1, c = 'r', marker='o')
@@ -181,11 +184,13 @@ ax.scatter3D(X2, Y2, Z2, c = 'g', marker='o')
 for i in range(len(C1r)-1): #Go from the center into the PC's direction by this much for each point
         #Plot3D, takes a start x, end x, start y, end y, start z, end z
         start = centerC1 + C1r[i]*C1Pc1 + C2Pr[i]*C1Pc2 + C3Pr[i]*C1Pc3
+        OverallFitXC1.append(start[0]); OverallFitYC1.append(start[1]); OverallFitZC1.append(start[2])
         end = centerC1 + C1r[i+1]*C1Pc1 + C2Pr[i+1]*C1Pc2 + C3Pr[i+1]*C1Pc3
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'blue', linewidth = 3)
 for i in range(len(C1g)-1): #Go from the center into the PC's direction by this much for each point
         #Plot3D, takes a start x, end x, start y, end y, start z, end z
         start = centerC2 + C1g[i]*C2Pc1 + C2Pg[i]*C2Pc2 + C3Pg[i]*C2Pc3
+        OverallFitXC2.append(start[0]); OverallFitYC2.append(start[1]); OverallFitZC2.append(start[2])
         end = centerC2 + C1g[i+1]*C2Pc1 + C2Pg[i+1]*C2Pc2 + C3Pg[i+1]*C2Pc3
         ax.plot3D([start[0], end[0]], [start[1], end[1]], [start[2], end[2]], c = 'yellow', linewidth = 3) #alpha=0.5) 
         ax.set_title('overall fit')
@@ -195,4 +200,6 @@ ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
 fig.savefig('Output/%s/3DFit.png' % last_line)
-                
+
+numpy.savetxt("FitC1.csv", numpy.column_stack((OverallFitXC1, OverallFitYC1, OverallFitZC1)), delimiter=",", fmt='%s')
+numpy.savetxt("FitC2.csv", numpy.column_stack((OverallFitXC2, OverallFitYC2, OverallFitZC2)), delimiter=",", fmt='%s')
