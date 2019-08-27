@@ -50,7 +50,7 @@ def PCs(X,Y,Z):
 PCsOutput = PCs(X, Y, Z)
 
 #Drawing PC's through data
-lineptsPC1 = PCsOutput[0] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
+lineptsPC1 = PCsOutput[0] * numpy.mgrid[-10000:10000:2j][:, numpy.newaxis]
 lineptsPC2 = PCsOutput[1] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
 lineptsPC3 = PCsOutput[2] * numpy.mgrid[-20:20:2j][:, numpy.newaxis]
 
@@ -68,7 +68,7 @@ ax.set_zlabel ('z axis')
 ax.plot3D(*lineptsPC1.T)
 ax.plot3D(*lineptsPC2.T)
 ax.plot3D(*lineptsPC3.T)
-#plt.show()
+plt.show()
 fig.savefig(sys.argv[4])
 
 #2D projections

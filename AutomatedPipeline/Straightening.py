@@ -60,7 +60,7 @@ def Straighten(LinePts,x,y,z):
     xPoints = list(); yPoints = list(); zPoints = list()
     xPoints = LinePts[0]; yPoints = LinePts[1]; zPoints = LinePts[2]
 
-    #Finding the distance between every pait of points and storing the cumulative distances to get to that point 
+    #Finding the distance between every pair of points and storing the cumulative distances to get to that point 
     linePtsDistances = list()
     cumulativeDistance = 0 #Keeps track of cumulative distance till that point
     linePtsDistances.append(0) #Don't have to add anything for the first point 
@@ -82,15 +82,16 @@ def Straighten(LinePts,x,y,z):
                 mindst = (distance.euclidean(a,b))
                 closestPointPos = j
         indexOfClosestPoints.append(closestPointPos)
+    print(indexOfClosestPoints)
 
     #Finding the vector from the coordinate to the nearest point on the line
     #Adding the additional x distance
     dx = list(); dy = list(); dz = list()
     for i in range(0, len(x)-1, 1):
         posOnLine = indexOfClosestPoints[i]
-        dx.append(x[i] - xPoints[posOnLine])
+        dx.append((x[i] - xPoints[posOnLine])+linePtsDistances[posOnLine])
         dy.append(y[i] - yPoints[posOnLine])
-        dz.append(linePtsDistances[posOnLine])
+        dz.append(z[i] - zPoints[posOnLine])
     return(dx, dy, dz)
 
 

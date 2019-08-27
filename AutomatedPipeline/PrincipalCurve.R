@@ -1,11 +1,20 @@
-#Importing data from excel to R
-sampledata <- read.csv("PCTrial.csv")
+#Importing data to R
+pointsC1 <- read.csv("CortexRemovedC1.csv")
+pointsC2 <- read.csv("CortexRemovedC2.csv")
+
+#Renaming columns 
+colnames(pointsC1) <- c("x","y","z")
+colnames(pointsC2) <- c("x","y","z")
+
+#Concatenating both dataframes 
+allpoints <- rbind(pointsC1, pointsC2)
+
 #Converting the dataframe to a matrix 
-sampledata <- data.matrix(sampledata)
+allpoints <- data.matrix(allpoints)
 
 #Fitting the first principal curve 
 library(princurve)
-fit <-(principal_curve(sampledata))
+fit <-(principal_curve(allpoints))
 
 #Obtaining fitted points on the curve and ordering of points
 fits <- fit$s

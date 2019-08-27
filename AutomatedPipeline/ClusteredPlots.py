@@ -105,7 +105,7 @@ ax.legend((red, green),
 ax.set_xlabel ('x, axis')
 ax.set_ylabel ('y axis')
 ax.set_zlabel ('z axis')
-#plt.show()
+plt.show()
 
 f_read = open("FileNames.txt", "r")
 last_line = f_read.readlines()[-1]
