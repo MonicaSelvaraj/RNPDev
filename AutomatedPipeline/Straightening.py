@@ -150,12 +150,10 @@ For a given list of points from start to end of the principal curve,
 - Repeat this for every set of consecutive points on the curve. 
 '''
 def Axes(CurvePts):
-    print(CurvePts)
-    print("Hello")
     #Storing the points of the principal cuve - the points are ordered 
     x = list(); y = list(); z = list()
     x = CurvePts[0]; y = CurvePts[1]; z = CurvePts[2]
-    
+
     #Finding the axes for each set of consecutive points on the curve
     xAxes = list(); yAxes= list(); zAxes = list()
 
@@ -204,12 +202,18 @@ def pick50points(x,y,z):
     interval = math.ceil(len(x)/50)
     i = 0
     newx = list(); newy = list();newz = list()
+    newx.append(x[0]);newy.append(y[0]);newz.append(z[0])
+    i+=interval
     while(i<len(x)):
-        newx.append(x[i])
-        newy.append(y[i])
-        newz.append(z[i])
-        i+=interval
-        
+        nextVector = [(x[i] - x[i-interval]), (y[i] - y[i-interval]), (z[i] - z[i-interval])]
+        if(np.linalg.norm(nextVector) == 0): #Removing duplicates
+            i+=interval
+            continue
+        else:
+            newx.append(x[i])
+            newy.append(y[i])
+            newz.append(z[i])
+            i+=interval
     newx = np.array(newx, dtype = float); newy = np.array(newy, dtype = float); newz = np.array(newz, dtype = float)
     return(newx, newy, newz)
 
@@ -384,5 +388,5 @@ fig.savefig('Output/%s/Straightened.png' % last_line)
 #Writing straightened points to a file
 StraightRNPC1= np.array(StraightRNPC1, dtype = float)
 StraightRNPC2= np.array(StraightRNPC2, dtype = float)
-np.savetxt("StraightenedC1.csv", numpy.column_stack((StraightRNPC1[0], StraightRNPC1[1], StraightRNPC1[2])), delimiter=",", fmt='%s')
-np.savetxt("StraightenedC2.csv", numpy.column_stack((StraightRNPC2[0], StraightRNPC2[1], StraightRNPC2[2])), delimiter=",", fmt='%s')
+np.savetxt("StraightenedC1.csv", np.column_stack((StraightRNPC1[0], StraightRNPC1[1], StraightRNPC1[2])), delimiter=",", fmt='%s')
+np.savetxt("StraightenedC2.csv", np.column_stack((StraightRNPC2[0], StraightRNPC2[1], StraightRNPC2[2])), delimiter=",", fmt='%s')
